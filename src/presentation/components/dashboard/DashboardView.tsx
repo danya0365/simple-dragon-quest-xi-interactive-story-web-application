@@ -1,7 +1,9 @@
 "use client";
 
 import { EventInteractionView } from "@/src/presentation/components/game/EventInteractionView";
+import { InventoryView } from "@/src/presentation/components/game/InventoryView";
 import { LocationView } from "@/src/presentation/components/game/LocationView";
+import { PartyView } from "@/src/presentation/components/game/PartyView";
 import { WorldMapView } from "@/src/presentation/components/game/WorldMapView";
 import { useAuthStore } from "@/src/stores/authStore";
 import { useGameStore } from "@/src/stores/gameStore";
@@ -10,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export function DashboardView() {
   const router = useRouter();
-  const { user, signOut, loading: authLoading, initialized } = useAuthStore();
+  const { user, signOut, loading: authLoading, initialized, initialize } = useAuthStore();
   const {
     currentView,
     userGameState,
@@ -22,19 +24,21 @@ export function DashboardView() {
 
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  // Initialize user data
+  // Initialize auth store and user data
   useEffect(() => {
-    if (user?.id && initialized) {
+    if (!initialized) {
+      initialize();
+    } else if (user?.id) {
       loadUserGameState(user.id);
     }
-  }, [user?.id, initialized, loadUserGameState]);
+  }, [user?.id, initialized, initialize, loadUserGameState]);
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (!authLoading && initialized && !user) {
+    if (initialized && !user) {
       router.push("/login");
     }
-  }, [user, authLoading, initialized, router]);
+  }, [user, initialized, router]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -46,12 +50,8 @@ export function DashboardView() {
     setCurrentView(view);
   };
 
-  useEffect(() => {
-    console.log(authLoading, initialized);
-  }, [authLoading, initialized]);
-
-  // Show loading while initializing
-  if (authLoading || !initialized) {
+  // Show loading while initializing or if not properly initialized
+  if (!initialized || (authLoading && !user)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -84,12 +84,12 @@ export function DashboardView() {
             </div>
 
             {/* Navigation */}
-            <nav className="hidden md:flex space-x-6">
+            <nav className="hidden md:flex space-x-4">
               <button
                 onClick={() => handleViewChange("world_map")}
-                className={`px-3 py-2 rounded-lg transition-colors ${
+                className={`px-3 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 ${
                   currentView === "world_map"
-                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 shadow-lg"
                     : "text-blue-200 hover:text-white hover:bg-white/10"
                 }`}
               >
@@ -97,9 +97,9 @@ export function DashboardView() {
               </button>
               <button
                 onClick={() => handleViewChange("inventory")}
-                className={`px-3 py-2 rounded-lg transition-colors ${
+                className={`px-3 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 ${
                   currentView === "inventory"
-                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 shadow-lg"
                     : "text-blue-200 hover:text-white hover:bg-white/10"
                 }`}
               >
@@ -107,13 +107,50 @@ export function DashboardView() {
               </button>
               <button
                 onClick={() => handleViewChange("party")}
-                className={`px-3 py-2 rounded-lg transition-colors ${
+                className={`px-3 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 ${
                   currentView === "party"
-                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 shadow-lg"
                     : "text-blue-200 hover:text-white hover:bg-white/10"
                 }`}
               >
                 👥 ปาร์ตี้
+              </button>
+            </nav>
+
+            {/* Mobile Navigation */}
+            <nav className="md:hidden flex space-x-2">
+              <button
+                onClick={() => handleViewChange("world_map")}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  currentView === "world_map"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    : "text-blue-200 hover:text-white hover:bg-white/10"
+                }`}
+                title="แผนที่โลก"
+              >
+                🗺️
+              </button>
+              <button
+                onClick={() => handleViewChange("inventory")}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  currentView === "inventory"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    : "text-blue-200 hover:text-white hover:bg-white/10"
+                }`}
+                title="กระเป๋า"
+              >
+                🎒
+              </button>
+              <button
+                onClick={() => handleViewChange("party")}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  currentView === "party"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    : "text-blue-200 hover:text-white hover:bg-white/10"
+                }`}
+                title="ปาร์ตี้"
+              >
+                👥
               </button>
             </nav>
 
@@ -150,10 +187,10 @@ export function DashboardView() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
           {/* Sidebar - Game Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 order-2 lg:order-1 space-y-4 lg:space-y-6">
             {/* User Progress Card */}
             <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6">
               <h3 className="text-yellow-400 font-bold mb-4">ความคืบหน้า</h3>
@@ -224,28 +261,14 @@ export function DashboardView() {
           </div>
 
           {/* Main Game Area */}
-          <div className="lg:col-span-3">
-            {currentView === "world_map" && <WorldMapView />}
-            {currentView === "location" && <LocationView />}
-            {currentView === "event" && <EventInteractionView />}
-            {currentView === "inventory" && (
-              <div className="text-center py-12">
-                <div className="text-blue-400 text-6xl mb-4">🎒</div>
-                <p className="text-blue-200 font-medium mb-2">กระเป๋า</p>
-                <p className="text-blue-300">
-                  ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้
-                </p>
-              </div>
-            )}
-            {currentView === "party" && (
-              <div className="text-center py-12">
-                <div className="text-blue-400 text-6xl mb-4">👥</div>
-                <p className="text-blue-200 font-medium mb-2">ปาร์ตี้</p>
-                <p className="text-blue-300">
-                  ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้
-                </p>
-              </div>
-            )}
+          <div className="lg:col-span-3 order-1 lg:order-2">
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4 lg:p-6 min-h-[500px]">
+              {currentView === "world_map" && <WorldMapView />}
+              {currentView === "location" && <LocationView />}
+              {currentView === "event" && <EventInteractionView />}
+              {currentView === "inventory" && <InventoryView />}
+              {currentView === "party" && <PartyView />}
+            </div>
           </div>
         </div>
       </main>

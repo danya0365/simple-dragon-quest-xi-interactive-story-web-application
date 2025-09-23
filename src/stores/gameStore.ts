@@ -37,8 +37,8 @@ interface PartyMember {
   name: string;
   description: string;
   avatar_url: string;
-  current_stats: Record<string, any>;
-  equipment: Record<string, any>;
+  current_stats: Record<string, number | string>;
+  equipment: Record<string, string | null>;
   party_position: number;
   joined_at: string;
 }
@@ -61,7 +61,7 @@ interface UserGameState {
   completed_events: string[];
   unlocked_locations: string[];
   unlocked_chapters: string[];
-  game_stats: Record<string, any>;
+  game_stats: Record<string, number | string>;
   party_members: PartyMember[];
   inventory: InventoryItem[];
   last_played_at: string;
@@ -89,9 +89,10 @@ interface GameActions {
   loadWorldMap: (userId: string) => Promise<void>;
   loadAvailableEvents: (userId: string) => Promise<void>;
   loadUserGameState: (userId: string) => Promise<void>;
+  loadEventInteractions: (userId: string, eventId: string) => Promise<any>;
   
   // Game interactions
-  completeInteraction: (userId: string, interactionId: string, choiceData?: any) => Promise<void>;
+  completeInteraction: (userId: string, interactionId: string, choiceData?: Record<string, unknown>) => Promise<void>;
   
   // Navigation
   setCurrentView: (view: GameState['currentView']) => void;
@@ -133,12 +134,23 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
+          // Transform the data to match our interface
+          const transformedData = (data || []).map((region: any) => ({
+            id: region.region_id,
+            name: region.region_name,
+            description: region.region_description,
+            image_url: region.region_image_url,
+            is_unlocked: region.is_unlocked,
+            locations_count: region.locations_count,
+            unlocked_locations_count: region.unlocked_locations_count,
+          }));
+
           set({
-            worldRegions: data || [],
+            worldRegions: transformedData,
             loading: false
           });
-        } catch (error) {
-          console.error('Error loading world map:', error);
+        } catch (err) {
+          console.error('Error loading world map:', err);
           set({
             error: 'ไม่สามารถโหลดแผนที่โลกได้',
             loading: false
@@ -161,8 +173,8 @@ export const useGameStore = create<GameStore>()(
             availableEvents: data || [],
             loading: false
           });
-        } catch (error) {
-          console.error('Error loading available events:', error);
+        } catch (err) {
+          console.error('Error loading available events:', err);
           set({
             error: 'ไม่สามารถโหลดเหตุการณ์ได้',
             loading: false
@@ -182,11 +194,11 @@ export const useGameStore = create<GameStore>()(
           if (error) throw error;
 
           set({
-            userGameState: data,
+            userGameState: data as UserGameState | null,
             loading: false
           });
-        } catch (error) {
-          console.error('Error loading user game state:', error);
+        } catch (err) {
+          console.error('Error loading user game state:', err);
           set({
             error: 'ไม่สามารถโหลดสถานะเกมได้',
             loading: false
@@ -194,7 +206,31 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      completeInteraction: async (userId: string, interactionId: string, choiceData = {}) => {
+      loadEventInteractions: async (userId: string, eventId: string) => {
+        set({ loading: true, error: null });
+        const supabase = createClientSupabaseClient();
+
+        try {
+          const { data, error } = await supabase.rpc('get_event_interactions', {
+            user_uuid: userId,
+            event_uuid: eventId
+          });
+
+          if (error) throw error;
+
+          set({ loading: false });
+          return data;
+        } catch (err) {
+          console.error('Error loading event interactions:', err);
+          set({
+            error: 'ไม่สามารถโหลดการโต้ตอบได้',
+            loading: false
+          });
+          return null;
+        }
+      },
+
+      completeInteraction: async (userId: string, interactionId: string, choiceData: Record<string, unknown> = {}) => {
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
 
@@ -202,27 +238,28 @@ export const useGameStore = create<GameStore>()(
           const { data, error } = await supabase.rpc('complete_interaction', {
             user_uuid: userId,
             interaction_uuid: interactionId,
-            choice_data: choiceData
+            choice_data: choiceData as any
           });
 
           if (error) throw error;
 
-          if (data?.success) {
+          const result = data as any;
+          if (result?.success) {
             // Reload game state after successful interaction
             await get().loadUserGameState(userId);
             await get().loadAvailableEvents(userId);
             
             // If there's a next event, navigate to it
-            if (data.next_event_id) {
-              set({ selectedEventId: data.next_event_id });
+            if (result.next_event_id) {
+              set({ selectedEventId: result.next_event_id });
             }
           } else {
-            throw new Error(data?.error || 'การโต้ตอบไม่สำเร็จ');
+            throw new Error(result?.error || 'การโต้ตอบไม่สำเร็จ');
           }
 
           set({ loading: false });
-        } catch (error) {
-          console.error('Error completing interaction:', error);
+        } catch (err) {
+          console.error('Error completing interaction:', err);
           set({
             error: 'ไม่สามารถดำเนินการโต้ตอบได้',
             loading: false

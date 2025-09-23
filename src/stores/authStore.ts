@@ -66,7 +66,8 @@ export const useAuthStore = create<AuthStore>()(
           }
 
           return {};
-        } catch (error) {
+        } catch (err) {
+          console.error("Sign in error:", err);
           set({ loading: false });
           return { error: "เกิดข้อผิดพลาดในการเข้าสู่ระบบ" };
         }
@@ -95,7 +96,8 @@ export const useAuthStore = create<AuthStore>()(
 
           set({ loading: false });
           return { error: "เกิดข้อผิดพลาดในการสมัครสมาชิก" };
-        } catch (error) {
+        } catch (err) {
+          console.error("Sign up error:", err);
           set({ loading: false });
           return { error: "เกิดข้อผิดพลาดในการสมัครสมาชิก" };
         }
@@ -119,6 +121,13 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       initialize: async () => {
+        // Prevent multiple initializations
+        if (get().initialized) {
+          set({ loading: false });
+          return;
+        }
+        
+        set({ loading: true });
         const supabase = createClientSupabaseClient();
 
         try {
@@ -202,6 +211,12 @@ export const useAuthStore = create<AuthStore>()(
         session: state.session,
         initialized: state.initialized,
       }),
+      // Reset loading state on hydration
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.loading = false;
+        }
+      },
     }
   )
 );

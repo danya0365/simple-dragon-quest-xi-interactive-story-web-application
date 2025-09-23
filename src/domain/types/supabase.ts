@@ -708,6 +708,10 @@ export type Database = {
           interactions_count: number
         }[]
       }
+      get_event_interactions: {
+        Args: { user_uuid: string; event_uuid: string }
+        Returns: Json
+      }
       get_paginated_users: {
         Args: { p_page?: number; p_limit?: number }
         Returns: Json

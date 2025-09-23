@@ -11,11 +11,22 @@ interface Interaction {
   description: string;
   dialogue_text: string;
   character_speaker: string;
+  character_avatar?: string;
   choices: Array<{
     id: string;
     text: string;
     type: string;
+    description?: string;
   }>;
+}
+
+interface EventData {
+  id: string;
+  title: string;
+  description: string;
+  event_type: string;
+  chapter_title: string;
+  location_name: string;
 }
 
 export function EventInteractionView() {
@@ -26,35 +37,33 @@ export function EventInteractionView() {
     loading,
     error,
     completeInteraction,
+    loadEventInteractions,
     setCurrentView,
     setSelectedEvent,
   } = useGameStore();
 
-  const [currentInteraction, setCurrentInteraction] = useState<Interaction | null>(null);
+  const [eventData, setEventData] = useState<EventData | null>(null);
+  const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [currentInteractionIndex, setCurrentInteractionIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
 
   const currentEvent = availableEvents.find(event => event.event_id === selectedEventId);
+  const currentInteraction = interactions[currentInteractionIndex] || null;
 
   useEffect(() => {
-    // Mock interaction data - in real app, this would be loaded from API
-    if (selectedEventId && currentEvent) {
-      const mockInteraction: Interaction = {
-        id: "mock-interaction-1",
-        interaction_type: "dialogue",
-        title: "เริ่มบทสนทนา",
-        description: "พูดคุยกับตัวละครในเหตุการณ์นี้",
-        dialogue_text: currentEvent.event_description,
-        character_speaker: "Erik",
-        choices: [
-          { id: "choice1", text: "ยินดีที่ได้รู้จัก", type: "friendly" },
-          { id: "choice2", text: "ทำไมนายถึงอยู่ที่นี่?", type: "suspicious" },
-          { id: "choice3", text: "เงียบไม่พูดอะไร", type: "neutral" }
-        ]
-      };
-      setCurrentInteraction(mockInteraction);
+    // Load real interaction data from database
+    if (selectedEventId && user?.id) {
+      loadEventInteractions(user.id, selectedEventId).then((data) => {
+        if (data && !data.error) {
+          setEventData(data.event);
+          setInteractions(data.interactions || []);
+          setCurrentInteractionIndex(0);
+          setInteractionHistory([]);
+        }
+      });
     }
-  }, [selectedEventId, currentEvent]);
+  }, [selectedEventId, user?.id, loadEventInteractions]);
 
   const handleChoiceSelect = (choiceId: string) => {
     setSelectedChoice(choiceId);
@@ -76,7 +85,10 @@ export function EventInteractionView() {
       setInteractionHistory(prev => [...prev, choice.text]);
     }
 
-    // Reset for next interaction
+    // Move to next interaction or reset
+    if (currentInteractionIndex < interactions.length - 1) {
+      setCurrentInteractionIndex(prev => prev + 1);
+    }
     setSelectedChoice(null);
   };
 
@@ -143,9 +155,9 @@ export function EventInteractionView() {
         
         <div className="text-center">
           <h2 className="text-2xl font-bold text-yellow-400 font-serif">
-            {currentEvent.event_title}
+            {eventData?.title || currentEvent?.event_title || 'เหตุการณ์'}
           </h2>
-          <p className="text-blue-200">{currentEvent.chapter_title}</p>
+          <p className="text-blue-200">{eventData?.chapter_title || currentEvent?.chapter_title}</p>
         </div>
         
         <div></div>
@@ -156,11 +168,19 @@ export function EventInteractionView() {
         {/* Character Speaker */}
         {currentInteraction.character_speaker && (
           <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4">
-              <span className="text-blue-900 font-bold text-lg">
-                {currentInteraction.character_speaker.charAt(0)}
-              </span>
-            </div>
+            {currentInteraction.character_avatar ? (
+              <img
+                src={currentInteraction.character_avatar}
+                alt={currentInteraction.character_speaker}
+                className="w-12 h-12 rounded-full mr-4 object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4">
+                <span className="text-blue-900 font-bold text-lg">
+                  {currentInteraction.character_speaker.charAt(0)}
+                </span>
+              </div>
+            )}
             <div>
               <h3 className="text-white font-bold">{currentInteraction.character_speaker}</h3>
               <p className="text-blue-300 text-sm">ตัวละคร</p>

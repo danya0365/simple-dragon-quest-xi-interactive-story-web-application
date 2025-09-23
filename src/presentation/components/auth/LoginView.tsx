@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/src/stores/authStore";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function LoginView() {
   const router = useRouter();
-  const { signIn, signUp, user, loading, initialize, initialized } = useAuthStore();
-  
+  const { signIn, signUp, user, loading, initialize, initialized } =
+    useAuthStore();
+
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -86,10 +87,9 @@ export function LoginView() {
               {isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
             </h2>
             <p className="text-blue-200">
-              {isLogin 
-                ? "เข้าสู่ระบบเพื่อเริ่มการผจญภัย" 
-                : "สร้างบัญชีใหม่เพื่อเริ่มเล่น"
-              }
+              {isLogin
+                ? "เข้าสู่ระบบเพื่อเริ่มการผจญภัย"
+                : "สร้างบัญชีใหม่เพื่อเริ่มเล่น"}
             </p>
           </div>
 
@@ -101,7 +101,10 @@ export function LoginView() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-blue-200 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-blue-200 mb-2"
+              >
                 อีเมล
               </label>
               <input
@@ -116,7 +119,10 @@ export function LoginView() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-blue-200 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-blue-200 mb-2"
+              >
                 รหัสผ่าน
               </label>
               <input
@@ -141,8 +147,10 @@ export function LoginView() {
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900 mr-2"></div>
                   กำลังดำเนินการ...
                 </div>
+              ) : isLogin ? (
+                "เข้าสู่ระบบ"
               ) : (
-                isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก"
+                "สมัครสมาชิก"
               )}
             </button>
           </form>
@@ -168,11 +176,13 @@ export function LoginView() {
 
           {/* Demo accounts info */}
           <div className="mt-6 p-4 bg-blue-900/30 rounded-lg border border-blue-500/30">
-            <p className="text-blue-200 text-sm font-medium mb-2">บัญชีทดสอบ:</p>
+            <p className="text-blue-200 text-sm font-medium mb-2">
+              บัญชีทดสอบ:
+            </p>
             <div className="text-xs text-blue-300 space-y-1">
-              <p>• admin@shopqueue.com (รหัส: 12345678)</p>
-              <p>• user1@shopqueue.com (รหัส: 12345678)</p>
-              <p>• user2@shopqueue.com (รหัส: 12345678)</p>
+              <p>• admin@test.com (รหัส: 12345678)</p>
+              <p>• user1@test.com (รหัส: 12345678)</p>
+              <p>• user2@test.com (รหัส: 12345678)</p>
             </div>
           </div>
         </div>
