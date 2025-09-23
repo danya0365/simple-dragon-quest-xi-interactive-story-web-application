@@ -559,6 +559,7 @@ export type Database = {
           save_data: Json | null
           unlocked_chapters: Json | null
           unlocked_locations: Json | null
+          unlocked_regions: Json | null
           updated_at: string | null
           user_id: string
         }
@@ -573,6 +574,7 @@ export type Database = {
           save_data?: Json | null
           unlocked_chapters?: Json | null
           unlocked_locations?: Json | null
+          unlocked_regions?: Json | null
           updated_at?: string | null
           user_id: string
         }
@@ -587,6 +589,7 @@ export type Database = {
           save_data?: Json | null
           unlocked_chapters?: Json | null
           unlocked_locations?: Json | null
+          unlocked_regions?: Json | null
           updated_at?: string | null
           user_id?: string
         }
@@ -790,6 +793,10 @@ export type Database = {
           new_role: Database["public"]["Enums"]["profile_role"]
         }
         Returns: boolean
+      }
+      unlock_region: {
+        Args: { user_uuid: string; region_id: string }
+        Returns: Json
       }
     }
     Enums: {
