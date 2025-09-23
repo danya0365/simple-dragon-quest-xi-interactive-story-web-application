@@ -173,14 +173,14 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_id, outcome_type, 
 -- Add default outcome for "Check Equipment" interaction
 ('88888888-8888-8888-8888-888888888008', '77777777-7777-7777-7777-777777777002', 'default', 'story',
  'Equipment Check', 'Hero ตรวจสอบอุปกรณ์ของตัวเอง',
- '{"items": [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1}]}', null),
+ '{"items": [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1}], "unlock_events": ["66666666-6666-6666-6666-666666666002"]}', '66666666-6666-6666-6666-666666666002'),
 
 -- Add default outcome for "Talk to Erik" interaction
 ('88888888-8888-8888-8888-888888888009', '77777777-7777-7777-7777-777777777003', 'default', 'story',
  'Erik''s Introduction', 'Erik แนะนำตัวเองให้ Hero รู้จัก',
- '{"relationship": {"erik": 5}}', null),
+ '{"relationship": {"erik": 5}, "unlock_events": ["66666666-6666-6666-6666-666666666005"]}', '66666666-6666-6666-6666-666666666005'),
 
 -- Add default outcome for "Discuss Escape Plan" interaction
 ('88888888-8888-8888-8888-888888888010', '77777777-7777-7777-7777-777777777005', 'default', 'story',
  'Escape Plan Discussion', 'การหารือแผนการหลบหนี',
- '{"unlock_events": ["66666666-6666-6666-6666-666666666006"]}', null);
+ '{"unlock_events": ["66666666-6666-6666-6666-666666666006"]}', '66666666-6666-6666-6666-666666666006');
