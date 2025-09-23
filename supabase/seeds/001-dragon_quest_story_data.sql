@@ -162,4 +162,25 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_id, outcome_type, 
 ('88888888-8888-8888-8888-888888888006', '77777777-7777-7777-7777-777777777006', 'window', 'party_join',
  'Risky but Successful', 'หลบหนีแบบเสี่ยงภัยผ่านหน้าต่าง Erik เข้าร่วมปาร์ตี้',
  '{"party_join": "44444444-4444-4444-4444-444444444002", "items": [{"id": "55555555-5555-5555-5555-555555555004", "quantity": 1}]}',
- '66666666-6666-6666-6666-666666666006');
+ '66666666-6666-6666-6666-666666666006'),
+
+-- Default outcomes for interactions without choices
+-- Add default outcome for "Talk to Grandpa" interaction
+('88888888-8888-8888-8888-888888888007', '77777777-7777-7777-7777-777777777001', 'default', 'story',
+ 'Grandpa''s Advice', 'ปู่ให้คำแนะนำแก่ Hero',
+ '{"unlock_events": ["66666666-6666-6666-6666-666666666002"]}', '66666666-6666-6666-6666-666666666002'),
+
+-- Add default outcome for "Check Equipment" interaction
+('88888888-8888-8888-8888-888888888008', '77777777-7777-7777-7777-777777777002', 'default', 'story',
+ 'Equipment Check', 'Hero ตรวจสอบอุปกรณ์ของตัวเอง',
+ '{"items": [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1}]}', null),
+
+-- Add default outcome for "Talk to Erik" interaction
+('88888888-8888-8888-8888-888888888009', '77777777-7777-7777-7777-777777777003', 'default', 'story',
+ 'Erik''s Introduction', 'Erik แนะนำตัวเองให้ Hero รู้จัก',
+ '{"relationship": {"erik": 5}}', null),
+
+-- Add default outcome for "Discuss Escape Plan" interaction
+('88888888-8888-8888-8888-888888888010', '77777777-7777-7777-7777-777777777005', 'default', 'story',
+ 'Escape Plan Discussion', 'การหารือแผนการหลบหนี',
+ '{"unlock_events": ["66666666-6666-6666-6666-666666666006"]}', null);

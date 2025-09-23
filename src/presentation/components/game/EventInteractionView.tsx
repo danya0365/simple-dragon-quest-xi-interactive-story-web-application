@@ -70,19 +70,28 @@ export function EventInteractionView() {
   };
 
   const handleConfirmChoice = async () => {
-    if (!user?.id || !currentInteraction || !selectedChoice) return;
+    if (!user?.id || !currentInteraction) return;
 
-    const choiceData = {
+    // If there are no choices, use a default choice data
+    const choiceData = selectedChoice ? {
       choice_id: selectedChoice,
+      interaction_id: currentInteraction.id
+    } : {
+      choice_id: 'default',
       interaction_id: currentInteraction.id
     };
 
     await completeInteraction(user.id, currentInteraction.id, choiceData);
     
-    // Add to history
-    const choice = currentInteraction.choices.find(c => c.id === selectedChoice);
-    if (choice) {
-      setInteractionHistory(prev => [...prev, choice.text]);
+    // Add to history if there was a choice
+    if (selectedChoice) {
+      const choice = currentInteraction.choices.find(c => c.id === selectedChoice);
+      if (choice) {
+        setInteractionHistory(prev => [...prev, choice.text]);
+      }
+    } else {
+      // Add default message for interactions without choices
+      setInteractionHistory(prev => [...prev, 'ดำเนินการต่อ']);
     }
 
     // Move to next interaction or reset
@@ -210,7 +219,7 @@ export function EventInteractionView() {
         )}
 
         {/* Choices */}
-        {currentInteraction.choices && currentInteraction.choices.length > 0 && (
+        {currentInteraction.choices && Array.isArray(currentInteraction.choices) && currentInteraction.choices.length > 0 ? (
           <div className="space-y-4">
             <h4 className="text-yellow-400 font-medium">เลือกการตอบสนอง:</h4>
             <div className="grid gap-3">
@@ -233,10 +242,16 @@ export function EventInteractionView() {
                       ${choice.type === 'friendly' ? 'bg-green-500/20 text-green-300' : ''}
                       ${choice.type === 'suspicious' ? 'bg-red-500/20 text-red-300' : ''}
                       ${choice.type === 'neutral' ? 'bg-blue-500/20 text-blue-300' : ''}
+                      ${choice.type === 'stealth' ? 'bg-purple-500/20 text-purple-300' : ''}
+                      ${choice.type === 'bold' ? 'bg-orange-500/20 text-orange-300' : ''}
+                      ${choice.type === 'risky' ? 'bg-red-500/20 text-red-300' : ''}
                     `}>
                       {choice.type === 'friendly' && '😊 เป็นมิตร'}
                       {choice.type === 'suspicious' && '🤨 สงสัย'}
                       {choice.type === 'neutral' && '😐 เฉยๆ'}
+                      {choice.type === 'stealth' && '🥷 ลอบเคลื่อนไหว'}
+                      {choice.type === 'bold' && '⚔️ กล้าหาญ'}
+                      {choice.type === 'risky' && '🎲 เสี่ยงภัย'}
                     </span>
                   </div>
                 </button>
@@ -262,6 +277,18 @@ export function EventInteractionView() {
                 </button>
               </div>
             )}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="text-blue-400 text-4xl mb-4">📖</div>
+            <p className="text-blue-200 mb-4">การโต้ตอบนี้ไม่มีตัวเลือก กดปุ่มด้านล่างเพื่อดำเนินการต่อ</p>
+            <button
+              onClick={handleConfirmChoice}
+              disabled={loading}
+              className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'กำลังดำเนินการ...' : 'ดำเนินการต่อ'}
+            </button>
           </div>
         )}
       </div>
