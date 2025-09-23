@@ -1,0 +1,93 @@
+@layer base {
+  /* Landing Page utilities */
+  
+  /* Background gradients */
+  .bg-landing-gradient {
+    background: linear-gradient(to bottom right, rgb(6 78 59), rgb(21 128 61), rgb(6 78 59));
+  }
+  
+  /* Text gradients */
+  .text-landing-gradient {
+    background: linear-gradient(to right, rgb(134 239 172), rgb(34 211 238), rgb(147 197 253));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Button gradients */
+  .bg-btn-primary-gradient {
+    background: linear-gradient(to right, rgb(16 185 129), rgb(59 130 246));
+  }
+  .bg-btn-primary-gradient:hover {
+    background: linear-gradient(to right, rgb(5 150 105), rgb(37 99 235));
+  }
+  
+  /* Tech stack gradients */
+  .text-nextjs-gradient {
+    background: linear-gradient(to right, rgb(34 197 94), rgb(16 185 129));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-r3f-gradient {
+    background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-typescript-gradient {
+    background: linear-gradient(to right, rgb(99 102 241), rgb(139 92 246));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-tailwind-gradient {
+    background: linear-gradient(to right, rgb(20 184 166), rgb(34 211 238));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Animated background orbs */
+  .bg-orb-purple {
+    background-color: rgb(34 197 94 / 0.2);
+  }
+  .bg-orb-blue {
+    background-color: rgb(59 130 246 / 0.2);
+  }
+  .bg-orb-indigo {
+    background-color: rgb(20 184 166 / 0.1);
+  }
+  
+  /* Glass morphism */
+  .bg-glass {
+    background-color: rgb(255 255 255 / 0.05);
+  }
+  .bg-glass-hover {
+    background-color: rgb(255 255 255 / 0.1);
+  }
+  .border-glass {
+    border-color: rgb(255 255 255 / 0.1);
+  }
+  
+  /* Text colors */
+  .text-landing-muted {
+    color: rgb(220 252 231);
+  }
+  .text-landing-secondary {
+    color: rgb(186 230 253);
+  }
+  
+  /* Border colors */
+  .border-landing {
+    border-color: rgb(134 239 172 / 0.2);
+  }
+  .border-btn-secondary {
+    border-color: rgb(34 197 94 / 0.5);
+  }
+  
+  /* Hover effects */
+  .hover-bg-glass {
+    background-color: rgb(34 197 94 / 0.1);
+  }
+}
