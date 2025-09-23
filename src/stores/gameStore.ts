@@ -252,6 +252,9 @@ export const useGameStore = create<GameStore>()(
             // If there's a next event, navigate to it
             if (result.next_event_id) {
               set({ selectedEventId: result.next_event_id });
+            } else {
+              // If no next event, go back to location view
+              set({ selectedEventId: null, currentView: 'location' });
             }
           } else {
             throw new Error(result?.error || 'การโต้ตอบไม่สำเร็จ');
