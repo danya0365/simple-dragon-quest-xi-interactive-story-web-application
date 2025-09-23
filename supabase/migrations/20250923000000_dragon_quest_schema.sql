@@ -145,6 +145,7 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     current_chapter_id UUID REFERENCES public.story_chapters(id) ON DELETE SET NULL,
     current_location_id UUID REFERENCES public.locations(id) ON DELETE SET NULL,
     completed_events JSONB DEFAULT '[]', -- Array of completed event IDs
+    unlocked_regions JSONB DEFAULT '[]'::JSONB,
     unlocked_locations JSONB DEFAULT '[]', -- Array of unlocked location IDs
     unlocked_chapters JSONB DEFAULT '[]', -- Array of unlocked chapter IDs
     game_stats JSONB DEFAULT '{}', -- Play time, completion percentage, etc.

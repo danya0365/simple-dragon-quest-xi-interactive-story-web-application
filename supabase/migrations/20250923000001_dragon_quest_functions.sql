@@ -45,6 +45,7 @@ END;
 $$;
 
 -- Function to complete an interaction and update user progress
+
 CREATE OR REPLACE FUNCTION public.complete_interaction(
     user_uuid UUID,
     interaction_uuid UUID,
@@ -60,6 +61,8 @@ DECLARE
     outcome_record RECORD;
     user_progress_record RECORD;
     result JSONB;
+    has_choices BOOLEAN;
+    next_event_to_unlock UUID;
 BEGIN
     -- Get interaction details
     SELECT * INTO interaction_record
@@ -86,6 +89,11 @@ BEGIN
         RETURNING * INTO user_progress_record;
     END IF;
     
+    -- Check if interaction has choices
+    has_choices := (interaction_record.choices IS NOT NULL AND 
+                   interaction_record.choices != '[]'::JSONB AND 
+                   jsonb_array_length(interaction_record.choices) > 0);
+    
     -- Find matching outcome based on choice
     SELECT * INTO outcome_record
     FROM public.event_outcomes
@@ -96,6 +104,48 @@ BEGIN
         OR choice_id IS NULL
     )
     LIMIT 1;
+    
+    -- If no outcome found and interaction has no choices, create a default outcome
+    IF outcome_record IS NULL AND NOT has_choices THEN
+        -- Create a default outcome record
+        outcome_record := ROW(
+            gen_random_uuid(),
+            interaction_uuid,
+            'default',
+            'story',
+            'Default Action',
+            'Interaction completed successfully',
+            '{}'::JSONB,
+            NULL,
+            NOW(),
+            NOW()
+        )::public.event_outcomes;
+        
+        -- For simple interactions, automatically unlock the next interaction in the same event
+        SELECT id INTO next_event_to_unlock
+        FROM public.event_interactions
+        WHERE event_id = event_record.id
+        AND id != interaction_uuid
+        AND display_order = (SELECT display_order FROM public.event_interactions WHERE id = interaction_uuid) + 1
+        LIMIT 1;
+        
+        -- If there's a next interaction, check if it's the last one in this event
+        IF next_event_to_unlock IS NOT NULL THEN
+            -- Check if this is the last interaction in the event
+            IF NOT EXISTS (
+                SELECT 1 FROM public.event_interactions ei
+                WHERE ei.event_id = event_record.id
+                AND ei.id != next_event_to_unlock
+                AND ei.display_order > (SELECT display_order FROM public.event_interactions WHERE id = next_event_to_unlock)
+            ) THEN
+                -- This is the last interaction, so return the event_id instead of interaction_id
+                outcome_record.next_event_id := event_record.id;
+            ELSE
+                -- There are more interactions, so return the next interaction_id
+                outcome_record.next_event_id := next_event_to_unlock;
+            END IF;
+        END IF;
+    END IF;
     
     -- Process outcome effects
     IF outcome_record.effects IS NOT NULL THEN
@@ -136,6 +186,14 @@ BEGIN
             UPDATE public.user_progress
             SET unlocked_chapters = unlocked_chapters || outcome_record.effects->'unlock_chapters'
             WHERE user_id = user_uuid;
+        END IF;
+        
+        -- Handle event unlocks
+        IF outcome_record.effects ? 'unlock_events' THEN
+            UPDATE public.story_events
+            SET is_unlocked = true
+            WHERE id = ANY((SELECT array_agg(elem::UUID) FROM jsonb_array_elements_text(outcome_record.effects->'unlock_events') as elem))
+            AND id NOT IN (SELECT unnest(completed_events::UUID[]) FROM public.user_progress WHERE user_id = user_uuid);
         END IF;
     END IF;
     
@@ -250,6 +308,7 @@ AS $$
 DECLARE
     first_chapter_id UUID;
     first_location_id UUID;
+    first_region_id UUID;
     protagonist_id UUID;
 BEGIN
     -- Get first chapter and location
@@ -258,24 +317,33 @@ BEGIN
     WHERE chapter_number = 1
     LIMIT 1;
     
+    -- Fix: Get first location with display_order = 1 (not 0)
     SELECT id INTO first_location_id
     FROM public.locations
     WHERE display_order = 1
     LIMIT 1;
     
+    -- Get first unlocked region
+    SELECT id INTO first_region_id
+    FROM public.world_map
+    WHERE is_unlocked = true
+    ORDER BY display_order
+    LIMIT 1;
+    
     -- Get protagonist character
     SELECT id INTO protagonist_id
     FROM public.characters
-    WHERE character_type = 'party_member' AND name ILIKE '%hero%' OR name ILIKE '%protagonist%'
+    WHERE character_type = 'party_member' AND (name ILIKE '%hero%' OR name ILIKE '%protagonist%')
     LIMIT 1;
     
-    -- Create user progress
+    -- Create user progress with unlocked regions
     INSERT INTO public.user_progress (
         user_id,
         current_chapter_id,
         current_location_id,
         completed_events,
         unlocked_locations,
+        unlocked_regions,
         unlocked_chapters,
         game_stats
     ) VALUES (
@@ -284,9 +352,15 @@ BEGIN
         first_location_id,
         '[]'::JSONB,
         jsonb_build_array(first_location_id::text),
+        jsonb_build_array(COALESCE(first_region_id::text, '')),
         jsonb_build_array(first_chapter_id::text),
         jsonb_build_object('play_time', 0, 'completion_percentage', 0)
-    ) ON CONFLICT (user_id) DO NOTHING;
+    ) ON CONFLICT (user_id) DO UPDATE SET
+        unlocked_regions = CASE 
+            WHEN user_progress.unlocked_regions IS NULL OR jsonb_array_length(user_progress.unlocked_regions) = 0
+            THEN jsonb_build_array(COALESCE(first_region_id::text, ''))
+            ELSE user_progress.unlocked_regions
+        END;
     
     -- Add protagonist to party if exists
     IF protagonist_id IS NOT NULL THEN
@@ -304,6 +378,28 @@ BEGIN
     END IF;
     
     RETURN jsonb_build_object('success', true, 'message', 'User progress initialized');
+END;
+$$;
+
+-- Function to unlock regions
+CREATE OR REPLACE FUNCTION public.unlock_region(user_uuid UUID, region_id UUID)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    -- Add region to unlocked_regions if not already there
+    UPDATE public.user_progress
+    SET unlocked_regions = 
+        CASE 
+            WHEN unlocked_regions IS NULL THEN jsonb_build_array(region_id::text)
+            WHEN NOT (region_id::text = ANY(SELECT jsonb_array_elements_text(unlocked_regions))) 
+            THEN unlocked_regions || region_id::text
+            ELSE unlocked_regions
+        END
+    WHERE user_id = user_uuid;
+    
+    RETURN jsonb_build_object('success', true, 'message', 'Region unlocked');
 END;
 $$;
 
@@ -329,8 +425,12 @@ BEGIN
         wm.description as region_description,
         wm.image_url as region_image_url,
         (
-            up.unlocked_locations IS NULL 
-            OR wm.id::text = ANY(SELECT jsonb_array_elements_text(up.unlocked_locations))
+            -- Check if region is unlocked by user progress OR if it's inherently unlocked
+            wm.is_unlocked = true 
+            OR (
+                up.unlocked_regions IS NOT NULL 
+                AND wm.id::text = ANY(SELECT jsonb_array_elements_text(up.unlocked_regions))
+            )
         ) as is_unlocked,
         COUNT(l.id) as locations_count,
         COUNT(CASE 
@@ -341,13 +441,12 @@ BEGIN
     FROM public.world_map wm
     LEFT JOIN public.locations l ON wm.id = l.world_map_id
     LEFT JOIN public.user_progress up ON up.user_id = user_uuid
-    GROUP BY wm.id, wm.name, wm.description, wm.image_url, up.unlocked_locations
+    GROUP BY wm.id, wm.name, wm.description, wm.image_url, wm.is_unlocked, up.unlocked_locations, up.unlocked_regions
     ORDER BY wm.display_order;
 END;
 $$;
 
--- Function to get event interactions
-CREATE OR REPLACE FUNCTION public.get_event_interactions(
+-- Function to get event interactionsCREATE OR REPLACE FUNCTION public.get_event_interactions(
     user_uuid UUID,
     event_uuid UUID
 )
@@ -380,25 +479,28 @@ BEGIN
             'title', ei.title,
             'description', ei.description,
             'dialogue_text', ei.dialogue_text,
-            'character_speaker', c.name,
-            'character_avatar', c.avatar_url,
+            'character_speaker', ei.character_speaker,
+            'character_avatar', 
+                CASE 
+                    WHEN ei.character_speaker IS NOT NULL THEN
+                        (SELECT avatar_url FROM public.characters c WHERE c.name = ei.character_speaker LIMIT 1)
+                    ELSE NULL
+                END,
             'choices', (
                 SELECT jsonb_agg(
                     jsonb_build_object(
                         'id', eo.id,
-                        'text', eo.choice_text,
+                        'text', eo.title,
                         'type', eo.outcome_type,
                         'description', eo.description
                     )
                 )
                 FROM public.event_outcomes eo
                 WHERE eo.interaction_id = ei.id
-                ORDER BY eo.choice_order
             )
-        ) ORDER BY ei.interaction_order
+        ) ORDER BY ei.display_order
     ) INTO interactions
     FROM public.event_interactions ei
-    LEFT JOIN public.characters c ON ei.character_id = c.id
     WHERE ei.event_id = event_uuid
     AND ei.is_available = true;
     
