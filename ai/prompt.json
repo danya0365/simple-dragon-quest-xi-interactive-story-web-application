@@ -1,0 +1,433 @@
+{
+  "project": {
+    "name": "Dragon Quest XI Interactive Story Web Application",
+    "description": "สร้างเว็บแอปพลิเคชันสำหรับเล่นเรื่อง Dragon Quest XI แบบ interactive โดยผู้ใช้สามารถกดปุ่มเพื่อโต้ตอบกับเหตุการณ์และดำเนินเรื่องไปตามลำดับ",
+    "theme": "RPG Fantasy Game Interface",
+    "target_audience": "Dragon Quest fans and RPG gamers"
+  },
+
+  "technical_requirements": {
+    "frontend": {
+      "framework": "Next.js 14+ with TypeScript and App Router",
+      "styling": "Tailwind CSS with dark fantasy theme",
+      "state_management": "Zustand for global state management",
+      "animations": "React Spring for smooth animations and transitions",
+      "routing": "Next.js App Router for file-based routing",
+      "ui_components": "Custom components with RPG aesthetics and React Spring animations"
+    },
+    "backend": {
+      "database": "Supabase PostgreSQL",
+      "authentication": "Supabase Auth with Next.js middleware",
+      "api": "Supabase JavaScript Client + Next.js API routes",
+      "real_time": "Supabase Realtime for progress updates"
+    },
+    "deployment": {
+      "platform": "Vercel (optimized for Next.js)",
+      "environment": "Production ready with environment variables"
+    }
+  },
+
+  "database_schema": {
+    "note": "ใช้ Schema ที่ให้ไว้แล้ว - Supabase PostgreSQL",
+    "key_tables": [
+      "world_map",
+      "locations",
+      "story_chapters",
+      "story_events",
+      "event_interactions",
+      "event_outcomes",
+      "user_profiles",
+      "user_progress",
+      "user_party_members",
+      "characters",
+      "items"
+    ],
+    "functions_to_use": [
+      "get_available_events(user_uuid)",
+      "complete_interaction(user_uuid, interaction_uuid, choice_data)"
+    ]
+  },
+
+  "step_by_step_development": {
+    "step_1_setup": {
+      "title": "Project Setup & Configuration",
+      "tasks": {
+        "1_initialize_project": {
+          "action": "Create Next.js TypeScript project",
+          "command": "npx create-next-app@latest dq11-interactive --typescript --tailwind --eslint --app",
+          "dependencies": [
+            "@supabase/supabase-js",
+            "@supabase/ssr",
+            "zustand",
+            "@react-spring/web",
+            "lucide-react",
+            "next-themes"
+          ]
+        },
+        "2_setup_supabase": {
+          "action": "Configure Supabase with Next.js SSR",
+          "files": {
+            "src/lib/supabase/client.ts": "Client-side Supabase configuration",
+            "src/lib/supabase/server.ts": "Server-side Supabase configuration",
+            "src/lib/supabase/middleware.ts": "Auth middleware for Next.js",
+            ".env.local": "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          }
+        },
+        "3_setup_zustand": {
+          "action": "Configure Zustand stores",
+          "files": {
+            "src/stores/authStore.ts": "Authentication state management",
+            "src/stores/gameStore.ts": "Game progress and state management",
+            "src/stores/uiStore.ts": "UI state (modals, loading states, etc.)"
+          }
+        },
+        "4_setup_tailwind": {
+          "action": "Configure Tailwind with custom DQ11 theme",
+          "config": {
+            "colors": {
+              "primary": "Dragon Quest blue (#1e40af)",
+              "secondary": "Gold (#fbbf24)",
+              "dark": "Deep purple (#312e81)",
+              "fantasy": "Custom fantasy colors"
+            },
+            "animations": "Custom animations for React Spring integration"
+          }
+        }
+      }
+    },
+
+    "step_2_authentication": {
+      "title": "Authentication System with Next.js",
+      "components_to_create": {
+        "AuthStore": {
+          "file": "src/stores/authStore.ts",
+          "purpose": "Zustand store for authentication state",
+          "features": [
+            "User session management",
+            "Login/logout actions",
+            "Auto-create user profile on first login",
+            "Persistent auth state"
+          ]
+        },
+        "AuthMiddleware": {
+          "file": "src/middleware.ts",
+          "purpose": "Next.js middleware for route protection",
+          "features": [
+            "Protected routes for authenticated users",
+            "Redirect unauthenticated users to login",
+            "Supabase auth integration"
+          ]
+        },
+        "LoginPage": {
+          "file": "src/app/login/page.tsx",
+          "design": "Dragon Quest styled login form with React Spring animations",
+          "features": [
+            "Email/password login",
+            "Sign up option",
+            "Fantasy-themed UI with smooth animations",
+            "Form validation with animated feedback"
+          ]
+        }
+      }
+    },
+
+    "step_3_core_components": {
+      "title": "Core Game Components",
+      "components": {
+        "WorldMap": {
+          "file": "src/components/WorldMap.tsx",
+          "purpose": "Display interactive world map with React Spring animations",
+          "features": {
+            "map_display": "Show regions with unlock status and hover animations",
+            "region_selection": "Click to enter regions with spring transitions",
+            "visual_indicators": "Animated completed/available area indicators",
+            "responsive_design": "Works on mobile and desktop with adaptive animations"
+          },
+          "data_source": "world_map table with locations",
+          "animations": "React Spring for region hover effects and selection transitions"
+        },
+        "LocationView": {
+          "file": "src/components/LocationView.tsx",
+          "purpose": "Show specific location with available events and smooth transitions",
+          "features": {
+            "location_info": "Display location name and description with fade-in animation",
+            "event_list": "Show available story events with staggered entrance animations",
+            "progress_indicator": "Animated completion status with progress bars",
+            "navigation": "Back to world map with slide transition"
+          }
+        },
+        "EventInteraction": {
+          "file": "src/components/EventInteraction.tsx",
+          "purpose": "Handle story event interactions with React Spring animations",
+          "features": {
+            "event_display": "Show event name and description with typewriter effect",
+            "interaction_buttons": "Animated Talk, Examine, Choose options with hover states",
+            "dialogue_system": "Display character dialogues with slide-in animations",
+            "choice_system": "Multiple choice selections with spring-powered emphasis",
+            "progress_animation": "Smooth transitions between interactions"
+          }
+        },
+        "PartyDisplay": {
+          "file": "src/components/PartyDisplay.tsx",
+          "purpose": "Show current party members with character animations",
+          "features": {
+            "character_portraits": "Display character images with floating animations",
+            "character_stats": "HP, MP, Level display with number counting animations",
+            "party_management": "Add/remove members with slide and fade animations",
+            "member_joining": "Special animation when new character joins party"
+          }
+        }
+      }
+    },
+
+    "step_4_game_logic": {
+      "title": "Game Logic Implementation",
+      "hooks": {
+        "useGameProgress": {
+          "file": "src/hooks/useGameProgress.ts",
+          "purpose": "Manage user's game progression with Zustand integration",
+          "functions": [
+            "fetchAvailableEvents()",
+            "completeInteraction(interactionId, choiceData)",
+            "updateUserProgress()",
+            "checkUnlockRequirements()"
+          ],
+          "zustand_integration": "Connect with gameStore for state management"
+        },
+        "useSupabaseData": {
+          "file": "src/hooks/useSupabaseData.ts",
+          "purpose": "Handle all Supabase database operations",
+          "functions": [
+            "fetchWorldMap()",
+            "fetchUserProfile()",
+            "fetchPartyMembers()",
+            "saveUserProgress()"
+          ],
+          "ssr_support": "Compatible with Next.js SSR/SSG"
+        },
+        "useAnimations": {
+          "file": "src/hooks/useAnimations.ts",
+          "purpose": "Custom React Spring animation hooks",
+          "functions": [
+            "useSlideIn()",
+            "useFadeIn()",
+            "useHoverScale()",
+            "useSequenceAnimation()",
+            "useProgressAnimation()"
+          ]
+        }
+      },
+      "stores": {
+        "gameStore.ts": {
+          "file": "src/stores/gameStore.ts",
+          "purpose": "Zustand store for game state",
+          "state": [
+            "currentLocation",
+            "availableEvents",
+            "userProgress",
+            "partyMembers",
+            "inventory"
+          ],
+          "actions": [
+            "setCurrentLocation()",
+            "updateProgress()",
+            "addPartyMember()",
+            "completeEvent()"
+          ]
+        },
+        "uiStore.ts": {
+          "file": "src/stores/uiStore.ts",
+          "purpose": "Zustand store for UI state",
+          "state": [
+            "isLoading",
+            "activeModal",
+            "animationQueue",
+            "currentTheme"
+          ],
+          "actions": [
+            "setLoading()",
+            "openModal()",
+            "queueAnimation()",
+            "toggleTheme()"
+          ]
+        }
+      },
+      "utilities": {
+        "gameLogic.ts": {
+          "file": "src/utils/gameLogic.ts",
+          "purpose": "Game-specific logic functions",
+          "functions": [
+            "checkEventRequirements()",
+            "processEventOutcome()",
+            "calculateRewards()",
+            "validateUserChoice()"
+          ]
+        }
+      }
+    },
+
+    "step_5_ui_pages": {
+      "title": "Main Application Pages",
+      "pages": {
+        "HomePage": {
+          "file": "src/app/page.tsx",
+          "purpose": "Landing page with game introduction",
+          "features": [
+            "Dragon Quest XI branding with React Spring entrance animations",
+            "Start New Game / Continue buttons with hover animations",
+            "User profile display with fade-in effect",
+            "Game instructions with staggered text animations"
+          ]
+        },
+        "GameDashboard": {
+          "file": "src/app/dashboard/page.tsx",
+          "purpose": "Main game interface",
+          "layout": {
+            "header": "User info, party status, current location with slide-down animation",
+            "main_content": "WorldMap or EventInteraction with smooth transitions",
+            "sidebar": "Party members, inventory with slide-in animations",
+            "footer": "Navigation controls with spring-powered buttons"
+          },
+          "animations": "Coordinated layout transitions using React Spring"
+        },
+        "StoryEventPage": {
+          "file": "src/app/story/[eventId]/page.tsx",
+          "purpose": "Full-screen story event experience",
+          "features": [
+            "Immersive event presentation with cinematic transitions",
+            "Character dialogue with portraits and typewriter animations",
+            "Interactive choice system with spring-powered selection",
+            "Progress saving with satisfying completion animations"
+          ],
+          "dynamic_routing": "Uses Next.js dynamic routing for event IDs"
+        }
+      }
+    },
+
+    "step_6_styling": {
+      "title": "Dragon Quest XI Themed Styling",
+      "design_system": {
+        "color_palette": {
+          "primary": "#1e40af (Dragon Quest blue)",
+          "secondary": "#fbbf24 (Gold)",
+          "accent": "#8b5cf6 (Magic purple)",
+          "dark": "#1f2937 (Dark background)",
+          "text": "#f9fafb (Light text)"
+        },
+        "typography": {
+          "headings": "Fantasy-style fonts",
+          "body": "Readable serif fonts",
+          "ui": "Clean sans-serif"
+        },
+        "components": {
+          "buttons": "RPG-style with hover effects",
+          "cards": "Medieval-inspired borders",
+          "dialogs": "Fantasy modal designs",
+          "backgrounds": "Subtle patterns or gradients"
+        }
+      },
+      "animations": {
+        "page_transitions": "Next.js page transitions with React Spring",
+        "button_interactions": "Scale and glow effects using React Spring useSpring",
+        "progress_updates": "Satisfying completion animations with useTransition",
+        "character_introductions": "Slide-in effects with useChain for coordinated timing",
+        "dialogue_effects": "Typewriter animations using React Spring's useSpringValue",
+        "loading_states": "Skeleton screens with shimmer effects",
+        "micro_interactions": "Hover states, button presses, and feedback animations"
+      }
+    },
+
+    "step_7_features": {
+      "title": "Advanced Features Implementation",
+      "features": {
+        "save_system": {
+          "description": "Auto-save user progress with optimistic updates",
+          "implementation": "Save after each interaction using Zustand middleware",
+          "storage": "Supabase user_progress table with Next.js API routes for validation"
+        },
+        "responsive_design": {
+          "description": "Mobile-friendly interface with adaptive animations",
+          "breakpoints": "Mobile, tablet, desktop optimized with React Spring responsive animations",
+          "interactions": "Touch-friendly on mobile with spring-powered gesture support"
+        },
+        "loading_states": {
+          "description": "Proper loading indicators with React Spring",
+          "implementation": "Skeleton screens with shimmer effects and smooth transitions",
+          "user_experience": "Never leave users wondering - animated feedback for all actions"
+        },
+        "state_persistence": {
+          "description": "Zustand state persistence across page reloads",
+          "implementation": "Persist important game state to localStorage with Zustand middleware",
+          "sync": "Sync with Supabase on state changes"
+        }
+      }
+    },
+
+    "step_8_testing": {
+      "title": "Testing & Quality Assurance",
+      "testing_areas": {
+        "user_flow": "Complete story progression from start",
+        "interaction_system": "All interaction types work correctly",
+        "data_persistence": "Progress saves and loads properly",
+        "responsive_design": "Works on different screen sizes",
+        "error_scenarios": "Handle network errors gracefully"
+      }
+    }
+  },
+
+  "specific_requirements": {
+    "user_experience": {
+      "onboarding": "Clear instructions for new users",
+      "progress_indication": "Always show where user is in the story",
+      "feedback": "Immediate response to user actions",
+      "accessibility": "Keyboard navigation and screen reader support"
+    },
+    "performance": {
+      "loading_optimization": "Next.js Image optimization and lazy loading with React Spring fade-ins",
+      "caching": "Next.js built-in caching + Zustand state caching",
+      "bundle_size": "Tree-shaking with Next.js and selective React Spring imports",
+      "database_queries": "Efficient queries with minimal round trips + Next.js API route caching",
+      "animation_performance": "Hardware-accelerated animations with React Spring's will-change optimization"
+    }
+  },
+
+  "sample_data_integration": {
+    "prison_arc_story": "Use the provided Dragon Quest XI prison arc data",
+    "character_integration": "Erik joining party system",
+    "progression_flow": "Cobblestone → Heliodor → Prison → Escape",
+    "interaction_examples": [
+      "Talk to Erik in prison cell",
+      "Plan escape with Erik",
+      "Choose escape route",
+      "Erik joins party permanently"
+    ]
+  },
+
+  "final_deliverable": {
+    "working_web_application": {
+      "functionality": "Complete interactive story experience",
+      "database_integration": "Full Supabase integration working",
+      "user_authentication": "Login/register system functional",
+      "story_progression": "Users can progress through Dragon Quest XI story",
+      "party_system": "Characters join party based on story events",
+      "responsive_ui": "Works on all device sizes"
+    },
+    "code_quality": {
+      "typescript": "Full TypeScript implementation",
+      "comments": "Well-documented code",
+      "structure": "Organized file structure",
+      "reusability": "Reusable components"
+    }
+  },
+
+  "additional_instructions": {
+    "database_setup": "Make sure to run the provided Supabase SQL schema first",
+    "environment_variables": "Set up Supabase credentials in .env.local with NEXT_PUBLIC_ prefix",
+    "nextjs_config": "Configure next.config.js for Supabase integration and image optimization",
+    "zustand_devtools": "Set up Zustand devtools for debugging state management",
+    "react_spring_optimization": "Use selective imports from @react-spring/web to minimize bundle size",
+    "testing_data": "Use the sample data provided in the schema",
+    "deployment": "Deploy to Vercel with proper environment variable configuration",
+    "documentation": "Provide README with Next.js specific setup instructions and Zustand store documentation"
+  }
+}
