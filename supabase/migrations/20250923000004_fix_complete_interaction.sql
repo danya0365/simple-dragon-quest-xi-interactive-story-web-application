@@ -84,8 +84,21 @@ BEGIN
         AND display_order = (SELECT display_order FROM public.event_interactions WHERE id = interaction_uuid) + 1
         LIMIT 1;
         
+        -- If there's a next interaction, check if it's the last one in this event
         IF next_event_to_unlock IS NOT NULL THEN
-            outcome_record.next_event_id := next_event_to_unlock;
+            -- Check if this is the last interaction in the event
+            IF NOT EXISTS (
+                SELECT 1 FROM public.event_interactions ei
+                WHERE ei.event_id = event_record.id
+                AND ei.id != next_event_to_unlock
+                AND ei.display_order > (SELECT display_order FROM public.event_interactions WHERE id = next_event_to_unlock)
+            ) THEN
+                -- This is the last interaction, so return the event_id instead of interaction_id
+                outcome_record.next_event_id := event_record.id;
+            ELSE
+                -- There are more interactions, so return the next interaction_id
+                outcome_record.next_event_id := next_event_to_unlock;
+            END IF;
         END IF;
     END IF;
     
