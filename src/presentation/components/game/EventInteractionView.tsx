@@ -210,7 +210,7 @@ export function EventInteractionView() {
         )}
 
         {/* Choices */}
-        {currentInteraction.choices.length > 0 && (
+        {currentInteraction.choices && currentInteraction.choices.length > 0 && (
           <div className="space-y-4">
             <h4 className="text-yellow-400 font-medium">เลือกการตอบสนอง:</h4>
             <div className="grid gap-3">

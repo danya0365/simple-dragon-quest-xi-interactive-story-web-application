@@ -260,7 +260,7 @@ BEGIN
     
     SELECT id INTO first_location_id
     FROM public.locations
-    WHERE display_order = 0
+    WHERE display_order = 1
     LIMIT 1;
     
     -- Get protagonist character
