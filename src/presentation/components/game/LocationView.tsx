@@ -171,6 +171,66 @@ export function LocationView() {
         </div>
       )}
 
+      {/* Walkthrough / Next Steps */}
+      <div className="bg-gradient-to-r from-yellow-900/40 to-orange-900/40 rounded-lg border border-yellow-500/30 p-6">
+        <div className="flex items-start space-x-4">
+          <div className="text-yellow-400 text-2xl">🎯</div>
+          <div className="flex-1">
+            <h4 className="text-yellow-400 font-bold text-lg mb-3">สิ่งที่ควรทำต่อไป:</h4>
+            
+            <div className="space-y-3">
+              {availableEvents.length > 0 ? (
+                <>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-yellow-400 mt-1">1️⃣</span>
+                    <div>
+                      <p className="text-blue-200 font-medium">เลือกเหตุการณ์ที่ต้องการเล่น</p>
+                      <p className="text-blue-300 text-sm">คลิกที่การ์ดเหตุการณ์ด้านบนเพื่อเริ่มการผจญภัย</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-2">
+                    <span className="text-yellow-400 mt-1">2️⃣</span>
+                    <div>
+                      <p className="text-blue-200 font-medium">ทำการโต้ตอบให้เสร็จสิ้น</p>
+                      <p className="text-blue-300 text-sm">อ่านบทสนทนาและเลือกตัวเลือกต่างๆ เพื่อดำเนินเรื่องราว</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-2">
+                    <span className="text-yellow-400 mt-1">3️⃣</span>
+                    <div>
+                      <p className="text-blue-200 font-medium">ปลดล็อคเนื้อหาใหม่</p>
+                      <p className="text-blue-300 text-sm">การตัดสินใจของคุณจะส่งผลต่อเรื่องราวและปลดล็อคเหตุการณ์ใหม่</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-start space-x-2">
+                  <span className="text-yellow-400 mt-1">🔄</span>
+                  <div>
+                    <p className="text-blue-200 font-medium">กลับไปแผนที่โลก</p>
+                    <p className="text-blue-300 text-sm">ไปที่พื้นที่อื่นๆ เพื่อค้นหาเหตุการณ์ใหม่ๆ ที่จะเปิดให้เล่น</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Progress Indicator */}
+            <div className="mt-4 pt-4 border-t border-yellow-500/30">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-blue-300">ความคืบหน้า:</span>
+                <span className="text-yellow-400 font-medium">
+                  {availableEvents.length > 0 
+                    ? `มี ${availableEvents.length} เหตุการณ์ที่พร้อมเล่น` 
+                    : 'สำรวจเพื่อค้นหาเหตุการณ์ใหม่'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       {/* Tips */}
       <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-4">
         <h4 className="text-yellow-400 font-medium mb-2">เคล็ดลับ:</h4>
