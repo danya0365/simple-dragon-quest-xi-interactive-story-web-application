@@ -19,7 +19,7 @@ export function LocationView() {
 
   useEffect(() => {
     if (user?.id) {
-      loadAvailableEvents(user.id);
+      loadAvailableEvents();
     }
   }, [user?.id, loadAvailableEvents]);
 
@@ -52,7 +52,7 @@ export function LocationView() {
           <p className="text-red-400 font-medium mb-2">เกิดข้อผิดพลาด</p>
           <p className="text-blue-200 mb-4">{error}</p>
           <button
-            onClick={() => user?.id && loadAvailableEvents(user.id)}
+            onClick={() => loadAvailableEvents()}
             className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
           >
             ลองใหม่อีกครั้ง

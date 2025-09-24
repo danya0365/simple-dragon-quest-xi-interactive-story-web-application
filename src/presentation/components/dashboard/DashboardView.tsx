@@ -16,7 +16,6 @@ export function DashboardView() {
   const {
     currentView,
     userGameState,
-    userProgressId,
     loading: gameLoading,
     loadUserGameState,
     initializeUserProgress,
@@ -31,7 +30,7 @@ export function DashboardView() {
   // Initialize user progress and game data
   useEffect(() => {
     const initializeProgress = async () => {
-      if (user?.id && !progressInitialized && !userProgressId) {
+      if (user?.id && !progressInitialized && !userGameState?.id) {
         try {
           // Initialize user progress first
           await initializeUserProgress(user.id);
@@ -45,14 +44,14 @@ export function DashboardView() {
     };
 
     initializeProgress();
-  }, [user?.id, progressInitialized, userProgressId, initializeUserProgress]);
+  }, [user?.id, progressInitialized, userGameState?.id, initializeUserProgress]);
 
   // Load user game state when progress is initialized
   useEffect(() => {
-    if (userProgressId && progressInitialized) {
-      loadUserGameState(userProgressId);
+    if (userGameState?.id && progressInitialized) {
+      loadUserGameState();
     }
-  }, [userProgressId, progressInitialized, loadUserGameState]);
+  }, [userGameState?.id, progressInitialized, loadUserGameState]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -84,7 +83,7 @@ export function DashboardView() {
   }
 
   // Show loading while initializing user progress
-  if (user && !progressInitialized && !userProgressId && !progressError) {
+  if (user && !progressInitialized && !userGameState?.id && !progressError) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -315,9 +314,9 @@ export function DashboardView() {
                   🔄 ลองเริ่มต้นความคืบหน้าใหม่
                 </button>
                 <button
-                  onClick={() => userProgressId && loadUserGameState(userProgressId)}
+                  onClick={() => userGameState?.id && loadUserGameState()}
                   className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!userProgressId}
+                  disabled={!userGameState?.id}
                 >
                   🔄 รีเฟรชข้อมูล
                 </button>

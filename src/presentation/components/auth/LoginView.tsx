@@ -7,8 +7,7 @@ import { useEffect, useState } from "react";
 
 export function LoginView() {
   const router = useRouter();
-  const { signIn, signUp, user, loading, initialize, initialized } =
-    useAuthStore();
+  const { signIn, signUp, user, loading } = useAuthStore();
 
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -16,19 +15,12 @@ export function LoginView() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Initialize auth store on mount
-  useEffect(() => {
-    if (!initialized) {
-      initialize();
-    }
-  }, [initialize, initialized]);
-
   // Redirect if already logged in
   useEffect(() => {
-    if (user && initialized) {
+    if (user) {
       router.push("/dashboard");
     }
-  }, [user, initialized, router]);
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +49,7 @@ export function LoginView() {
   };
 
   // Show loading while initializing
-  if (!initialized || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">

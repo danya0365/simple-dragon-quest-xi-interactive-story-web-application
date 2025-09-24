@@ -2,17 +2,6 @@ import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type WorldMapUnlockStatusRpcResponse = {
-  id: string;
-  name: string;
-  description: string;
-  image_url: string;
-  unlock_requirements: Record<string, unknown>;
-  display_order: number;
-  is_initial_user_progress: boolean;
-  locations: LocationData[];
-};
-
 type WorldMapsRpcResponse = {
   id: string;
   name: string;
@@ -97,6 +86,7 @@ function mapUserGameStateResponseToUserGameState(
   response: UserGameStateRpcResponse
 ): UserGameState {
   return {
+    id: response.id,
     user_id: response.user_id,
     current_world_map_id: null, // Not provided by RPC, set to null
     current_location_id: response.current_location_id,
@@ -108,24 +98,43 @@ function mapUserGameStateResponseToUserGameState(
     unlocked_locations: response.unlocked_locations,
     unlocked_chapters: response.unlocked_chapters,
     unlocked_events: response.unlocked_events,
-    active_quests: response.active_quests as unknown as Record<string, string | number>[],
-    game_flags: response.game_flags as unknown as Record<string, string | number>[],
-    game_settings: response.game_settings as unknown as Record<string, string | number>[],
-    game_stats: response.game_stats as unknown as Record<string, string | number>,
-    player_level: response.player_level,
-    player_experience: response.player_experience,
-    party_members: response.party_members as unknown as PartyMember[],
-    character_relationships: response.character_relationships as unknown as Record<
+    active_quests: response.active_quests as unknown as Record<
       string,
       string | number
     >[],
+    game_flags: response.game_flags as unknown as Record<
+      string,
+      string | number
+    >[],
+    game_settings: response.game_settings as unknown as Record<
+      string,
+      string | number
+    >[],
+    game_stats: response.game_stats as unknown as Record<
+      string,
+      string | number
+    >,
+    player_level: response.player_level,
+    player_experience: response.player_experience,
+    party_members: response.party_members as unknown as PartyMember[],
+    character_relationships:
+      response.character_relationships as unknown as Record<
+        string,
+        string | number
+      >[],
     player_position: response.player_position as unknown as Record<
       string,
       string | number
     >,
     inventory: response.inventory as unknown as InventoryItem[],
-    achievements: response.achievements as unknown as Record<string, string | number>[],
-    play_history: response.play_history as unknown as Record<string, string | number>[],
+    achievements: response.achievements as unknown as Record<
+      string,
+      string | number
+    >[],
+    play_history: response.play_history as unknown as Record<
+      string,
+      string | number
+    >[],
     last_played_at: response.last_played_at,
   };
 }
@@ -140,17 +149,6 @@ interface LocationData {
   unlock_requirements: Record<string, unknown>;
   display_order: number;
   is_initial_user_progress: boolean;
-}
-
-interface WorldMapData {
-  id: string;
-  name: string;
-  description: string;
-  image_url: string;
-  unlock_requirements: Record<string, unknown>;
-  display_order: number;
-  is_initial_user_progress: boolean;
-  locations: LocationData[];
 }
 
 interface WorldRegion {
@@ -205,6 +203,7 @@ interface InventoryItem {
 }
 
 interface UserGameState {
+  id: string;
   user_id: string;
   current_world_map_id: string | null;
   current_location_id: string | null;
@@ -245,7 +244,6 @@ interface GameState {
 
   // User progress
   userGameState: UserGameState | null;
-  userProgressId: string | null;
 
   // UI state
   loading: boolean;
@@ -257,15 +255,11 @@ interface GameState {
 
 interface GameActions {
   // Data loading
-  loadWorldMap: (userProgressId: string) => Promise<void>;
-  loadAvailableEvents: (userProgressId: string) => Promise<void>;
-  loadUserGameState: (userProgressId: string) => Promise<void>;
-  loadEventInteractions: (
-    userProgressId: string,
-    eventId: string
-  ) => Promise<unknown>;
+  loadWorldMap: () => Promise<void>;
+  loadAvailableEvents: () => Promise<void>;
+  loadUserGameState: (userProgressId?: string) => Promise<void>;
+  loadEventInteractions: (eventId: string) => Promise<unknown>;
   completeInteraction: (
-    userProgressId: string,
     interactionId: string,
     choiceData?: Record<string, unknown>
   ) => Promise<void>;
@@ -300,7 +294,12 @@ export const useGameStore = create<GameStore>()(
       selectedEventId: null,
 
       // Actions
-      loadWorldMap: async (userProgressId: string) => {
+      loadWorldMap: async () => {
+        const { userGameState } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
 
@@ -311,28 +310,12 @@ export const useGameStore = create<GameStore>()(
 
           if (allMapsError) throw allMapsError;
 
-          // Get user's unlocked world maps and locations
-          const { data: unlockedWorldMapsData, error: unlockedMapsError } =
-            await supabase.rpc("get_world_map_for_user_progress", {
-              p_user_progress_uuid: userProgressId,
-            });
-
-          if (unlockedMapsError) throw unlockedMapsError;
-
           const allWorldMaps =
             allWorldMapsData as unknown as WorldMapsRpcResponse[];
-          const unlockedWorldMaps =
-            unlockedWorldMapsData as unknown as WorldMapUnlockStatusRpcResponse[];
 
-          // Create hash maps for quick lookup of unlocked status
-          const unlockedWorldMapIds = new Set(
-            unlockedWorldMaps.map((map) => map.id)
-          );
-          const unlockedLocationIds = new Set(
-            unlockedWorldMaps.flatMap((map) =>
-              map.locations.map((loc) => loc.id)
-            )
-          );
+          // Use unlocked data from userGameState
+          const unlockedWorldMapIds = new Set(userGameState.unlocked_world_maps);
+          const unlockedLocationIds = new Set(userGameState.unlocked_locations);
 
           // Transform the data to match our WorldRegion interface
           const transformedData = allWorldMaps.map((worldMap) => {
@@ -365,7 +348,13 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      loadAvailableEvents: async (userProgressId: string) => {
+      loadAvailableEvents: async () => {
+        const { userGameState } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
+        const userProgressId = userGameState.id;
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
 
@@ -395,7 +384,15 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      loadUserGameState: async (userProgressId: string) => {
+      loadUserGameState: async (userProgressId?: string) => {
+        // If no userProgressId provided, try to get it from userGameState
+        const { userGameState } = get();
+        const progressId = userProgressId || userGameState?.id;
+        
+        if (!progressId) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
 
@@ -403,7 +400,7 @@ export const useGameStore = create<GameStore>()(
           const { data, error } = await supabase.rpc(
             "get_user_game_state_for_user_progress",
             {
-              p_user_progress_uuid: userProgressId,
+              p_user_progress_uuid: progressId,
             }
           );
 
@@ -428,10 +425,13 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      loadEventInteractions: async (
-        userProgressId: string,
-        eventId: string
-      ) => {
+      loadEventInteractions: async (eventId: string) => {
+        const { userGameState } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return null;
+        }
+        const userProgressId = userGameState.id;
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
 
@@ -459,10 +459,15 @@ export const useGameStore = create<GameStore>()(
       },
 
       completeInteraction: async (
-        userProgressId: string,
         interactionId: string,
-        choiceData: Record<string, unknown> | undefined
+        choiceData?: Record<string, unknown>
       ) => {
+        const { userGameState } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
+        const userProgressId = userGameState.id;
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
 
@@ -481,8 +486,8 @@ export const useGameStore = create<GameStore>()(
           const result = data as any;
           if (result?.success) {
             // Reload game state after successful interaction
-            await get().loadUserGameState(userProgressId);
-            await get().loadAvailableEvents(userProgressId);
+            await get().loadUserGameState();
+            await get().loadAvailableEvents();
 
             // If there's a next event, navigate to it
             if (result.next_event_id) {
@@ -517,7 +522,6 @@ export const useGameStore = create<GameStore>()(
           currentLocation: null,
           availableEvents: [],
           userGameState: null,
-          userProgressId: null,
           loading: false,
           error: null,
           currentView: "world_map",
@@ -531,9 +535,12 @@ export const useGameStore = create<GameStore>()(
 
         try {
           // Call the initialize_user_progress function
-          const { data, error } = await supabase.rpc("initialize_user_progress", {
-            p_user_uuid: userId,
-          });
+          const { data, error } = await supabase.rpc(
+            "initialize_user_progress",
+            {
+              p_user_uuid: userId,
+            }
+          );
 
           if (error) {
             console.error("Error initializing user progress:", error);
@@ -544,8 +551,9 @@ export const useGameStore = create<GameStore>()(
             // Extract the user progress ID from the response
             const response = data as unknown as InitializeUserProgressResponse;
             if (response.id) {
-              set({ userProgressId: response.id });
               console.log("User progress initialized with ID:", response.id);
+              // Load the complete user game state after initialization
+              await get().loadUserGameState(response.id);
             }
           }
         } catch (error) {
@@ -553,16 +561,14 @@ export const useGameStore = create<GameStore>()(
           throw error;
         }
       },
-    }
-  ),
-  {
-    name: "dragon-quest-game",
-    partialize: (state) => ({
-      userGameState: state.userGameState,
-      userProgressId: state.userProgressId,
-      currentLocation: state.currentLocation,
-      currentView: state.currentView,
     }),
-  }
-)
+    {
+      name: "dragon-quest-game",
+      partialize: (state) => ({
+        userGameState: state.userGameState,
+        currentLocation: state.currentLocation,
+        currentView: state.currentView,
+      }),
+    }
+  )
 );

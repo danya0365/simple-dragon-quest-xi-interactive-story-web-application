@@ -1,31 +1,30 @@
 "use client";
 
-import { useAuthStore } from "@/src/stores/authStore";
 import { useGameStore } from "@/src/stores/gameStore";
 import { useEffect } from "react";
 
 export function WorldMapView() {
-  const { user } = useAuthStore();
   const {
     worldRegions,
     loading,
     error,
     selectedRegionId,
+    userGameState,
     loadWorldMap,
     setSelectedRegion,
     setCurrentView,
   } = useGameStore();
 
-  useEffect(() => {
-    if (user?.id) {
-      loadWorldMap(user.id);
-    }
-  }, [user?.id, loadWorldMap]);
-
   const handleRegionClick = (regionId: string) => {
     setSelectedRegion(regionId);
     setCurrentView("location");
   };
+
+  useEffect(() => {
+    if (userGameState?.id) {
+      loadWorldMap();
+    }
+  }, [userGameState?.id, loadWorldMap]);
 
   useEffect(() => {
     console.log(worldRegions);
@@ -50,7 +49,7 @@ export function WorldMapView() {
           <p className="text-red-400 font-medium mb-2">เกิดข้อผิดพลาด</p>
           <p className="text-blue-200 mb-4">{error}</p>
           <button
-            onClick={() => user?.id && loadWorldMap(user.id)}
+            onClick={() => loadWorldMap()}
             className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
           >
             ลองใหม่อีกครั้ง

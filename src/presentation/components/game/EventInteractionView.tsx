@@ -56,7 +56,7 @@ export function EventInteractionView() {
   useEffect(() => {
     // Load real interaction data from database
     if (selectedEventId && user?.id) {
-      loadEventInteractions(user.id, selectedEventId).then((data) => {
+      loadEventInteractions(selectedEventId).then((data) => {
         if (data && !data.error) {
           setEventData(data.event);
           setInteractions(data.interactions || []);
@@ -85,7 +85,7 @@ export function EventInteractionView() {
           interaction_id: currentInteraction.id,
         };
 
-    await completeInteraction(user.id, currentInteraction.id, choiceData);
+    await completeInteraction(currentInteraction.id, choiceData);
 
     // Add to history if there was a choice
     if (selectedChoice) {

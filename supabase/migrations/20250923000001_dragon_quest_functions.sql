@@ -39,14 +39,14 @@ BEGIN
     SELECT id INTO v_hero_character_id
     FROM public.characters 
     WHERE is_initial_user_progress = true
-    ORDER BY display_order
+    ORDER BY created_at
     LIMIT 1;
     
     -- Rusty sword item (initial equipment)
     SELECT id INTO v_rusty_sword_item_id
     FROM public.items 
     WHERE is_initial_user_progress = true
-    ORDER BY display_order
+    ORDER BY created_at
     LIMIT 1;
     
     -- Chapter 1 (initial chapter)
@@ -172,7 +172,7 @@ BEGIN
         '[]'::JSONB,                      -- No completed events (JSONB format)
         
         -- Player inventory and equipment
-        ARRAY[
+        to_jsonb(ARRAY[
             jsonb_build_object(
                 'item_id', v_rusty_sword_item_id,
                 'quantity', 1,
@@ -180,10 +180,10 @@ BEGIN
                 'equipped', true,
                 'slot', 'weapon'
             )
-        ]::JSONB[],
+        ]),
         
         -- Party members
-        ARRAY[
+        to_jsonb(ARRAY[
             jsonb_build_object(
                 'character_id', v_hero_character_id,
                 'joined_at', NOW(),
@@ -200,7 +200,7 @@ BEGIN
                 'is_active', true,
                 'party_position', 1
             )
-        ]::JSONB[],
+        ]),
         
         -- Character relationships
         jsonb_build_object(
@@ -217,10 +217,10 @@ BEGIN
         ),
         
         -- Achievements (empty for new user)
-        ARRAY[]::JSONB[],
+        to_jsonb(ARRAY[]::TEXT[]),
         
         -- Play history (empty for new user)
-        ARRAY[]::JSONB[],
+        to_jsonb(ARRAY[]::TEXT[]),
         
         -- Active content
         '[]'::JSONB,                      -- No active quests initially (JSONB format)
@@ -404,6 +404,7 @@ BEGIN
     );
 END;
 $$;
+
 
 -- =============================================================================
 -- Function to get all world maps with all locations (no user progress filtering)
