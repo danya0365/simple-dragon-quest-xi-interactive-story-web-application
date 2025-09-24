@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS public.world_map (
     description TEXT,
     image_url VARCHAR(500),
     unlock_requirements JSONB DEFAULT '{}',
+    -- Requirements to unlock this world map region
+    -- Format: {"level": integer, "completed_chapters": [uuid], "flags": {string: any}}
+    -- Example: {"level": 3, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -30,6 +33,9 @@ CREATE TABLE IF NOT EXISTS public.locations (
     image_url VARCHAR(500),
     location_type VARCHAR(50) DEFAULT 'town', -- town, dungeon, field, castle, etc.
     unlock_requirements JSONB DEFAULT '{}',
+    -- Requirements to unlock this location
+    -- Format: {"level": integer, "completed_events": [uuid], "items": [uuid], "flags": {string: any}}
+    -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"talked_to_king": true}}
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -43,6 +49,9 @@ CREATE TABLE IF NOT EXISTS public.story_chapters (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     unlock_requirements JSONB DEFAULT '{}',
+    -- Requirements to unlock this story chapter
+    -- Format: {"level": integer, "completed_chapters": [uuid], "flags": {string: any}}
+    -- Example: {"level": 1, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"ceremony_completed": true}}
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -58,8 +67,17 @@ CREATE TABLE IF NOT EXISTS public.story_events (
     description TEXT NOT NULL,
     event_type VARCHAR(50) DEFAULT 'story', -- story, battle, dialogue, choice, etc.
     unlock_requirements JSONB DEFAULT '{}',
+    -- Requirements to unlock this story event
+    -- Format: {"level": integer, "completed_events": [uuid], "items": [uuid], "flags": {string: any}}
+    -- Example: {"level": 1, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"met_grandpa": true}}
     completion_requirements JSONB DEFAULT '{}',
+    -- Requirements to complete this story event
+    -- Format: {"interactions_completed": [uuid], "choices_made": [string], "items_used": [uuid]}
+    -- Example: {"interactions_completed": ["77777777-7777-7777-7777-777777777001"], "choices_made": ["friendly"]}
     rewards JSONB DEFAULT '{}',
+    -- Rewards for completing this story event
+    -- Format: {"experience": integer, "gold": integer, "items": [{"id": uuid, "quantity": integer}]}
+    -- Example: {"experience": 100, "gold": 50, "items": [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1}]}
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -75,8 +93,14 @@ CREATE TABLE IF NOT EXISTS public.event_interactions (
     description TEXT,
     dialogue_text TEXT,
     character_speaker VARCHAR(255),
-    choices JSONB DEFAULT '[]', -- Array of choice options
+    choices JSONB DEFAULT '[]',
+    -- Array of choice options for player interaction
+    -- Format: [{"id": string, "text": string, "type": string, "requirements": {}}]
+    -- Example: [{"id": "friendly", "text": "ยินดีที่ได้รู้จัก ฉันชื่อ Hero", "type": "friendly", "requirements": {}}]
     requirements JSONB DEFAULT '{}',
+    -- Requirements for this interaction to be available
+    -- Format: {"level": integer, "items": [uuid], "flags": {string: any}}
+    -- Example: {"level": 1, "items": ["55555555-5555-5555-5555-555555555001"], "flags": {"met_king": true}}
     is_available BOOLEAN DEFAULT true,
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -92,7 +116,20 @@ CREATE TABLE IF NOT EXISTS public.event_outcomes (
     outcome_type VARCHAR(50) DEFAULT 'story', -- story, reward, unlock, party_join, etc.
     title VARCHAR(255),
     description TEXT,
-    effects JSONB DEFAULT '{}', -- What happens as a result
+    effects JSONB DEFAULT '{}',
+    -- Effects that occur when this outcome is triggered
+    -- Format: {
+    --   "relationship": {character_name: integer},
+    --   "unlock_events": [uuid],
+    --   "unlock_chapters": [uuid],
+    --   "unlock_locations": [uuid],
+    --   "unlock_regions": [uuid],
+    --   "party_join": uuid,
+    --   "items": [{"id": uuid, "quantity": integer}],
+    --   "experience": integer,
+    --   "gold": integer
+    -- }
+    -- Example: {"relationship": {"erik": 10}, "unlock_events": ["66666666-6666-6666-6666-666666666005"], "items": [{"id": "55555555-5555-5555-5555-555555555005", "quantity": 1}]}
     next_event_id UUID REFERENCES public.story_events(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -106,9 +143,18 @@ CREATE TABLE IF NOT EXISTS public.characters (
     description TEXT,
     character_type VARCHAR(50) DEFAULT 'npc', -- party_member, npc, enemy, etc.
     avatar_url VARCHAR(500),
-    stats JSONB DEFAULT '{}', -- HP, MP, Level, etc.
-    abilities JSONB DEFAULT '[]', -- Array of abilities/skills
+    stats JSONB DEFAULT '{}',
+    -- Character base stats
+    -- Format: {"hp": integer, "mp": integer, "level": integer, "attack": integer, "defense": integer}
+    -- Example: {"hp": 100, "mp": 50, "level": 1, "attack": 15, "defense": 10}
+    abilities JSONB DEFAULT '[]',
+    -- Array of character abilities/skills
+    -- Format: [{"id": string, "name": string, "description": string, "mp_cost": integer}]
+    -- Example: [{"id": "sword_strike", "name": "Sword Strike", "description": "Basic sword attack", "mp_cost": 0}]
     join_requirements JSONB DEFAULT '{}',
+    -- Requirements for character to join party
+    -- Format: {"level": integer, "completed_events": [uuid], "flags": {string: any}}
+    -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"erik_trust": 10}}
     is_party_member BOOLEAN DEFAULT false,
     is_available BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -123,8 +169,14 @@ CREATE TABLE IF NOT EXISTS public.items (
     description TEXT,
     item_type VARCHAR(50) DEFAULT 'misc', -- weapon, armor, consumable, key_item, misc
     rarity VARCHAR(20) DEFAULT 'common', -- common, rare, epic, legendary
-    stats JSONB DEFAULT '{}', -- Attack, Defense, etc.
-    effects JSONB DEFAULT '{}', -- Special effects
+    stats JSONB DEFAULT '{}',
+    -- Item stats and attributes
+    -- Format: {"attack": integer, "defense": integer, "hp_bonus": integer, "mp_bonus": integer, "critical": integer}
+    -- Example: {"attack": 5, "critical": 15}
+    effects JSONB DEFAULT '{}',
+    -- Special effects of the item
+    -- Format: {"heal": integer, "unlock": string, "buff": {string: any}, "duration": integer}
+    -- Example: {"heal": 30, "unlock": "prison_door"}
     image_url VARCHAR(500),
     is_tradeable BOOLEAN DEFAULT true,
     is_consumable BOOLEAN DEFAULT false,
@@ -148,27 +200,66 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     player_experience INTEGER DEFAULT 0,
     
     -- Game content
-    unlocked_world_maps JSONB DEFAULT '[]', -- Array of unlocked world map IDs
-    unlocked_locations JSONB DEFAULT '[]', -- Array of unlocked location IDs
-    unlocked_chapters JSONB DEFAULT '[]', -- Array of unlocked chapter IDs
-    unlocked_events JSONB DEFAULT '[]', -- Array of unlocked event IDs
+    unlocked_world_maps JSONB DEFAULT '[]',
+    -- Array of unlocked world map UUIDs
+    -- Format: [uuid]
+    -- Example: ["11111111-1111-1111-1111-111111111001", "11111111-1111-1111-1111-111111111002"]
+    unlocked_locations JSONB DEFAULT '[]',
+    -- Array of unlocked location UUIDs
+    -- Format: [uuid]
+    -- Example: ["22222222-2222-2222-2222-222222222001", "22222222-2222-2222-2222-222222222002"]
+    unlocked_chapters JSONB DEFAULT '[]',
+    -- Array of unlocked chapter UUIDs
+    -- Format: [uuid]
+    -- Example: ["33333333-3333-3333-3333-333333333001", "33333333-3333-3333-3333-333333333002"]
+    unlocked_events JSONB DEFAULT '[]',
+    -- Array of unlocked event UUIDs
+    -- Format: [uuid]
+    -- Example: ["66666666-6666-6666-6666-666666666001", "66666666-6666-6666-6666-666666666002"]
     
     -- Completed content
-    completed_chapters JSONB DEFAULT '[]', -- Array of completed chapter IDs
-    completed_events JSONB DEFAULT '[]', -- Array of completed event IDs
+    completed_chapters JSONB DEFAULT '[]',
+    -- Array of completed chapter UUIDs
+    -- Format: [uuid]
+    -- Example: ["33333333-3333-3333-3333-333333333001"]
+    completed_events JSONB DEFAULT '[]',
+    -- Array of completed event UUIDs
+    -- Format: [uuid]
+    -- Example: ["66666666-6666-6666-6666-666666666001", "66666666-6666-6666-6666-666666666002"]
     
     -- Player inventory and equipment
-    inventory JSONB DEFAULT '[]', -- Array of item IDs with quantities
-    equipment JSONB DEFAULT '{}', -- Currently equipped items
+    inventory JSONB DEFAULT '[]',
+    -- Array of items with quantities in player inventory
+    -- Format: [{"id": uuid, "quantity": integer, "obtained_at": timestamp}]
+    -- Example: [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1, "obtained_at": "2025-01-01T00:00:00Z"}]
+    equipment JSONB DEFAULT '{}',
+    -- Currently equipped items by slot
+    -- Format: {"weapon": uuid, "armor": uuid, "accessory": uuid}
+    -- Example: {"weapon": "55555555-5555-5555-5555-555555555001", "armor": "55555555-5555-5555-5555-555555555002"}
     
     -- Active content
-    active_quests JSONB DEFAULT '[]', -- Array of active quest/event IDs
-    game_flags JSONB DEFAULT '{}', -- Story flags and variables for branching narratives
+    active_quests JSONB DEFAULT '[]',
+    -- Array of active quest/event UUIDs
+    -- Format: [uuid]
+    -- Example: ["66666666-6666-6666-6666-666666666003", "66666666-6666-6666-6666-666666666004"]
+    game_flags JSONB DEFAULT '{}',
+    -- Story flags and variables for branching narratives
+    -- Format: {flag_name: any}
+    -- Example: {"met_king": true, "erik_trust": 10, "completed_tutorial": false}
     
     -- Game statistics and save data
-    game_stats JSONB DEFAULT '{}', -- Play time, completion percentage, etc.
-    game_settings JSONB DEFAULT '{}', -- Player preferences (sound, difficulty, etc.)
-    save_data JSONB DEFAULT '{}', -- Additional save data
+    game_stats JSONB DEFAULT '{}',
+    -- Player game statistics and progress tracking
+    -- Format: {"play_time": integer, "interactions_completed": integer, "events_completed": integer, "completion_percentage": float}
+    -- Example: {"play_time": 3600, "interactions_completed": 25, "events_completed": 8, "completion_percentage": 15.5}
+    game_settings JSONB DEFAULT '{}',
+    -- Player preferences and game settings
+    -- Format: {"sound_volume": float, "music_volume": float, "difficulty": string, "language": string}
+    -- Example: {"sound_volume": 0.8, "music_volume": 0.6, "difficulty": "normal", "language": "th"}
+    save_data JSONB DEFAULT '{}',
+    -- Additional save data for custom game state
+    -- Format: {custom_data: any}
+    -- Example: {"last_checkpoint": "checkpoint-uuid", "player_position": {"x": 100, "y": 200}}
     
     -- Timestamps
     last_played_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -185,8 +276,14 @@ CREATE TABLE IF NOT EXISTS public.user_party_members (
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     character_id UUID NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,
     joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    current_stats JSONB DEFAULT '{}', -- Current HP, MP, Level, etc.
-    equipment JSONB DEFAULT '{}', -- Equipped items
+    current_stats JSONB DEFAULT '{}',
+    -- Current character stats (may differ from base stats due to leveling, equipment, etc.)
+    -- Format: {"hp": integer, "mp": integer, "level": integer, "attack": integer, "defense": integer, "experience": integer}
+    -- Example: {"hp": 120, "mp": 60, "level": 2, "attack": 18, "defense": 12, "experience": 150}
+    equipment JSONB DEFAULT '{}',
+    -- Equipment currently worn by this party member
+    -- Format: {"weapon": uuid, "armor": uuid, "accessory": uuid}
+    -- Example: {"weapon": "55555555-5555-5555-5555-555555555001", "armor": "55555555-5555-5555-5555-555555555002"}
     is_active BOOLEAN DEFAULT true,
     party_position INTEGER DEFAULT 1, -- Position in party (1-4)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
