@@ -218,64 +218,42 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Function to get user game state with comprehensive data
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.get_user_game_state_for_user_progress(p_user_progress_uuid UUID)
-RETURNS TABLE (
-    progress_id UUID,
-    user_id UUID,
-    current_chapter_id UUID,
-    current_chapter_title TEXT,
-    current_location_id UUID,
-    current_location_name TEXT,
-    current_event_id UUID,
-    current_event_title TEXT,
-    player_level INTEGER,
-    player_experience INTEGER,
-    unlocked_world_maps JSONB,
-    unlocked_locations JSONB,
-    unlocked_chapters JSONB,
-    unlocked_events JSONB,
-    completed_chapters JSONB,
-    completed_events JSONB,
-    inventory JSONB,
-    party_members JSONB,
-    character_relationships JSONB,
-    player_position JSONB,
-    game_flags JSONB,
-    game_stats JSONB,
-    last_played_at TIMESTAMP WITH TIME ZONE
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        up.id,
-        up.user_id,
-        up.current_chapter_id,
-        COALESCE(sc.title, 'Unknown Chapter') as current_chapter_title,
-        up.current_location_id,
-        COALESCE(sl.name, 'Unknown Location') as current_location_name,
-        up.current_event_id,
-        COALESCE(se.title, 'Unknown Event') as current_event_title,
-        up.player_level,
-        up.player_experience,
-        up.unlocked_world_maps,
-        up.unlocked_locations,
-        up.unlocked_chapters,
-        up.unlocked_events,
-        up.completed_chapters,
-        up.completed_events,
-        up.inventory,
-        up.party_members,
-        up.character_relationships,
-        up.player_position,
-        up.game_flags,
-        up.game_stats,
-        up.last_played_at
-    FROM public.user_progress up
-    LEFT JOIN public.story_chapters sc ON up.current_chapter_id = sc.id
-    LEFT JOIN public.locations sl ON up.current_location_id = sl.id
-    LEFT JOIN public.story_events se ON up.current_event_id = se.id
-    WHERE up.id = user_progress_id;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+RETURNS JSONB
+LANGUAGE sql
+AS $$
+    SELECT to_jsonb(game_state)
+    FROM (
+        SELECT 
+            up.id,
+            up.user_id,
+            up.current_chapter_id,
+            COALESCE(sc.title, 'Unknown Chapter') as current_chapter_title,
+            up.current_location_id,
+            COALESCE(sl.name, 'Unknown Location') as current_location_name,
+            up.current_event_id,
+            COALESCE(se.title, 'Unknown Event') as current_event_title,
+            up.player_level,
+            up.player_experience,
+            up.unlocked_world_maps,
+            up.unlocked_locations,
+            up.unlocked_chapters,
+            up.unlocked_events,
+            up.completed_chapters,
+            up.completed_events,
+            up.inventory,
+            up.party_members,
+            up.character_relationships,
+            up.player_position,
+            up.game_flags,
+            up.game_stats,
+            up.last_played_at
+        FROM public.user_progress up
+        LEFT JOIN public.story_chapters sc ON up.current_chapter_id = sc.id
+        LEFT JOIN public.locations sl ON up.current_location_id = sl.id
+        LEFT JOIN public.story_events se ON up.current_event_id = se.id
+        WHERE up.id = p_user_progress_uuid
+    ) AS game_state;
+$$;
 
 -- =============================================================================
 -- Function to get available events for a user_progress
