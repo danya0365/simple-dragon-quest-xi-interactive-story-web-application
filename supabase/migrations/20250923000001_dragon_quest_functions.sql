@@ -12,11 +12,19 @@ CREATE OR REPLACE FUNCTION public.initialize_user_progress(p_user_uuid UUID)
 RETURNS JSONB AS $$
 DECLARE
     v_progress_record RECORD;
-    v_hero_character_id UUID := '44444444-4444-4444-4444-444444444001';
-    v_rusty_sword_item_id UUID := '55555555-5555-5555-5555-555555555001';
-    v_chapter_1_id UUID := '33333333-3333-3333-3333-333333333001';
-    v_morning_at_home_event_id UUID := '66666666-6666-6666-6666-666666666001';
-    v_heros_house_location_id UUID := '22222222-2222-2222-2222-222222222001';
+    
+    -- Dynamic queries for default content (FIX: Query from database instead of hardcoded values)
+    v_hero_character_id UUID;
+    v_rusty_sword_item_id UUID;
+    v_chapter_1_id UUID;
+    v_morning_at_home_event_id UUID;
+    v_heros_house_location_id UUID;
+    
+    -- Variables to store unlocked content arrays
+    v_unlocked_world_maps UUID[];
+    v_unlocked_locations UUID[];
+    v_unlocked_chapters UUID[];
+    v_unlocked_events UUID[];
 BEGIN
     -- Check if user progress already exists
     SELECT * INTO v_progress_record FROM public.user_progress WHERE user_id = p_user_uuid;
@@ -26,8 +34,68 @@ BEGIN
         RETURN to_jsonb(v_progress_record);
     END IF;
     
-    -- Insert new user progress with comprehensive initialization
-    -- Dynamically unlock all content with empty requirements
+    -- Get default content from database with unlock_requirements = '{}' (FIX: Dynamic queries)
+    -- Hero character (first party member with empty join requirements)
+    SELECT id INTO v_hero_character_id
+    FROM public.characters 
+    WHERE join_requirements = '{}'::JSONB AND is_party_member = true
+    ORDER BY display_order
+    LIMIT 1;
+    
+    -- Rusty sword item (first weapon with no specific requirements)
+    SELECT id INTO v_rusty_sword_item_id
+    FROM public.items 
+    WHERE item_type = 'weapon'
+    ORDER BY id
+    LIMIT 1;
+    
+    -- Chapter 1 (first chapter with empty unlock requirements)
+    SELECT id INTO v_chapter_1_id
+    FROM public.story_chapters 
+    WHERE unlock_requirements = '{}'::JSONB
+    ORDER BY display_order
+    LIMIT 1;
+    
+    -- Morning at home event (first event with empty unlock requirements)
+    SELECT id INTO v_morning_at_home_event_id
+    FROM public.story_events 
+    WHERE unlock_requirements = '{}'::JSONB
+    ORDER BY display_order
+    LIMIT 1;
+    
+    -- Hero's house location (first location with empty unlock requirements)
+    SELECT id INTO v_heros_house_location_id
+    FROM public.locations 
+    WHERE unlock_requirements = '{}'::JSONB
+    ORDER BY display_order
+    LIMIT 1;
+    
+    -- Get unlocked content from each table separately (FIX: No more UNION ALL mixing)
+    -- World Maps with empty requirements
+    SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
+    INTO v_unlocked_world_maps
+    FROM public.world_map 
+    WHERE unlock_requirements = '{}'::JSONB;
+    
+    -- Locations with empty requirements  
+    SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
+    INTO v_unlocked_locations
+    FROM public.locations 
+    WHERE unlock_requirements = '{}'::JSONB;
+    
+    -- Chapters with empty requirements
+    SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
+    INTO v_unlocked_chapters
+    FROM public.story_chapters 
+    WHERE unlock_requirements = '{}'::JSONB;
+    
+    -- Events with empty requirements
+    SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
+    INTO v_unlocked_events
+    FROM public.story_events 
+    WHERE unlock_requirements = '{}'::JSONB;
+    
+    -- Insert new user progress with comprehensive initialization (FIX: Proper data types)
     INSERT INTO public.user_progress (
         user_id,
         
@@ -40,7 +108,7 @@ BEGIN
         player_level,
         player_experience,
         
-        -- Game content - UNLOCKED (all items with empty requirements)
+        -- Game content - UNLOCKED (FIX: Convert UUID arrays to JSONB)
         unlocked_world_maps,
         unlocked_locations,
         unlocked_chapters,
@@ -81,7 +149,7 @@ BEGIN
         last_played_at,
         created_at,
         updated_at
-    ) SELECT 
+    ) VALUES (
         p_user_uuid,
         
         -- Current state
@@ -93,15 +161,15 @@ BEGIN
         1,                                 -- Level 1
         0,                                 -- 0 experience
         
-        -- Game content - UNLOCKED (all items with empty requirements)
-        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- World Maps
-        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- Locations
-        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- Chapters
-        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- Events
+        -- Game content - UNLOCKED (FIX: Convert UUID arrays to JSONB)
+        to_jsonb(v_unlocked_world_maps),  -- World Maps as JSONB array
+        to_jsonb(v_unlocked_locations),   -- Locations as JSONB array
+        to_jsonb(v_unlocked_chapters),    -- Chapters as JSONB array
+        to_jsonb(v_unlocked_events),      -- Events as JSONB array
         
         -- Completed content (empty for new user)
-        ARRAY[]::UUID[],                  -- No completed chapters
-        ARRAY[]::UUID[],                  -- No completed events
+        '[]'::JSONB,                      -- No completed chapters (JSONB format)
+        '[]'::JSONB,                      -- No completed events (JSONB format)
         
         -- Player inventory and equipment
         ARRAY[
@@ -155,7 +223,7 @@ BEGIN
         ARRAY[]::JSONB[],
         
         -- Active content
-        ARRAY[]::UUID[],                  -- No active quests initially
+        '[]'::JSONB,                      -- No active quests initially (JSONB format)
         jsonb_build_object(
             'tutorial_completed', false,
             'met_grandpa', false,
@@ -188,18 +256,7 @@ BEGIN
         NOW(),                            -- last_played_at
         NOW(),                            -- created_at
         NOW()                             -- updated_at
-    FROM (
-        -- Combine all tables with unlock_requirements columns
-        SELECT id, unlock_requirements, display_order FROM public.world_map
-        UNION ALL
-        SELECT id, unlock_requirements, display_order FROM public.locations
-        UNION ALL
-        SELECT id, unlock_requirements, display_order FROM public.story_chapters
-        UNION ALL
-        SELECT id, unlock_requirements, display_order FROM public.story_events
-    ) AS all_content
-    WHERE unlock_requirements = '{}'::JSONB
-    LIMIT 1;  -- We only need one row to generate the arrays
+    );
     
     -- Get the complete user progress record
     SELECT * INTO v_progress_record FROM public.user_progress WHERE user_id = p_user_uuid;
