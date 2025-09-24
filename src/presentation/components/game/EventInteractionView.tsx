@@ -367,11 +367,26 @@ export function EventInteractionView() {
         )}
 
         {/* Dialogue */}
-        <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
-          <p className="text-white text-lg leading-relaxed">
-            {currentInteraction.dialogueText}
-          </p>
-        </div>
+        {currentInteraction.dialogueText && (
+          <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
+            <p className="text-white text-lg leading-relaxed">
+              {currentInteraction.dialogueText}
+            </p>
+          </div>
+        )}
+
+        {/* Description/Context */}
+        {currentInteraction.description && (
+          <div className="bg-yellow-900/30 rounded-lg border border-yellow-500/30 p-6 mb-6">
+            <div className="flex items-center mb-3">
+              <div className="text-yellow-400 text-2xl mr-3">💡</div>
+              <h4 className="text-yellow-400 font-medium">คำแนะนำ:</h4>
+            </div>
+            <p className="text-yellow-100 text-lg leading-relaxed">
+              {currentInteraction.description}
+            </p>
+          </div>
+        )}
 
         {/* Interaction History */}
         {interactionHistory.length > 0 && (
@@ -389,6 +404,19 @@ export function EventInteractionView() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Interaction Instruction */}
+        {!currentInteraction.dialogueText && !currentInteraction.description && (
+          <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
+            <div className="flex items-center mb-3">
+              <div className="text-blue-400 text-2xl mr-3">🎯</div>
+              <h4 className="text-blue-400 font-medium">เลือกการกระทำ:</h4>
+            </div>
+            <p className="text-blue-200 text-lg leading-relaxed">
+              เลือกสิ่งที่คุณต้องการทำจากตัวเลือกด้านล่าง
+            </p>
           </div>
         )}
 
