@@ -1,24 +1,8 @@
 "use client";
 
 import { useAuthStore } from "@/src/stores/authStore";
-import { useGameStore } from "@/src/stores/gameStore";
+import { useGameStore, EventInteraction } from "@/src/stores/gameStore";
 import { useEffect, useState } from "react";
-
-interface Interaction {
-  id: string;
-  interaction_type: string;
-  title: string;
-  description: string;
-  dialogue_text: string;
-  character_speaker: string;
-  character_avatar?: string;
-  choices: Array<{
-    id: string;
-    text: string;
-    type: string;
-    description?: string;
-  }>;
-}
 
 interface EventData {
   id: string;
@@ -46,7 +30,7 @@ export function EventInteractionView() {
   } = useGameStore();
 
   const [eventData, setEventData] = useState<EventData | null>(null);
-  const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [interactions, setInteractions] = useState<EventInteraction[]>([]);
   const [currentInteractionIndex, setCurrentInteractionIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
@@ -193,7 +177,7 @@ export function EventInteractionView() {
       // Add to history
       if (selectedChoice) {
         const choice = currentInteraction.choices.find(
-          (c) => c.id === selectedChoice
+          (c: { id: string }) => c.id === selectedChoice
         );
         if (choice) {
           setInteractionHistory((prev) => [...prev, choice.text]);
@@ -339,26 +323,22 @@ export function EventInteractionView() {
       {/* Event Scene */}
       <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-8">
         {/* Character Speaker */}
-        {currentInteraction.character_speaker && (
+        {currentInteraction.characterSpeaker && (
           <div className="flex items-center mb-6">
-            {currentInteraction.character_avatar ? (
+            {currentInteraction.characterAvatar && (
               <img
-                src={currentInteraction.character_avatar}
-                alt={currentInteraction.character_speaker}
-                className="w-12 h-12 rounded-full mr-4 object-cover"
+                src={currentInteraction.characterAvatar}
+                alt={currentInteraction.characterSpeaker}
+                className="w-16 h-16 rounded-full border-2 border-yellow-400"
               />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4">
-                <span className="text-blue-900 font-bold text-lg">
-                  {currentInteraction.character_speaker.charAt(0)}
-                </span>
-              </div>
             )}
-            <div>
-              <h3 className="text-white font-bold">
-                {currentInteraction.character_speaker}
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-yellow-400">
+                {currentInteraction.characterSpeaker}
               </h3>
-              <p className="text-blue-300 text-sm">ตัวละคร</p>
+              <p className="text-sm text-blue-200">
+                {currentInteraction.interactionType === "dialogue" ? "บทสนทนา" : "เหตุการณ์"}
+              </p>
             </div>
           </div>
         )}
@@ -366,7 +346,7 @@ export function EventInteractionView() {
         {/* Dialogue */}
         <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
           <p className="text-white text-lg leading-relaxed">
-            {currentInteraction.dialogue_text}
+            {currentInteraction.dialogueText}
           </p>
         </div>
 
@@ -396,7 +376,7 @@ export function EventInteractionView() {
           <div className="space-y-4">
             <h4 className="text-yellow-400 font-medium">เลือกการตอบสนอง:</h4>
             <div className="grid gap-3">
-              {currentInteraction.choices.map((choice) => (
+              {currentInteraction.choices.map((choice: { id: string; text: string; type: string }) => (
                 <button
                   key={choice.id}
                   onClick={() => handleChoiceSelect(choice.id)}

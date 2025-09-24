@@ -3,6 +3,59 @@ import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+// Event Interactions RPC Response Type
+interface EventInteractionsRpcResponse {
+  id: string;
+  title: string;
+  description: string;
+  dialogue_text: string;
+  character_speaker: string;
+  character_avatar?: string;
+  choices: Array<{
+    id: string;
+    text: string;
+    type: string;
+    description?: string;
+  }>;
+  interaction_type: string;
+  is_available: boolean;
+  requirements: Record<string, unknown>;
+  display_order: number;
+}
+
+// Event Interaction Type for frontend use
+export interface EventInteraction {
+  id: string;
+  interactionType: string;
+  title: string;
+  description: string;
+  dialogueText: string;
+  characterSpeaker: string;
+  characterAvatar?: string;
+  choices: Array<{
+    id: string;
+    text: string;
+    type: string;
+    description?: string;
+  }>;
+}
+
+// Mapping function to convert EventInteractionsRpcResponse to EventInteraction
+const mapEventInteractionsResponseToEventInteractions = (
+  responses: EventInteractionsRpcResponse[]
+): EventInteraction[] => {
+  return responses.map((response) => ({
+    id: response.id,
+    interactionType: response.interaction_type,
+    title: response.title,
+    description: response.description,
+    dialogueText: response.dialogue_text,
+    characterSpeaker: response.character_speaker,
+    characterAvatar: response.character_avatar,
+    choices: response.choices || [],
+  }));
+};
+
 type WorldMapsRpcResponse = {
   id: string;
   name: string;
@@ -152,19 +205,6 @@ interface LocationData {
   is_initial_user_progress: boolean;
 }
 
-interface EventInteraction {
-  id: string;
-  event_id: string;
-  interaction_type: string;
-  title: string;
-  description: string;
-  dialogue: string;
-  choices: Record<string, unknown>[];
-  requirements: Record<string, unknown>;
-  display_order: number;
-  is_available: boolean;
-}
-
 interface WorldRegion {
   id: string;
   name: string;
@@ -283,7 +323,7 @@ interface GameActions {
   loadLocationsForRegion: (regionId: string) => Promise<void>;
   loadAvailableEvents: (locationId: string) => Promise<void>;
   loadUserGameState: (userProgressId?: string) => Promise<void>;
-  loadEventInteractions: (eventId: string) => Promise<unknown>;
+  loadEventInteractions: (eventId: string) => Promise<EventInteraction[] | null>;
   completeInteraction: (
     interactionId: string,
     choiceData?: Json
@@ -531,13 +571,14 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const eventInteractions = data as unknown as {
-            event: StoryEvent;
-            interactions: EventInteraction[];
-          };
+          // API returns array of interactions directly
+          const rpcResponse = data as unknown as EventInteractionsRpcResponse[];
+          
+          // Map the response to frontend format
+          const mappedInteractions = mapEventInteractionsResponseToEventInteractions(rpcResponse);
 
           set({ loading: false });
-          return eventInteractions;
+          return mappedInteractions;
         } catch (err: unknown) {
           console.error("Error loading event interactions:", err);
           set({
