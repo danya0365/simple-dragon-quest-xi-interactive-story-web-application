@@ -16,20 +16,43 @@ export function DashboardView() {
   const {
     currentView,
     userGameState,
+    userProgressId,
     loading: gameLoading,
     loadUserGameState,
+    initializeUserProgress,
     setCurrentView,
     reset: resetGameStore,
   } = useGameStore();
 
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [progressInitialized, setProgressInitialized] = useState(false);
+  const [progressError, setProgressError] = useState<string | null>(null);
 
-  // Initialize auth store and user data
+  // Initialize user progress and game data
   useEffect(() => {
-    if (user?.id) {
-      loadUserGameState(user.id);
+    const initializeProgress = async () => {
+      if (user?.id && !progressInitialized && !userProgressId) {
+        try {
+          // Initialize user progress first
+          await initializeUserProgress(user.id);
+          setProgressInitialized(true);
+          setProgressError(null);
+        } catch (error) {
+          console.error("Failed to initialize user progress:", error);
+          setProgressError("ไม่สามารถเริ่มต้นความคืบหน้าเกมได้ กรุณาลองใหม่อีกครั้ง");
+        }
+      }
+    };
+
+    initializeProgress();
+  }, [user?.id, progressInitialized, userProgressId, initializeUserProgress]);
+
+  // Load user game state when progress is initialized
+  useEffect(() => {
+    if (userProgressId && progressInitialized) {
+      loadUserGameState(userProgressId);
     }
-  }, [user?.id, loadUserGameState]);
+  }, [userProgressId, progressInitialized, loadUserGameState]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -55,6 +78,40 @@ export function DashboardView() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
           <p className="text-white text-lg">กำลังโหลด...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while initializing user progress
+  if (user && !progressInitialized && !userProgressId && !progressError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+          <p className="text-white text-lg">กำลังเริ่มต้นความคืบหน้าเกม...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if user progress initialization failed
+  if (progressError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-red-400 text-6xl mb-4">⚠️</div>
+          <h2 className="text-white text-xl font-bold mb-2">เกิดข้อผิดพลาด</h2>
+          <p className="text-blue-200 mb-6">{progressError}</p>
+          <button
+            onClick={() => {
+              setProgressError(null);
+              setProgressInitialized(false);
+            }}
+            className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-6 rounded-lg transition-colors"
+          >
+            ลองใหม่อีกครั้ง
+          </button>
         </div>
       </div>
     );
@@ -249,8 +306,18 @@ export function DashboardView() {
                   🗺️ ไปแผนที่โลก
                 </button>
                 <button
-                  onClick={() => user?.id && loadUserGameState(user.id)}
+                  onClick={() => {
+                    setProgressError(null);
+                    setProgressInitialized(false);
+                  }}
                   className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  🔄 ลองเริ่มต้นความคืบหน้าใหม่
+                </button>
+                <button
+                  onClick={() => userProgressId && loadUserGameState(userProgressId)}
+                  className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!userProgressId}
                 >
                   🔄 รีเฟรชข้อมูล
                 </button>
