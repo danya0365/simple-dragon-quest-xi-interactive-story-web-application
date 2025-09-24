@@ -117,6 +117,7 @@ BEGIN
         -- Completed content (empty for new user)
         completed_chapters,
         completed_events,
+        completed_interactions,
         
         -- Player inventory and equipment
         inventory,
@@ -170,6 +171,7 @@ BEGIN
         -- Completed content (empty for new user)
         '[]'::JSONB,                      -- No completed chapters (JSONB format)
         '[]'::JSONB,                      -- No completed events (JSONB format)
+        '[]'::JSONB,                      -- No completed interactions (JSONB format)
         
         -- Player inventory and equipment
         to_jsonb(ARRAY[
@@ -297,6 +299,7 @@ AS $$
             up.unlocked_events,
             up.completed_chapters,
             up.completed_events,
+            up.completed_interactions,
             up.inventory,
             up.party_members,
             up.character_relationships,
@@ -649,6 +652,9 @@ DECLARE
     v_next_event_id UUID;
     v_success BOOLEAN DEFAULT true;
     v_error_message TEXT;
+    v_all_interactions_completed BOOLEAN DEFAULT false;
+    v_total_interactions INTEGER;
+    v_completed_interactions INTEGER;
 BEGIN
     -- Get user progress data
     SELECT * INTO v_user_progress 
@@ -695,14 +701,37 @@ BEGIN
     v_effects := v_outcome.effects;
     v_next_event_id := v_outcome.next_event_id;
     
+    -- Check if all interactions in this event are completed
+    -- Get total number of interactions for this event
+    SELECT COUNT(*) INTO v_total_interactions
+    FROM public.event_interactions
+    WHERE event_id = v_interaction.event_id;
+    
+    -- Get number of completed interactions for this event
+    SELECT COUNT(*) INTO v_completed_interactions
+    FROM jsonb_array_elements(v_user_progress.completed_interactions) AS completed_interaction
+    WHERE completed_interaction->>'event_id' = v_interaction.event_id::TEXT;
+    
+    -- Check if all interactions are completed (including the current one)
+    v_all_interactions_completed := (v_completed_interactions + 1) >= v_total_interactions;
+    
     -- Update user progress with effects
     UPDATE public.user_progress
     SET 
+        -- Track completed interactions
+        completed_interactions = completed_interactions || 
+            jsonb_build_array(
+                jsonb_build_object(
+                    'interaction_id', p_interaction_uuid,
+                    'event_id', v_interaction.event_id,
+                    'completed_at', NOW()
+                )
+            ),
         -- Update unlocked content
-        unlocked_world_maps = CASE 
+        unlocked_world_regions = CASE 
             WHEN v_effects->'unlock_regions' IS NOT NULL 
-            THEN unlocked_world_maps || v_effects->'unlock_regions'
-            ELSE unlocked_world_maps 
+            THEN unlocked_world_regions || v_effects->'unlock_regions'
+            ELSE unlocked_world_regions 
         END,
         unlocked_locations = CASE 
             WHEN v_effects->'unlock_locations' IS NOT NULL 
@@ -722,8 +751,11 @@ BEGIN
         
         -- Update completed events if this completes the event
         completed_events = CASE 
-            WHEN v_next_event_id IS NOT NULL OR v_effects->'unlock_events' IS NOT NULL
-            THEN completed_events || to_jsonb(ARRAY[v_interaction.event_id])
+            -- Mark event as completed when:
+            -- 1. All interactions in the event are completed, OR
+            -- 2. There's a next_event_id (explicit progression)
+            WHEN v_all_interactions_completed OR v_next_event_id IS NOT NULL
+            THEN completed_events || to_jsonb(v_interaction.event_id)
             ELSE completed_events 
         END,
         
@@ -775,7 +807,7 @@ BEGIN
         game_stats = jsonb_set(
             game_stats,
             ARRAY['interactions_completed'],
-            COALESCE((game_stats->>'interactions_completed')::INTEGER, 0) + 1
+            to_jsonb(COALESCE((game_stats->>'interactions_completed')::INTEGER, 0) + 1)
         ),
         
         -- Update current event if there's a next event

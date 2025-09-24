@@ -238,6 +238,11 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     -- Format: [uuid]
     -- Example: ["66666666-6666-6666-6666-666666666001", "66666666-6666-6666-6666-666666666002"]
     
+    completed_interactions JSONB DEFAULT '[]',
+    -- Array of completed interaction data with timestamps and event associations
+    -- Format: [{"interaction_id": uuid, "event_id": uuid, "completed_at": timestamp}]
+    -- Example: [{"interaction_id": "77777777-7777-7777-7777-777777777001", "event_id": "66666666-6666-6666-6666-666666666001", "completed_at": "2025-01-01T00:00:00Z"}]
+    
     -- Player inventory and equipment (CENTRALIZED)
     inventory JSONB DEFAULT '[]',
     -- Array of items with detailed inventory data
@@ -320,6 +325,7 @@ CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_chapters ON public.user_pr
 CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_events ON public.user_progress USING GIN (unlocked_events);
 CREATE INDEX IF NOT EXISTS idx_user_progress_completed_chapters ON public.user_progress USING GIN (completed_chapters);
 CREATE INDEX IF NOT EXISTS idx_user_progress_completed_events ON public.user_progress USING GIN (completed_events);
+CREATE INDEX IF NOT EXISTS idx_user_progress_completed_interactions ON public.user_progress USING GIN (completed_interactions);
 CREATE INDEX IF NOT EXISTS idx_user_progress_inventory ON public.user_progress USING GIN (inventory);
 CREATE INDEX IF NOT EXISTS idx_user_progress_party_members ON public.user_progress USING GIN (party_members);
 CREATE INDEX IF NOT EXISTS idx_user_progress_character_relationships ON public.user_progress USING GIN (character_relationships);

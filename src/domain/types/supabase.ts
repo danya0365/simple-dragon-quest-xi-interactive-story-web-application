@@ -466,6 +466,7 @@ export type Database = {
           character_relationships: Json | null
           completed_chapters: Json | null
           completed_events: Json | null
+          completed_interactions: Json | null
           created_at: string | null
           current_chapter_id: string | null
           current_event_id: string | null
@@ -495,6 +496,7 @@ export type Database = {
           character_relationships?: Json | null
           completed_chapters?: Json | null
           completed_events?: Json | null
+          completed_interactions?: Json | null
           created_at?: string | null
           current_chapter_id?: string | null
           current_event_id?: string | null
@@ -524,6 +526,7 @@ export type Database = {
           character_relationships?: Json | null
           completed_chapters?: Json | null
           completed_events?: Json | null
+          completed_interactions?: Json | null
           created_at?: string | null
           current_chapter_id?: string | null
           current_event_id?: string | null

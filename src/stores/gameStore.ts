@@ -94,6 +94,7 @@ type UserGameStateRpcResponse = {
   unlocked_events: string[];
   completed_chapters: string[];
   completed_events: string[];
+  completed_interactions: Record<string, unknown>[];
   inventory: Record<string, unknown>[];
   party_members: Record<string, unknown>[];
   character_relationships: Record<string, unknown>;
@@ -124,6 +125,7 @@ type InitializeUserProgressResponse = {
   unlocked_events: string[];
   completed_chapters: string[];
   completed_events: string[];
+  completed_interactions: Record<string, unknown>[];
   inventory: Record<string, unknown>[];
   party_members: Record<string, unknown>[];
   character_relationships: Record<string, unknown>;
@@ -148,6 +150,7 @@ function mapUserGameStateResponseToUserGameState(
     currentEventId: response.current_event_id,
     completedChapters: response.completed_chapters,
     completedEvents: response.completed_events,
+    completedInteractions: response.completed_interactions,
     unlockedWorldRegions: response.unlocked_world_regions,
     unlockedLocations: response.unlocked_locations,
     unlockedChapters: response.unlocked_chapters,
@@ -266,6 +269,7 @@ interface UserGameState {
 
   completedChapters: string[];
   completedEvents: string[];
+  completedInteractions: Record<string, unknown>[];
 
   unlockedWorldRegions: string[];
   unlockedLocations: string[];
