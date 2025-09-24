@@ -115,9 +115,9 @@ export function EventInteractionView() {
     setSelectedChoice(null);
   };
 
-  const handleBackToLocation = () => {
+  const handleBackToEventList = () => {
     setSelectedEventId(null);
-    setCurrentView("location");
+    setCurrentView('event');
   };
 
   if (loading) {
@@ -139,10 +139,10 @@ export function EventInteractionView() {
           <p className="text-red-400 font-medium mb-2">เกิดข้อผิดพลาด</p>
           <p className="text-blue-200 mb-4">{error}</p>
           <button
-            onClick={handleBackToLocation}
+            onClick={handleBackToEventList}
             className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
           >
-            กลับไปรายการเหตุการณ์
+            กลับไปหน้าเหตุการณ์
           </button>
         </div>
       </div>
@@ -155,10 +155,10 @@ export function EventInteractionView() {
         <div className="text-blue-400 text-6xl mb-4">❓</div>
         <p className="text-blue-200 font-medium mb-2">ไม่พบเหตุการณ์</p>
         <button
-          onClick={handleBackToLocation}
+          onClick={handleBackToEventList}
           className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
         >
-          กลับไปรายการเหตุการณ์
+          กลับไปหน้าเหตุการณ์
         </button>
       </div>
     );
@@ -169,11 +169,11 @@ export function EventInteractionView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
-          onClick={handleBackToLocation}
+          onClick={handleBackToEventList}
           className="flex items-center text-blue-300 hover:text-blue-200 transition-colors"
         >
           <span className="mr-2">←</span>
-          กลับไปรายการเหตุการณ์
+          กลับไปหน้าเหตุการณ์
         </button>
 
         <div className="text-center">

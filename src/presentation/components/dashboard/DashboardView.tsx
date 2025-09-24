@@ -1,6 +1,7 @@
 "use client";
 
 import { EventInteractionView } from "@/src/presentation/components/game/EventInteractionView";
+import { EventView } from "@/src/presentation/components/game/EventView";
 import { InventoryView } from "@/src/presentation/components/game/InventoryView";
 import { LocationView } from "@/src/presentation/components/game/LocationView";
 import { PartyView } from "@/src/presentation/components/game/PartyView";
@@ -261,7 +262,7 @@ export function DashboardView() {
                       เหตุการณ์ที่เสร็จแล้ว:
                     </span>
                     <p className="text-white font-medium">
-                      {userGameState.completed_events?.length || 0}
+                      {userGameState.completedEvents?.length || 0}
                     </p>
                   </div>
                   <div>
@@ -269,7 +270,7 @@ export function DashboardView() {
                       สมาชิกปาร์ตี้:
                     </span>
                     <p className="text-white font-medium">
-                      {userGameState.party_members?.length || 0}
+                      {userGameState.partyMembers?.length || 0}
                     </p>
                   </div>
                   <div>
@@ -278,12 +279,12 @@ export function DashboardView() {
                       {userGameState.inventory?.length || 0}
                     </p>
                   </div>
-                  {userGameState.last_played_at && (
+                  {userGameState.lastPlayedAt && (
                     <div>
                       <span className="text-blue-300 text-sm">เล่นล่าสุด:</span>
                       <p className="text-white text-sm">
                         {new Date(
-                          userGameState.last_played_at
+                          userGameState.lastPlayedAt
                         ).toLocaleDateString("th-TH")}
                       </p>
                     </div>
@@ -329,7 +330,8 @@ export function DashboardView() {
             <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4 lg:p-6 min-h-[500px]">
               {currentView === "world_map" && <WorldMapView />}
               {currentView === "location" && <LocationView />}
-              {currentView === "event" && <EventInteractionView />}
+              {currentView === "event" && <EventView />}
+              {currentView === "event_interaction" && <EventInteractionView />}
               {currentView === "inventory" && <InventoryView />}
               {currentView === "party" && <PartyView />}
             </div>

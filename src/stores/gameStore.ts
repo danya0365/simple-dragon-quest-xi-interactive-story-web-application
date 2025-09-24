@@ -251,7 +251,7 @@ interface GameState {
   // UI state
   loading: boolean;
   error: string | null;
-  currentView: "world_map" | "location" | "event" | "inventory" | "party";
+  currentView: "world_map" | "location" | "event" | "event_interaction" | "inventory" | "party";
   selectedRegionId: string | null;
   selectedLocationId: string | null;
   selectedEventId: string | null;
@@ -585,7 +585,7 @@ export const useGameStore = create<GameStore>()(
         set({ selectedEventId: eventId });
       },
 
-      setCurrentView: (view: "world_map" | "location" | "event" | "inventory" | "party") => {
+      setCurrentView: (view: "world_map" | "location" | "event" | "event_interaction" | "inventory" | "party") => {
         set({ currentView: view });
       },
 
