@@ -32,7 +32,7 @@ INSERT INTO public.story_chapters (id, chapter_number, title, description, unloc
 ('33333333-3333-3333-3333-333333333003', 3, 'The Great Escape', 'การหลบหนีจากคุก Heliodor พร้อมกับ Erik', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333002"], "flags": {"met_erik": true}}', 3, false);
 
 -- Insert Characters
-INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_party_member, is_initial_user_progress) VALUES
+INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress) VALUES
 -- Party members
 ('44444444-4444-4444-4444-444444444001', 'Hero', 'ตัวเอกของเรื่อง ผู้ถูกเรียกว่า Darkspawn', 'party_member', '/images/characters/hero.jpg', 
  '{"hp": 100, "mp": 50, "level": 1, "attack": 15, "defense": 10}', 
@@ -40,7 +40,7 @@ INSERT INTO public.characters (id, name, description, character_type, avatar_url
  
 ('44444444-4444-4444-4444-444444444002', 'Erik', 'โจรหนุ่มที่ถูกขังในคุก Heliodor เชี่ยวชาญด้านการขโมยและมีดโยน', 'party_member', '/images/characters/erik.jpg',
  '{"hp": 80, "mp": 30, "level": 1, "attack": 18, "defense": 8}',
- '["Dagger Throw", "Steal", "Critical Hit"]', false, false),
+ '["Dagger Throw", "Steal", "Critical Hit"]', true, false),
 
 -- NPCs
 ('44444444-4444-4444-4444-444444444003', 'Grandpa', 'ปู่ของ Hero ผู้เลี้ยงดู Hero มาตั้งแต่เด็ก', 'npc', '/images/characters/grandpa.jpg',
