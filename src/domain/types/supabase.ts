@@ -612,6 +612,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_interaction_for_user_progress: {
+        Args: {
+          p_user_progress_uuid: string
+          p_interaction_uuid: string
+          p_choice_data?: Json
+        }
+        Returns: Json
+      }
       create_profile: {
         Args: { username: string; full_name?: string; avatar_url?: string }
         Returns: string
@@ -650,6 +658,14 @@ export type Database = {
       }
       get_auth_user_by_id: {
         Args: { p_id: string }
+        Returns: Json
+      }
+      get_available_events_for_user_progress: {
+        Args: { p_user_progress_uuid: string }
+        Returns: Json
+      }
+      get_event_interactions_for_user_progress: {
+        Args: { p_user_progress_uuid: string; p_event_uuid: string }
         Returns: Json
       }
       get_paginated_users: {

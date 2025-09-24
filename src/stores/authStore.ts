@@ -7,18 +7,15 @@ interface AuthState {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  initialized: boolean;
 }
 
 interface AuthActions {
   setUser: (user: User | null) => void;
   setSession: (session: Session | null) => void;
   setLoading: (loading: boolean) => void;
-  setInitialized: (initialized: boolean) => void;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
-  initialize: () => Promise<void>;
   initializeUserProgress: () => Promise<void>;
 }
 
@@ -31,13 +28,11 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       session: null,
       loading: true,
-      initialized: false,
 
       // Actions
       setUser: (user) => set({ user }),
       setSession: (session) => set({ session }),
       setLoading: (loading) => set({ loading }),
-      setInitialized: (initialized) => set({ initialized }),
 
       signIn: async (email: string, password: string) => {
         set({ loading: true });
@@ -121,12 +116,6 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       initialize: async () => {
-        // Prevent multiple initializations
-        if (get().initialized) {
-          set({ loading: false });
-          return;
-        }
-
         set({ loading: true });
         const supabase = createClientSupabaseClient();
 
@@ -141,14 +130,12 @@ export const useAuthStore = create<AuthStore>()(
               user: session.user,
               session: session,
               loading: false,
-              initialized: true,
             });
           } else {
             set({
               user: null,
               session: null,
               loading: false,
-              initialized: true,
             });
           }
 
@@ -160,11 +147,6 @@ export const useAuthStore = create<AuthStore>()(
                 session: session,
                 loading: false,
               });
-
-              // Initialize user progress for new users
-              if (event === "SIGNED_IN") {
-                await get().initializeUserProgress();
-              }
             } else {
               set({
                 user: null,
@@ -179,7 +161,6 @@ export const useAuthStore = create<AuthStore>()(
             user: null,
             session: null,
             loading: false,
-            initialized: true,
           });
         }
       },
@@ -209,7 +190,6 @@ export const useAuthStore = create<AuthStore>()(
       partialize: (state) => ({
         user: state.user,
         session: state.session,
-        initialized: state.initialized,
       }),
       // Reset loading state on hydration
       onRehydrateStorage: () => (state) => {

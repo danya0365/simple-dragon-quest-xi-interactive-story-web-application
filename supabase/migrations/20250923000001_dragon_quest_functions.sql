@@ -301,9 +301,16 @@ AS $$
             up.party_members,
             up.character_relationships,
             up.player_position,
+            up.achievements,
+            up.play_history,
+            up.active_quests,
             up.game_flags,
             up.game_stats,
-            up.last_played_at
+            up.game_settings,
+            up.save_data,
+            up.last_played_at,
+            up.created_at,
+            up.updated_at
         FROM public.user_progress up
         LEFT JOIN public.story_chapters sc ON up.current_chapter_id = sc.id
         LEFT JOIN public.locations sl ON up.current_location_id = sl.id
@@ -466,4 +473,281 @@ AS $$
     ), '[]'::jsonb)
     FROM world_maps_data wm
     LEFT JOIN locations_by_world_map lbm ON wm.id = lbm.world_map_id;
+$$;
+
+-- =============================================================================
+-- Function to get available events for user progress
+-- Returns events that are unlocked but not completed
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_available_events_for_user_progress(p_user_progress_uuid UUID)
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    WITH user_progress_data AS (
+        SELECT 
+            unlocked_events,
+            completed_events,
+            current_location_id
+        FROM public.user_progress 
+        WHERE id = p_user_progress_uuid
+    ),
+    available_events AS (
+        SELECT 
+            se.id as event_id,
+            se.title as event_title,
+            se.description as event_description,
+            se.event_type,
+            sc.title as chapter_title,
+            sl.name as location_name,
+            COUNT(ei.id) as interactions_count
+        FROM public.story_events se
+        JOIN public.story_chapters sc ON se.chapter_id = sc.id
+        LEFT JOIN public.locations sl ON se.location_id = sl.id
+        LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
+        JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.unlocked_events)::UUID)
+        WHERE NOT se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
+        AND (se.location_id IS NULL OR se.location_id = upd.current_location_id)
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
+        ORDER BY se.display_order, se.title
+    )
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'event_id', ae.event_id,
+            'event_title', ae.event_title,
+            'event_description', ae.event_description,
+            'event_type', ae.event_type,
+            'chapter_title', ae.chapter_title,
+            'location_name', ae.location_name,
+            'interactions_count', ae.interactions_count
+        )
+    ), '[]'::jsonb)
+    FROM available_events ae;
+$$;
+
+-- =============================================================================
+-- Function to get event interactions for user progress
+-- Returns all interactions for a specific event with availability status
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_event_interactions_for_user_progress(p_user_progress_uuid UUID, p_event_uuid UUID)
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    WITH user_progress_data AS (
+        SELECT 
+            game_flags,
+            character_relationships,
+            inventory,
+            player_level
+        FROM public.user_progress 
+        WHERE id = p_user_progress_uuid
+    ),
+    event_interactions_data AS (
+        SELECT 
+            ei.id,
+            ei.interaction_type,
+            ei.title,
+            ei.description,
+            ei.dialogue_text,
+            ei.character_speaker,
+            ei.choices,
+            ei.requirements,
+            ei.is_available,
+            ei.display_order
+        FROM public.event_interactions ei
+        WHERE ei.event_id = p_event_uuid
+        ORDER BY ei.display_order, ei.title
+    )
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'id', eid.id,
+            'interaction_type', eid.interaction_type,
+            'title', eid.title,
+            'description', eid.description,
+            'dialogue_text', eid.dialogue_text,
+            'character_speaker', eid.character_speaker,
+            'choices', eid.choices,
+            'requirements', eid.requirements,
+            'is_available', eid.is_available,
+            'display_order', eid.display_order
+        )
+    ), '[]'::jsonb)
+    FROM event_interactions_data eid;
+$$;
+
+-- =============================================================================
+-- Function to complete interaction for user progress
+-- Handles choice processing, effects application, and state updates
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.complete_interaction_for_user_progress(
+    p_user_progress_uuid UUID,
+    p_interaction_uuid UUID,
+    p_choice_data JSONB DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_user_progress RECORD;
+    v_interaction RECORD;
+    v_outcome RECORD;
+    v_choice_key TEXT;
+    v_effects JSONB;
+    v_updated_progress JSONB;
+    v_next_event_id UUID;
+    v_success BOOLEAN DEFAULT true;
+    v_error_message TEXT;
+BEGIN
+    -- Get user progress data
+    SELECT * INTO v_user_progress 
+    FROM public.user_progress 
+    WHERE id = p_user_progress_uuid;
+    
+    IF v_user_progress IS NULL THEN
+        v_success := false;
+        v_error_message := 'User progress not found';
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+    END IF;
+    
+    -- Get interaction data
+    SELECT * INTO v_interaction
+    FROM public.event_interactions
+    WHERE id = p_interaction_uuid;
+    
+    IF v_interaction IS NULL THEN
+        v_success := false;
+        v_error_message := 'Interaction not found';
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+    END IF;
+    
+    -- Determine choice key (either from choice_data or default)
+    IF p_choice_data IS NOT NULL AND p_choice_data->>'choice_id' IS NOT NULL THEN
+        v_choice_key := p_choice_data->>'choice_id';
+    ELSE
+        v_choice_key := 'default';
+    END IF;
+    
+    -- Get outcome for this choice
+    SELECT * INTO v_outcome
+    FROM public.event_outcomes
+    WHERE interaction_id = p_interaction_uuid
+    AND (choice_key = v_choice_key OR choice_key IS NULL);
+    
+    IF v_outcome IS NULL THEN
+        v_success := false;
+        v_error_message := 'Outcome not found for choice: ' || v_choice_key;
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+    END IF;
+    
+    -- Extract effects from outcome
+    v_effects := v_outcome.effects;
+    v_next_event_id := v_outcome.next_event_id;
+    
+    -- Update user progress with effects
+    UPDATE public.user_progress
+    SET 
+        -- Update unlocked content
+        unlocked_world_maps = CASE 
+            WHEN v_effects->'unlock_regions' IS NOT NULL 
+            THEN unlocked_world_maps || v_effects->'unlock_regions'
+            ELSE unlocked_world_maps 
+        END,
+        unlocked_locations = CASE 
+            WHEN v_effects->'unlock_locations' IS NOT NULL 
+            THEN unlocked_locations || v_effects->'unlock_locations'
+            ELSE unlocked_locations 
+        END,
+        unlocked_chapters = CASE 
+            WHEN v_effects->'unlock_chapters' IS NOT NULL 
+            THEN unlocked_chapters || v_effects->'unlock_chapters'
+            ELSE unlocked_chapters 
+        END,
+        unlocked_events = CASE 
+            WHEN v_effects->'unlock_events' IS NOT NULL 
+            THEN unlocked_events || v_effects->'unlock_events'
+            ELSE unlocked_events 
+        END,
+        
+        -- Update completed events if this completes the event
+        completed_events = CASE 
+            WHEN v_next_event_id IS NOT NULL OR v_effects->'unlock_events' IS NOT NULL
+            THEN completed_events || to_jsonb(ARRAY[v_interaction.event_id])
+            ELSE completed_events 
+        END,
+        
+        -- Update character relationships
+        character_relationships = character_relationships || 
+            CASE 
+                WHEN v_effects->'relationship' IS NOT NULL 
+                THEN v_effects->'relationship' 
+                ELSE '{}'::jsonb 
+            END,
+        
+        -- Update inventory
+        inventory = CASE 
+            WHEN v_effects->'items' IS NOT NULL 
+            THEN 
+                inventory || (
+                    SELECT jsonb_agg(
+                        jsonb_build_object(
+                            'item_id', (item->>'id')::UUID,
+                            'quantity', (item->>'quantity')::INTEGER,
+                            'obtained_at', NOW(),
+                            'equipped', false,
+                            'slot', NULL
+                        )
+                    )
+                    FROM jsonb_array_elements(v_effects->'items') item
+                )
+            ELSE inventory 
+        END,
+        
+        -- Update party members
+        party_members = CASE 
+            WHEN v_effects->'party_join' IS NOT NULL 
+            THEN 
+                party_members || jsonb_build_array(
+                    jsonb_build_object(
+                        'character_id', (v_effects->>'party_join')::UUID,
+                        'joined_at', NOW(),
+                        'current_stats', (SELECT stats FROM public.characters WHERE id = (v_effects->>'party_join')::UUID),
+                        'equipment', '{}'::jsonb,
+                        'is_active', true,
+                        'party_position', COALESCE(jsonb_array_length(party_members), 0) + 1
+                    )
+                )
+            ELSE party_members 
+        END,
+        
+        -- Update game stats
+        game_stats = jsonb_set(
+            game_stats,
+            ARRAY['interactions_completed'],
+            COALESCE((game_stats->>'interactions_completed')::INTEGER, 0) + 1
+        ),
+        
+        -- Update current event if there's a next event
+        current_event_id = COALESCE(v_next_event_id, current_event_id),
+        
+        -- Update timestamps
+        updated_at = NOW(),
+        last_played_at = NOW()
+    WHERE id = p_user_progress_uuid;
+    
+    -- Return success response
+    RETURN jsonb_build_object(
+        'success', v_success,
+        'next_event_id', v_next_event_id,
+        'effects', v_effects,
+        'choice_key', v_choice_key
+    );
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        v_success := false;
+        v_error_message := 'Failed to complete interaction: ' || SQLERRM;
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+END;
 $$;
