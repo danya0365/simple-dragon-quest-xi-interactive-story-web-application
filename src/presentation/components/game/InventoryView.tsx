@@ -12,13 +12,55 @@ interface InventoryItem {
   image_url: string;
   quantity: number;
   obtained_at: string;
+  equipped?: boolean;
+  slot?: string;
+}
+
+interface SimpleInventoryItem {
+  item_id: string;
+  quantity: number;
+  obtained_at: string;
+  equipped?: boolean;
+  slot?: string;
 }
 
 export function InventoryView() {
   const { user } = useAuthStore();
   const { userGameState, loading, error } = useGameStore();
 
-  const inventory = userGameState?.inventory || [];
+  const simpleInventory = userGameState?.inventory || [];
+  
+  // Mock item data - in real app this should come from items table
+  const mockItems: Record<string, Omit<InventoryItem, 'quantity' | 'obtained_at' | 'equipped' | 'slot'>> = {
+    '55555555-5555-5555-5555-555555555001': {
+      item_id: '55555555-5555-5555-5555-555555555001',
+      name: 'ดาบเก่าแก่',
+      description: 'ดาบเก่าๆ ที่หัวศาลพ่อมอบให้ แม้จะเก่าแต่ก็ยังใช้ได้ดี',
+      item_type: 'weapon',
+      rarity: 'common',
+      image_url: ''
+    }
+  };
+  
+  // Merge inventory data with mock item details
+  const inventory: InventoryItem[] = simpleInventory.map((item: SimpleInventoryItem) => {
+    const mockItem = mockItems[item.item_id] || {
+      item_id: item.item_id,
+      name: 'ไอเทมไม่รู้จัก',
+      description: 'ไม่พบข้อมูลไอเทมนี้',
+      item_type: 'misc',
+      rarity: 'common',
+      image_url: ''
+    };
+    
+    return {
+      ...mockItem,
+      quantity: item.quantity,
+      obtained_at: item.obtained_at,
+      equipped: item.equipped,
+      slot: item.slot
+    };
+  });
 
   const getRarityColor = (rarity: string) => {
     switch (rarity.toLowerCase()) {
