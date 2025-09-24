@@ -33,10 +33,12 @@ export function EventInteractionView() {
   const { user } = useAuthStore();
   const {
     selectedEventId,
+    selectedLocationId,
     availableEvents,
     loading,
     error,
     completeInteraction,
+    loadAvailableEvents,
     loadEventInteractions,
     setCurrentView,
     setSelectedEventId,
@@ -55,11 +57,17 @@ export function EventInteractionView() {
 
   useEffect(() => {
     // Load real interaction data from database
+    if (user?.id && selectedLocationId) {
+      loadAvailableEvents();
+    }
+  }, [user?.id, selectedLocationId, loadAvailableEvents]);
+
+  useEffect(() => {
     if (selectedEventId && user?.id) {
-      loadEventInteractions(selectedEventId).then((data) => {
-        if (data && !data.error) {
-          setEventData(data.event);
-          setInteractions(data.interactions || []);
+      loadEventInteractions(selectedEventId).then((data: any) => {
+        if (data && !(data as any).error) {
+          setEventData((data as any).event);
+          setInteractions((data as any).interactions || []);
           setCurrentInteractionIndex(0);
           setInteractionHistory([]);
         }

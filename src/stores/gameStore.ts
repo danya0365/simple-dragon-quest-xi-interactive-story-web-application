@@ -13,7 +13,7 @@ type WorldMapsRpcResponse = {
   locations: LocationData[];
 };
 
-type AvailableEventsRpcResponse = {
+type AvailableEventsResponse = {
   event_id: string;
   event_title: string;
   event_description: string;
@@ -272,6 +272,7 @@ interface GameActions {
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
+  setSelectedLocationId: (locationId: string | null) => void;
   setSelectedEventId: (eventId: string | null) => void;
   setCurrentLocation: (location: Location | null) => void;
 
@@ -429,8 +430,7 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const newAvailableEvents =
-            data as unknown as AvailableEventsRpcResponse[];
+          const newAvailableEvents = data as unknown as AvailableEventsResponse[];
 
           set({
             availableEvents: newAvailableEvents,
@@ -467,8 +467,7 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const userGameStateResponse =
-            data as unknown as UserGameStateRpcResponse;
+          const userGameStateResponse = data as unknown as UserGameStateRpcResponse;
           const mappedUserGameState = mapUserGameStateResponseToUserGameState(
             userGameStateResponse
           );
@@ -507,8 +506,10 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
+          const eventInteractions = data as unknown as { event: StoryEvent; interactions: any[]; };
+
           set({ loading: false });
-          return data as unknown;
+          return eventInteractions;
         } catch (err: unknown) {
           console.error("Error loading event interactions:", err);
           set({
@@ -538,14 +539,15 @@ export const useGameStore = create<GameStore>()(
             {
               p_user_progress_uuid: userProgressId,
               p_interaction_uuid: interactionId,
-              p_choice_data: choiceData as any,
+              p_choice_data: choiceData || {} as Record<string, unknown>,
             }
           );
 
           if (error) throw error;
 
-          const result = data as any;
-          if (result?.success) {
+          const result = data as unknown as { success: boolean; message: string; next_event_id?: string; error?: string; };
+
+          if (result.success && !result.error) {
             // Reload game state after successful interaction
             await get().loadUserGameState();
             await get().loadAvailableEvents();
@@ -573,6 +575,10 @@ export const useGameStore = create<GameStore>()(
 
       setSelectedLocationId: (locationId: string | null) => {
         set({ selectedLocationId: locationId });
+      },
+
+      setSelectedLocation: (location: Location | null) => {
+        set({ currentLocation: location });
       },
 
       setSelectedEventId: (eventId: string | null) => {

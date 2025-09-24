@@ -7,24 +7,26 @@ import { useAuthStore } from "@/src/stores/authStore";
 export function LocationView() {
   const { user } = useAuthStore();
   const {
-    availableEvents,
+    availableLocations,
     selectedRegionId,
     loading,
     error,
     loadAvailableEvents,
-    setSelectedEvent,
+    setSelectedEventId,
+    setSelectedLocationId,
     setCurrentView,
     setSelectedRegion,
   } = useGameStore();
 
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && selectedRegionId) {
       loadAvailableEvents();
     }
-  }, [user?.id, loadAvailableEvents]);
+  }, [user?.id, selectedRegionId, loadAvailableEvents]);
 
-  const handleEventClick = (eventId: string) => {
-    setSelectedEvent(eventId);
+  const handleLocationClick = (locationId: string) => {
+    setSelectedLocationId(locationId); // Set selected location
+    setSelectedEventId(null); // Reset selected event
     setCurrentView('event');
   };
 
@@ -38,7 +40,7 @@ export function LocationView() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
-          <p className="text-blue-200">กำลังโหลดเหตุการณ์...</p>
+          <p className="text-blue-200">กำลังโหลดสถานที่...</p>
         </div>
       </div>
     );
@@ -76,65 +78,48 @@ export function LocationView() {
         
         <div className="text-center">
           <h2 className="text-2xl font-bold text-yellow-400 font-serif">
-            เหตุการณ์ที่พร้อมเล่น
+            สถานที่ที่พร้อมเล่น
           </h2>
-          <p className="text-blue-200">เลือกเหตุการณ์เพื่อเริ่มการผจญภัย</p>
+          <p className="text-blue-200">เลือกสถานที่เพื่อเริ่มการผจญภัย</p>
         </div>
         
         <div></div> {/* Spacer for flex layout */}
       </div>
 
-      {/* Available Events */}
+      {/* Available Locations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {availableEvents.map((event) => (
+        {availableLocations.map((location) => (
           <div
-            key={event.event_id}
+            key={location.id}
             className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:bg-white/20 hover:border-yellow-400/50"
-            onClick={() => handleEventClick(event.event_id)}
+            onClick={() => handleLocationClick(location.id)}
           >
-            {/* Event Type Badge */}
+            {/* Location Type Badge */}
             <div className="flex items-center justify-between mb-4">
-              <span className={`
-                px-3 py-1 rounded-full text-xs font-medium
-                ${event.event_type === 'story' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/50' : ''}
-                ${event.event_type === 'dialogue' ? 'bg-green-500/20 text-green-300 border border-green-500/50' : ''}
-                ${event.event_type === 'choice' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50' : ''}
-                ${event.event_type === 'battle' ? 'bg-red-500/20 text-red-300 border border-red-500/50' : ''}
-              `}>
-                {event.event_type === 'story' && '📖 เรื่องราว'}
-                {event.event_type === 'dialogue' && '💬 บทสนทนา'}
-                {event.event_type === 'choice' && '🤔 ตัวเลือก'}
-                {event.event_type === 'battle' && '⚔️ การต่อสู้'}
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/50">
+                📍 สถานที่
               </span>
               
               <span className="text-blue-300 text-sm">
-                {event.interactions_count} การโต้ตอบ
+                {location.description ? 'มีเหตุการณ์' : 'สถานที่'}
               </span>
             </div>
 
             {/* Event Info */}
             <div className="space-y-3">
-              <h3 className="text-xl font-bold text-white">{event.event_title}</h3>
-              
-              <p className="text-blue-200 text-sm line-clamp-3">
-                {event.event_description}
+              <h3 className="text-xl font-bold text-white mb-2">
+                {location.name}
+              </h3>
+              <p className="text-blue-200 mb-4">
+                {location.description || 'สถานที่สำคัญในโลกของ Dragon Quest'}
               </p>
 
               {/* Chapter and Location Info */}
               <div className="space-y-2">
-                {event.chapter_title && (
-                  <div className="flex items-center text-sm">
-                    <span className="text-yellow-400 mr-2">📚</span>
-                    <span className="text-blue-300">บท: {event.chapter_title}</span>
-                  </div>
-                )}
-                
-                {event.location_name && (
-                  <div className="flex items-center text-sm">
-                    <span className="text-yellow-400 mr-2">📍</span>
-                    <span className="text-blue-300">สถานที่: {event.location_name}</span>
-                  </div>
-                )}
+                <div className="flex items-center text-blue-300 text-sm mb-2">
+                  <span className="mr-2">📍</span>
+                  <span>ประเภท: {location.location_type || 'สถานที่ทั่วไป'}</span>
+                </div>
               </div>
             </div>
 
@@ -153,7 +138,7 @@ export function LocationView() {
       </div>
 
       {/* Empty State */}
-      {availableEvents.length === 0 && (
+      {availableLocations.length === 0 && (
         <div className="text-center py-12">
           <div className="text-blue-400 text-6xl mb-4">🎭</div>
           <p className="text-blue-200 font-medium mb-2">
@@ -179,7 +164,7 @@ export function LocationView() {
             <h4 className="text-yellow-400 font-bold text-lg mb-3">สิ่งที่ควรทำต่อไป:</h4>
             
             <div className="space-y-3">
-              {availableEvents.length > 0 ? (
+              {availableLocations.length > 0 ? (
                 <>
                   <div className="flex items-start space-x-2">
                     <span className="text-yellow-400 mt-1">1️⃣</span>
@@ -218,14 +203,15 @@ export function LocationView() {
             
             {/* Progress Indicator */}
             <div className="mt-4 pt-4 border-t border-yellow-500/30">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-blue-300">ความคืบหน้า:</span>
-                <span className="text-yellow-400 font-medium">
-                  {availableEvents.length > 0 
-                    ? `มี ${availableEvents.length} เหตุการณ์ที่พร้อมเล่น` 
-                    : 'สำรวจเพื่อค้นหาเหตุการณ์ใหม่'}
-                </span>
+              <div className="flex items-center text-blue-300 text-sm">
+                <span className="mr-2">🌍</span>
+                <span>ภูมิภาค: {selectedRegionId || 'ไม่ระบุ'}</span>
               </div>
+              <span className="text-yellow-400 font-medium">
+                {availableLocations.length > 0 
+                  ? `มี ${availableLocations.length} เหตุการณ์ที่พร้อมเล่น` 
+                  : 'สำรวจเพื่อค้นหาเหตุการณ์ใหม่'}
+              </span>
             </div>
           </div>
         </div>
