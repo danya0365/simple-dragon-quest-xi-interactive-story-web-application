@@ -14,7 +14,7 @@ INSERT INTO public.world_map (id, name, description, image_url, unlock_requireme
 INSERT INTO public.locations (id, world_map_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
 -- Cobblestone locations
 ('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1, true),
-('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, false),
+('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, true),
 ('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'landmark', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3, false),
 
 -- Heliodor locations  
