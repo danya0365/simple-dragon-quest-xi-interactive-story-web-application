@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useGameStore } from "@/src/stores/gameStore";
 import { useAuthStore } from "@/src/stores/authStore";
+import { useGameStore } from "@/src/stores/gameStore";
+import { useEffect, useState } from "react";
 
 interface Interaction {
   id: string;
@@ -48,7 +48,9 @@ export function EventInteractionView() {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
 
-  const currentEvent = availableEvents.find(event => event.event_id === selectedEventId);
+  const currentEvent = availableEvents.find(
+    (event) => event.event_id === selectedEventId
+  );
   const currentInteraction = interactions[currentInteractionIndex] || null;
 
   useEffect(() => {
@@ -65,45 +67,49 @@ export function EventInteractionView() {
     }
   }, [selectedEventId, user?.id, loadEventInteractions]);
 
-  const handleChoiceSelect = (choiceId: string) => {
-    setSelectedChoice(choiceId);
+  const handleChoiceSelect = (choiceKey: string) => {
+    setSelectedChoice(choiceKey);
   };
 
   const handleConfirmChoice = async () => {
     if (!user?.id || !currentInteraction) return;
 
     // If there are no choices, use a default choice data
-    const choiceData = selectedChoice ? {
-      choice_id: selectedChoice,
-      interaction_id: currentInteraction.id
-    } : {
-      choice_id: 'default',
-      interaction_id: currentInteraction.id
-    };
+    const choiceData = selectedChoice
+      ? {
+          choice_key: selectedChoice,
+          interaction_id: currentInteraction.id,
+        }
+      : {
+          choice_key: "default",
+          interaction_id: currentInteraction.id,
+        };
 
     await completeInteraction(user.id, currentInteraction.id, choiceData);
-    
+
     // Add to history if there was a choice
     if (selectedChoice) {
-      const choice = currentInteraction.choices.find(c => c.id === selectedChoice);
+      const choice = currentInteraction.choices.find(
+        (c) => c.id === selectedChoice
+      );
       if (choice) {
-        setInteractionHistory(prev => [...prev, choice.text]);
+        setInteractionHistory((prev) => [...prev, choice.text]);
       }
     } else {
       // Add default message for interactions without choices
-      setInteractionHistory(prev => [...prev, 'ดำเนินการต่อ']);
+      setInteractionHistory((prev) => [...prev, "ดำเนินการต่อ"]);
     }
 
     // Move to next interaction or reset
     if (currentInteractionIndex < interactions.length - 1) {
-      setCurrentInteractionIndex(prev => prev + 1);
+      setCurrentInteractionIndex((prev) => prev + 1);
     }
     setSelectedChoice(null);
   };
 
   const handleBackToLocation = () => {
     setSelectedEvent(null);
-    setCurrentView('location');
+    setCurrentView("location");
   };
 
   if (loading) {
@@ -161,14 +167,16 @@ export function EventInteractionView() {
           <span className="mr-2">←</span>
           กลับไปรายการเหตุการณ์
         </button>
-        
+
         <div className="text-center">
           <h2 className="text-2xl font-bold text-yellow-400 font-serif">
-            {eventData?.title || currentEvent?.event_title || 'เหตุการณ์'}
+            {eventData?.title || currentEvent?.event_title || "เหตุการณ์"}
           </h2>
-          <p className="text-blue-200">{eventData?.chapter_title || currentEvent?.chapter_title}</p>
+          <p className="text-blue-200">
+            {eventData?.chapter_title || currentEvent?.chapter_title}
+          </p>
         </div>
-        
+
         <div></div>
       </div>
 
@@ -191,7 +199,9 @@ export function EventInteractionView() {
               </div>
             )}
             <div>
-              <h3 className="text-white font-bold">{currentInteraction.character_speaker}</h3>
+              <h3 className="text-white font-bold">
+                {currentInteraction.character_speaker}
+              </h3>
               <p className="text-blue-300 text-sm">ตัวละคร</p>
             </div>
           </div>
@@ -207,10 +217,15 @@ export function EventInteractionView() {
         {/* Interaction History */}
         {interactionHistory.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-yellow-400 font-medium mb-3">การตอบสนองก่อนหน้า:</h4>
+            <h4 className="text-yellow-400 font-medium mb-3">
+              การตอบสนองก่อนหน้า:
+            </h4>
             <div className="space-y-2">
               {interactionHistory.map((response, index) => (
-                <div key={index} className="bg-green-900/20 border border-green-500/30 rounded-lg p-3">
+                <div
+                  key={index}
+                  className="bg-green-900/20 border border-green-500/30 rounded-lg p-3"
+                >
                   <p className="text-green-200 text-sm">คุณ: {response}</p>
                 </div>
               ))}
@@ -219,7 +234,9 @@ export function EventInteractionView() {
         )}
 
         {/* Choices */}
-        {currentInteraction.choices && Array.isArray(currentInteraction.choices) && currentInteraction.choices.length > 0 ? (
+        {currentInteraction.choices &&
+        Array.isArray(currentInteraction.choices) &&
+        currentInteraction.choices.length > 0 ? (
           <div className="space-y-4">
             <h4 className="text-yellow-400 font-medium">เลือกการตอบสนอง:</h4>
             <div className="grid gap-3">
@@ -229,29 +246,56 @@ export function EventInteractionView() {
                   onClick={() => handleChoiceSelect(choice.id)}
                   className={`
                     text-left p-4 rounded-lg border transition-all duration-200
-                    ${selectedChoice === choice.id
-                      ? 'bg-yellow-500/20 border-yellow-400 text-yellow-100'
-                      : 'bg-white/5 border-white/20 text-blue-200 hover:bg-white/10 hover:border-white/40'
+                    ${
+                      selectedChoice === choice.id
+                        ? "bg-yellow-500/20 border-yellow-400 text-yellow-100"
+                        : "bg-white/5 border-white/20 text-blue-200 hover:bg-white/10 hover:border-white/40"
                     }
                   `}
                 >
                   <div className="flex items-center justify-between">
                     <span>{choice.text}</span>
-                    <span className={`
+                    <span
+                      className={`
                       text-xs px-2 py-1 rounded-full
-                      ${choice.type === 'friendly' ? 'bg-green-500/20 text-green-300' : ''}
-                      ${choice.type === 'suspicious' ? 'bg-red-500/20 text-red-300' : ''}
-                      ${choice.type === 'neutral' ? 'bg-blue-500/20 text-blue-300' : ''}
-                      ${choice.type === 'stealth' ? 'bg-purple-500/20 text-purple-300' : ''}
-                      ${choice.type === 'bold' ? 'bg-orange-500/20 text-orange-300' : ''}
-                      ${choice.type === 'risky' ? 'bg-red-500/20 text-red-300' : ''}
-                    `}>
-                      {choice.type === 'friendly' && '😊 เป็นมิตร'}
-                      {choice.type === 'suspicious' && '🤨 สงสัย'}
-                      {choice.type === 'neutral' && '😐 เฉยๆ'}
-                      {choice.type === 'stealth' && '🥷 ลอบเคลื่อนไหว'}
-                      {choice.type === 'bold' && '⚔️ กล้าหาญ'}
-                      {choice.type === 'risky' && '🎲 เสี่ยงภัย'}
+                      ${
+                        choice.type === "friendly"
+                          ? "bg-green-500/20 text-green-300"
+                          : ""
+                      }
+                      ${
+                        choice.type === "suspicious"
+                          ? "bg-red-500/20 text-red-300"
+                          : ""
+                      }
+                      ${
+                        choice.type === "neutral"
+                          ? "bg-blue-500/20 text-blue-300"
+                          : ""
+                      }
+                      ${
+                        choice.type === "stealth"
+                          ? "bg-purple-500/20 text-purple-300"
+                          : ""
+                      }
+                      ${
+                        choice.type === "bold"
+                          ? "bg-orange-500/20 text-orange-300"
+                          : ""
+                      }
+                      ${
+                        choice.type === "risky"
+                          ? "bg-red-500/20 text-red-300"
+                          : ""
+                      }
+                    `}
+                    >
+                      {choice.type === "friendly" && "😊 เป็นมิตร"}
+                      {choice.type === "suspicious" && "🤨 สงสัย"}
+                      {choice.type === "neutral" && "😐 เฉยๆ"}
+                      {choice.type === "stealth" && "🥷 ลอบเคลื่อนไหว"}
+                      {choice.type === "bold" && "⚔️ กล้าหาญ"}
+                      {choice.type === "risky" && "🎲 เสี่ยงภัย"}
                     </span>
                   </div>
                 </button>
@@ -272,7 +316,7 @@ export function EventInteractionView() {
                       กำลังดำเนินการ...
                     </div>
                   ) : (
-                    'ยืนยันการเลือก'
+                    "ยืนยันการเลือก"
                   )}
                 </button>
               </div>
@@ -281,13 +325,15 @@ export function EventInteractionView() {
         ) : (
           <div className="text-center py-8">
             <div className="text-blue-400 text-4xl mb-4">📖</div>
-            <p className="text-blue-200 mb-4">การโต้ตอบนี้ไม่มีตัวเลือก กดปุ่มด้านล่างเพื่อดำเนินการต่อ</p>
+            <p className="text-blue-200 mb-4">
+              การโต้ตอบนี้ไม่มีตัวเลือก กดปุ่มด้านล่างเพื่อดำเนินการต่อ
+            </p>
             <button
               onClick={handleConfirmChoice}
               disabled={loading}
               className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'กำลังดำเนินการ...' : 'ดำเนินการต่อ'}
+              {loading ? "กำลังดำเนินการ..." : "ดำเนินการต่อ"}
             </button>
           </div>
         )}
@@ -298,15 +344,21 @@ export function EventInteractionView() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="text-yellow-400 font-medium">ประเภท:</span>
-            <span className="text-blue-200 ml-2">{currentEvent.event_type}</span>
+            <span className="text-blue-200 ml-2">
+              {currentEvent.event_type}
+            </span>
           </div>
           <div>
             <span className="text-yellow-400 font-medium">สถานที่:</span>
-            <span className="text-blue-200 ml-2">{currentEvent.location_name || 'ไม่ระบุ'}</span>
+            <span className="text-blue-200 ml-2">
+              {currentEvent.location_name || "ไม่ระบุ"}
+            </span>
           </div>
           <div>
             <span className="text-yellow-400 font-medium">การโต้ตอบ:</span>
-            <span className="text-blue-200 ml-2">{currentEvent.interactions_count}</span>
+            <span className="text-blue-200 ml-2">
+              {currentEvent.interactions_count}
+            </span>
           </div>
         </div>
       </div>

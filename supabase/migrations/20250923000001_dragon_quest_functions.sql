@@ -65,14 +65,33 @@ DECLARE
     result JSONB;
     has_choices BOOLEAN;
     next_event_to_unlock UUID;
+    transaction_id UUID;
 BEGIN
+    -- Generate transaction ID for error tracking
+    transaction_id := gen_random_uuid();
+    
+    -- Initialize result with transaction ID
+    result := jsonb_build_object(
+        'success', false,
+        'transaction_id', transaction_id,
+        'errors', '[]'::JSONB
+    );
     -- Get interaction details
     SELECT * INTO interaction_record
     FROM public.event_interactions
     WHERE id = interaction_uuid;
     
     IF NOT FOUND THEN
-        RETURN jsonb_build_object('success', false, 'error', 'Interaction not found');
+        result := jsonb_set(result, '{success}', 'false');
+        result := jsonb_set(result, '{errors}', 
+            result->'errors' || jsonb_build_array(
+                jsonb_build_object(
+                    'type', 'validation_error',
+                    'message', 'Interaction not found',
+                    'transaction_id', transaction_id
+                )
+            ));
+        RETURN result;
     END IF;
     
     -- Get event details
@@ -80,45 +99,35 @@ BEGIN
     FROM public.story_events
     WHERE id = interaction_record.event_id;
     
-    -- Get or create user progress
+    IF NOT FOUND THEN
+        result := jsonb_set(result, '{success}', 'false');
+        result := jsonb_set(result, '{errors}', 
+            result->'errors' || jsonb_build_array(
+                jsonb_build_object(
+                    'type', 'validation_error',
+                    'message', 'Event not found for this interaction',
+                    'transaction_id', transaction_id
+                )
+            ));
+        RETURN result;
+    END IF;
+    
+    -- Get user progress (must exist)
     SELECT * INTO user_progress_record
     FROM public.user_progress
     WHERE user_id = user_uuid;
     
     IF NOT FOUND THEN
-        INSERT INTO public.user_progress (
-            user_id, 
-            completed_events, 
-            unlocked_events,
-            unlocked_world_maps, 
-            unlocked_locations, 
-            unlocked_chapters,
-            completed_chapters,
-            inventory,
-            equipment,
-            active_quests,
-            game_flags,
-            game_stats,
-            game_settings,
-            save_data
-        )
-        VALUES (
-            user_uuid, 
-            '[]'::JSONB, 
-            '[]'::JSONB,
-            '[]'::JSONB, 
-            '[]'::JSONB, 
-            '[]'::JSONB,
-            '[]'::JSONB,
-            '[]'::JSONB,
-            '{}'::JSONB,
-            '[]'::JSONB,
-            '{}'::JSONB,
-            '{}'::JSONB,
-            '{}'::JSONB,
-            '{}'::JSONB
-        )
-        RETURNING * INTO user_progress_record;
+        result := jsonb_set(result, '{success}', 'false');
+        result := jsonb_set(result, '{errors}', 
+            result->'errors' || jsonb_build_array(
+                jsonb_build_object(
+                    'type', 'validation_error',
+                    'message', 'User progress not found. Please initialize user progress first.',
+                    'transaction_id', transaction_id
+                )
+            ));
+        RETURN result;
     END IF;
     
     -- Check if interaction has choices
@@ -131,9 +140,9 @@ BEGIN
     FROM public.event_outcomes
     WHERE interaction_id = interaction_uuid
     AND (
-        choice_data->>'choice_id' IS NULL 
-        OR choice_id = choice_data->>'choice_id'
-        OR choice_id IS NULL
+        choice_data->>'choice_key' IS NULL 
+        OR choice_key = choice_data->>'choice_key'
+        OR choice_key IS NULL
     )
     LIMIT 1;
     
@@ -249,13 +258,29 @@ BEGIN
     -- Build result
     result := jsonb_build_object(
         'success', true,
+        'transaction_id', transaction_id,
         'interaction_id', interaction_uuid,
         'event_id', event_record.id,
         'outcome', row_to_json(outcome_record),
-        'next_event_id', outcome_record.next_event_id
+        'next_event_id', outcome_record.next_event_id,
+        'errors', '[]'::JSONB
     );
     
     RETURN result;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Error handling - rollback จะเกิดขึ้นอัตโนมัติ
+        result := jsonb_set(result, '{success}', 'false');
+        result := jsonb_set(result, '{errors}', 
+            result->'errors' || jsonb_build_array(
+                jsonb_build_object(
+                    'type', 'internal_error',
+                    'message', SQLERRM,
+                    'transaction_id', transaction_id
+                )
+            ));
+        RETURN result;
 END;
 $$;
 

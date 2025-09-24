@@ -151,7 +151,7 @@ INSERT INTO public.event_interactions (id, event_id, interaction_type, title, de
  'ตรวจสอบสภาพแวดล้อมหลังหลบหนี', '', '', '[]', 2);
 
 -- Insert Event Outcomes
-INSERT INTO public.event_outcomes (id, interaction_id, choice_id, outcome_type, title, description, effects, next_event_id) VALUES
+INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type, title, description, effects, next_event_id) VALUES
 -- Friendly response to Erik
 ('88888888-8888-8888-8888-888888888001', '77777777-7777-7777-7777-777777777004', 'friendly', 'story',
  'Erik becomes friendly', 'Erik รู้สึกประทับใจในตัว Hero',
