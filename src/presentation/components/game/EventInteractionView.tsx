@@ -42,6 +42,7 @@ export function EventInteractionView() {
     loadEventInteractions,
     setCurrentView,
     setSelectedEventId,
+    userGameState,
   } = useGameStore();
 
   const [eventData, setEventData] = useState<EventData | null>(null);
@@ -49,40 +50,125 @@ export function EventInteractionView() {
   const [currentInteractionIndex, setCurrentInteractionIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Find current event from available events
   const currentEvent = availableEvents.find(
     (event) => event.event_id === selectedEventId
   );
+
   const currentInteraction = interactions[currentInteractionIndex] || null;
 
+  // Initialize component - load available events if not already loaded
   useEffect(() => {
-    // Load real interaction data from database
-    if (user?.id && selectedLocationId) {
+    if (!isInitialized && user?.id && selectedLocationId) {
+      console.log(
+        "EventInteractionView: Initializing, loading available events for location:",
+        selectedLocationId
+      );
       loadAvailableEvents(selectedLocationId);
+      setIsInitialized(true);
     }
-  }, [user?.id, selectedLocationId, loadAvailableEvents]);
+  }, [user?.id, selectedLocationId, loadAvailableEvents, isInitialized]);
 
+  // Load event interactions when event is selected
   useEffect(() => {
     if (selectedEventId && user?.id) {
-      loadEventInteractions(selectedEventId).then((data: any) => {
-        if (data && !(data as any).error) {
-          setEventData((data as any).event);
-          setInteractions((data as any).interactions || []);
-          setCurrentInteractionIndex(0);
-          setInteractionHistory([]);
+      console.log(
+        "EventInteractionView: Loading interactions for event:",
+        selectedEventId
+      );
+
+      const loadInteractions = async () => {
+        try {
+          const data = await loadEventInteractions(selectedEventId);
+          console.log("EventInteractionView: Loaded interactions data:", data);
+
+          if (data && !(data as any).error) {
+            // API คืนค่ามาเป็น array ของ interactions ตรงๆ
+            const interactions = Array.isArray(data) ? data : [];
+
+            // แปลง StoryEvent เป็น EventData structure
+            const eventData = currentEvent ? {
+              id: currentEvent.event_id,
+              title: currentEvent.event_title,
+              description: currentEvent.event_description || '',
+              event_type: currentEvent.event_type,
+              chapter_title: currentEvent.chapter_title || '',
+              location_name: currentEvent.location_name || ''
+            } : null;
+
+            console.log("EventInteractionView: Setting event data:", eventData);
+            console.log("EventInteractionView: Setting interactions:", interactions);
+
+            setEventData(eventData);
+            setInteractions(interactions);
+            setCurrentInteractionIndex(0);
+            setInteractionHistory([]);
+            setSelectedChoice(null);
+          } else {
+            console.error(
+              "EventInteractionView: Error loading interactions:",
+              data
+            );
+          }
+        } catch (error) {
+          console.error(
+            "EventInteractionView: Exception loading interactions:",
+            error
+          );
         }
-      });
+      };
+
+      loadInteractions();
     }
-  }, [selectedEventId, user?.id, loadEventInteractions]);
+  }, [selectedEventId, user?.id, loadEventInteractions, currentEvent]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("EventInteractionView Debug:", {
+      selectedEventId,
+      selectedLocationId,
+      availableEvents: availableEvents?.length || 0,
+      currentEvent: currentEvent?.event_title,
+      interactions: interactions?.length || 0,
+      currentInteractionIndex,
+      loading,
+      error,
+      userGameState: userGameState ? "loaded" : "not loaded",
+    });
+  }, [
+    selectedEventId,
+    selectedLocationId,
+    availableEvents,
+    currentEvent,
+    interactions,
+    currentInteractionIndex,
+    loading,
+    error,
+    userGameState,
+  ]);
 
   const handleChoiceSelect = (choiceKey: string) => {
+    console.log("EventInteractionView: Choice selected:", choiceKey);
     setSelectedChoice(choiceKey);
   };
 
   const handleConfirmChoice = async () => {
-    if (!user?.id || !currentInteraction) return;
+    if (!user?.id || !currentInteraction) {
+      console.error("EventInteractionView: Missing user or interaction", {
+        user: !!user,
+        interaction: !!currentInteraction,
+      });
+      return;
+    }
 
-    // If there are no choices, use a default choice data
+    console.log(
+      "EventInteractionView: Confirming choice for interaction:",
+      currentInteraction.id
+    );
+
+    // Prepare choice data
     const choiceData = selectedChoice
       ? {
           choice_key: selectedChoice,
@@ -93,44 +179,76 @@ export function EventInteractionView() {
           interaction_id: currentInteraction.id,
         };
 
-    await completeInteraction(currentInteraction.id, choiceData);
-
-    // Add to history if there was a choice
-    if (selectedChoice) {
-      const choice = currentInteraction.choices.find(
-        (c) => c.id === selectedChoice
+    try {
+      // Complete the interaction
+      const result = await completeInteraction(
+        currentInteraction.id,
+        choiceData
       );
-      if (choice) {
-        setInteractionHistory((prev) => [...prev, choice.text]);
-      }
-    } else {
-      // Add default message for interactions without choices
-      setInteractionHistory((prev) => [...prev, "ดำเนินการต่อ"]);
-    }
+      console.log(
+        "EventInteractionView: Interaction completion result:",
+        result
+      );
 
-    // Move to next interaction or reset
-    if (currentInteractionIndex < interactions.length - 1) {
-      setCurrentInteractionIndex((prev) => prev + 1);
+      // Add to history
+      if (selectedChoice) {
+        const choice = currentInteraction.choices.find(
+          (c) => c.id === selectedChoice
+        );
+        if (choice) {
+          setInteractionHistory((prev) => [...prev, choice.text]);
+        }
+      } else {
+        setInteractionHistory((prev) => [...prev, "ดำเนินการต่อ"]);
+      }
+
+      // Move to next interaction or reset
+      if (currentInteractionIndex < interactions.length - 1) {
+        setCurrentInteractionIndex((prev) => prev + 1);
+        console.log(
+          "EventInteractionView: Moving to next interaction:",
+          currentInteractionIndex + 1
+        );
+      } else {
+        console.log(
+          "EventInteractionView: No more interactions, returning to event list"
+        );
+        // If no more interactions, go back to event list
+        setTimeout(() => {
+          setSelectedEventId(null);
+          setCurrentView("event");
+        }, 1000);
+      }
+
+      setSelectedChoice(null);
+    } catch (error) {
+      console.error(
+        "EventInteractionView: Error completing interaction:",
+        error
+      );
     }
-    setSelectedChoice(null);
   };
 
   const handleBackToEventList = () => {
+    console.log("EventInteractionView: Going back to event list");
     setSelectedEventId(null);
-    setCurrentView('event');
+    setCurrentView("event");
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
           <p className="text-blue-200">กำลังโหลดการโต้ตอบ...</p>
+          <p className="text-blue-300 text-sm mt-2">Event: {selectedEventId}</p>
         </div>
       </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -149,11 +267,39 @@ export function EventInteractionView() {
     );
   }
 
-  if (!currentEvent || !currentInteraction) {
+  // No event or interaction data state
+  if (!currentEvent) {
     return (
       <div className="text-center py-12">
         <div className="text-blue-400 text-6xl mb-4">❓</div>
         <p className="text-blue-200 font-medium mb-2">ไม่พบเหตุการณ์</p>
+        <p className="text-blue-300 text-sm mb-4">
+          Selected Event ID: {selectedEventId}
+        </p>
+        <p className="text-blue-300 text-sm mb-4">
+          Available Events: {availableEvents?.length || 0}
+        </p>
+        <button
+          onClick={handleBackToEventList}
+          className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
+        >
+          กลับไปหน้าเหตุการณ์
+        </button>
+      </div>
+    );
+  }
+
+  if (!currentInteraction) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-blue-400 text-6xl mb-4">📝</div>
+        <p className="text-blue-200 font-medium mb-2">ไม่พบการโต้ตอบ</p>
+        <p className="text-blue-300 text-sm mb-4">
+          Event: {currentEvent.event_title}
+        </p>
+        <p className="text-blue-300 text-sm mb-4">
+          Loaded Interactions: {interactions.length}
+        </p>
         <button
           onClick={handleBackToEventList}
           className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
@@ -185,7 +331,9 @@ export function EventInteractionView() {
           </p>
         </div>
 
-        <div></div>
+        <div className="text-blue-300 text-sm">
+          {currentInteractionIndex + 1} / {interactions.length}
+        </div>
       </div>
 
       {/* Event Scene */}
