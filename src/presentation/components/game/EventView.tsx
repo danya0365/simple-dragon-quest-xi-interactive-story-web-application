@@ -19,7 +19,7 @@ export function EventView() {
 
   useEffect(() => {
     if (user?.id && selectedLocationId) {
-      loadAvailableEvents();
+      loadAvailableEvents(selectedLocationId);
     }
   }, [user?.id, selectedLocationId, loadAvailableEvents]);
 

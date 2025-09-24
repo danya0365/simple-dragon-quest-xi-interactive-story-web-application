@@ -1,3 +1,4 @@
+import { Json } from "@/src/domain/types/supabase";
 import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase-client-client";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -280,12 +281,12 @@ interface GameActions {
   // Data loading
   loadWorldMap: () => Promise<void>;
   loadLocationsForRegion: (regionId: string) => Promise<void>;
-  loadAvailableEvents: () => Promise<void>;
+  loadAvailableEvents: (locationId: string) => Promise<void>;
   loadUserGameState: (userProgressId?: string) => Promise<void>;
   loadEventInteractions: (eventId: string) => Promise<unknown>;
   completeInteraction: (
     interactionId: string,
-    choiceData?: Record<string, unknown>
+    choiceData?: Json
   ) => Promise<void>;
   initializeUserProgress: (userId: string) => Promise<void>;
   // Navigation
@@ -431,7 +432,7 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      loadAvailableEvents: async () => {
+      loadAvailableEvents: async (locationId: string) => {
         const { userGameState } = get();
         if (!userGameState) {
           set({ error: "ไม่พบข้อมูลผู้เล่น" });
@@ -443,9 +444,10 @@ export const useGameStore = create<GameStore>()(
 
         try {
           const { data, error } = await supabase.rpc(
-            "get_available_events_for_user_progress",
+            "get_available_events_for_location",
             {
               p_user_progress_uuid: userProgressId,
+              p_location_uuid: locationId,
             }
           );
 
@@ -546,10 +548,7 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      completeInteraction: async (
-        interactionId: string,
-        choiceData?: Record<string, unknown>
-      ) => {
+      completeInteraction: async (interactionId: string, choiceData?: Json) => {
         const { userGameState } = get();
         if (!userGameState) {
           set({ error: "ไม่พบข้อมูลผู้เล่น" });
@@ -565,7 +564,7 @@ export const useGameStore = create<GameStore>()(
             {
               p_user_progress_uuid: userProgressId,
               p_interaction_uuid: interactionId,
-              p_choice_data: (choiceData as any) || {},
+              p_choice_data: choiceData || null,
             }
           );
 

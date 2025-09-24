@@ -660,6 +660,10 @@ export type Database = {
         Args: { p_id: string }
         Returns: Json
       }
+      get_available_events_for_location: {
+        Args: { p_user_progress_uuid: string; p_location_uuid: string }
+        Returns: Json
+      }
       get_available_events_for_user_progress: {
         Args: { p_user_progress_uuid: string }
         Returns: Json

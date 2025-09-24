@@ -527,6 +527,55 @@ AS $$
 $$;
 
 -- =============================================================================
+-- Function to get available events for a specific location
+-- Returns events that are unlocked but not completed for a specific location
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_available_events_for_location(p_user_progress_uuid UUID, p_location_uuid UUID)
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    WITH user_progress_data AS (
+        SELECT 
+            unlocked_events,
+            completed_events
+        FROM public.user_progress 
+        WHERE id = p_user_progress_uuid
+    ),
+    available_events AS (
+        SELECT 
+            se.id as event_id,
+            se.title as event_title,
+            se.description as event_description,
+            se.event_type,
+            sc.title as chapter_title,
+            sl.name as location_name,
+            COUNT(ei.id) as interactions_count
+        FROM public.story_events se
+        JOIN public.story_chapters sc ON se.chapter_id = sc.id
+        LEFT JOIN public.locations sl ON se.location_id = sl.id
+        LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
+        JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.unlocked_events)::UUID)
+        WHERE NOT se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
+        AND se.location_id = p_location_uuid
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
+        ORDER BY se.display_order, se.title
+    )
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'event_id', ae.event_id,
+            'event_title', ae.event_title,
+            'event_description', ae.event_description,
+            'event_type', ae.event_type,
+            'chapter_title', ae.chapter_title,
+            'location_name', ae.location_name,
+            'interactions_count', ae.interactions_count
+        )
+    ), '[]'::jsonb)
+    FROM available_events ae;
+$$;
+
+-- =============================================================================
 -- Function to get event interactions for user progress
 -- Returns all interactions for a specific event with availability status
 -- =============================================================================
