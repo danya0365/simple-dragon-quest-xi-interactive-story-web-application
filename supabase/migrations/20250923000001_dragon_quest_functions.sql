@@ -497,8 +497,8 @@ BEGIN
     FROM public.event_outcomes
     WHERE interaction_id = p_interaction_uuid
     AND (
-        choice_data->>'choice_key' IS NULL 
-        OR choice_key = choice_data->>'choice_key'
+        p_choice_data->>'choice_key' IS NULL 
+        OR choice_key = p_choice_data->>'choice_key'
         OR choice_key IS NULL
     )
     LIMIT 1;
@@ -708,65 +708,124 @@ DECLARE
     event_record RECORD;
     interactions JSONB;
     result JSONB;
+    error_message TEXT;
 BEGIN
-    -- Get event details
-    SELECT se.*, sc.title as chapter_title, l.name as location_name
-    INTO event_record
-    FROM public.story_events se
-    JOIN public.story_chapters sc ON se.chapter_id = sc.id
-    LEFT JOIN public.locations l ON se.location_id = l.id
-    WHERE se.id = p_event_uuid;
-    
-    IF NOT FOUND THEN
-        RETURN jsonb_build_object('error', 'Event not found');
+    -- Input validation
+    IF p_user_progress_uuid IS NULL THEN
+        RETURN jsonb_build_object(
+            'error', 'Invalid input',
+            'details', 'User progress UUID cannot be null'
+        );
     END IF;
     
-    -- Get available interactions for this event
-    SELECT jsonb_agg(
-        jsonb_build_object(
-            'id', ei.id,
-            'interaction_type', ei.interaction_type,
-            'title', ei.title,
-            'description', ei.description,
-            'dialogue_text', ei.dialogue_text,
-            'character_speaker', ei.character_speaker,
-            'character_avatar', 
-                CASE 
-                    WHEN ei.character_speaker IS NOT NULL THEN
-                        (SELECT avatar_url FROM public.characters c WHERE c.name = ei.character_speaker LIMIT 1)
-                    ELSE NULL
-                END,
-            'choices', (
-                SELECT jsonb_agg(
-                    jsonb_build_object(
-                        'id', eo.id,
-                        'text', eo.title,
-                        'type', eo.outcome_type,
-                        'description', eo.description
+    IF p_event_uuid IS NULL THEN
+        RETURN jsonb_build_object(
+            'error', 'Invalid input',
+            'details', 'Event UUID cannot be null'
+        );
+    END IF;
+    
+    -- Check if user progress exists
+    IF NOT EXISTS (SELECT 1 FROM public.user_progress WHERE id = p_user_progress_uuid) THEN
+        RETURN jsonb_build_object(
+            'error', 'User progress not found',
+            'details', 'The specified user progress record does not exist'
+        );
+    END IF;
+    
+    BEGIN
+        -- Get event details with proper error handling
+        SELECT se.*, sc.title as chapter_title, l.name as location_name
+        INTO event_record
+        FROM public.story_events se
+        JOIN public.story_chapters sc ON se.chapter_id = sc.id
+        LEFT JOIN public.locations l ON se.location_id = l.id
+        WHERE se.id = p_event_uuid;
+        
+        IF NOT FOUND THEN
+            RETURN jsonb_build_object(
+                'error', 'Event not found',
+                'details', 'The specified event does not exist',
+                'event_id', p_event_uuid
+            );
+        END IF;
+        
+        -- Get available interactions for this event with error handling
+        BEGIN
+            SELECT jsonb_agg(
+                jsonb_build_object(
+                    'id', ei.id,
+                    'interaction_type', ei.interaction_type,
+                    'title', ei.title,
+                    'description', ei.description,
+                    'dialogue_text', ei.dialogue_text,
+                    'character_speaker', ei.character_speaker,
+                    'character_avatar', 
+                        CASE 
+                            WHEN ei.character_speaker IS NOT NULL THEN
+                                (SELECT avatar_url FROM public.characters c WHERE c.name = ei.character_speaker LIMIT 1)
+                            ELSE NULL
+                        END,
+                    'choices', (
+                        SELECT jsonb_agg(
+                            jsonb_build_object(
+                                'id', eo.id,
+                                'text', eo.title,
+                                'type', eo.outcome_type,
+                                'description', eo.description
+                            )
+                        )
+                        FROM public.event_outcomes eo
+                        WHERE eo.interaction_id = ei.id
                     )
-                )
-                FROM public.event_outcomes eo
-                WHERE eo.interaction_id = ei.id
-            )
-        ) ORDER BY ei.display_order
-    ) INTO interactions
-    FROM public.event_interactions ei
-    WHERE ei.event_id = p_event_uuid
-    AND ei.is_available = true;
-    
-    -- Build result
-    result := jsonb_build_object(
-        'event', jsonb_build_object(
-            'id', event_record.id,
-            'title', event_record.title,
-            'description', event_record.description,
-            'event_type', event_record.event_type,
-            'chapter_title', event_record.chapter_title,
-            'location_name', event_record.location_name
-        ),
-        'interactions', COALESCE(interactions, '[]'::jsonb)
-    );
-    
-    RETURN result;
+                ) ORDER BY ei.display_order
+            ) INTO interactions
+            FROM public.event_interactions ei
+            WHERE ei.event_id = p_event_uuid
+            AND ei.is_available = true;
+            
+        EXCEPTION WHEN OTHERS THEN
+            error_message := SQLERRM;
+            RETURN jsonb_build_object(
+                'error', 'Failed to retrieve interactions',
+                'details', error_message,
+                'event_id', p_event_uuid
+            );
+        END;
+        
+        -- Build result with error handling
+        BEGIN
+            result := jsonb_build_object(
+                'event', jsonb_build_object(
+                    'id', event_record.id,
+                    'title', event_record.title,
+                    'description', event_record.description,
+                    'event_type', event_record.event_type,
+                    'chapter_title', event_record.chapter_title,
+                    'location_name', event_record.location_name
+                ),
+                'interactions', COALESCE(interactions, '[]'::jsonb)
+            );
+            
+        EXCEPTION WHEN OTHERS THEN
+            error_message := SQLERRM;
+            RETURN jsonb_build_object(
+                'error', 'Failed to build result',
+                'details', error_message,
+                'event_id', p_event_uuid
+            );
+        END;
+        
+        RETURN result;
+        
+    EXCEPTION WHEN OTHERS THEN
+        error_message := SQLERRM;
+        RETURN jsonb_build_object(
+            'error', 'Database error occurred',
+            'details', error_message,
+            'user_progress_id', p_user_progress_uuid,
+            'event_id', p_event_uuid
+        );
+    END;
 END;
 $$;
