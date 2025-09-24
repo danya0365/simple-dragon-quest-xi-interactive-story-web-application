@@ -630,7 +630,7 @@ AS $$
 $$;
 
 -- =============================================================================
--- Function to complete interaction for user progress
+-- Function to complete interaction for user progress (FIXED VERSION)
 -- Handles choice processing, effects application, and state updates
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.complete_interaction_for_user_progress(
@@ -655,6 +655,7 @@ DECLARE
     v_all_interactions_completed BOOLEAN DEFAULT false;
     v_total_interactions INTEGER;
     v_completed_interactions INTEGER;
+    v_current_unlocked_events JSONB;
 BEGIN
     -- Get user progress data
     SELECT * INTO v_user_progress 
@@ -697,9 +698,21 @@ BEGIN
         RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
     END IF;
     
-    -- Extract effects from outcome
-    v_effects := v_outcome.effects;
-    v_next_event_id := v_outcome.next_event_id;
+    -- Extract effects from the outcome
+    IF v_outcome.effects IS NOT NULL THEN
+        v_effects := v_outcome.effects;
+    ELSE
+        v_effects := '{}'::jsonb;
+    END IF;
+    
+    -- Get next event ID if available
+    IF v_outcome.next_event_id IS NOT NULL THEN
+        v_next_event_id := v_outcome.next_event_id;
+    END IF;
+    
+    -- DEBUG: Log effects and next_event_id
+    RAISE NOTICE 'DEBUG: Effects: %', v_effects;
+    RAISE NOTICE 'DEBUG: Next event ID: %', v_next_event_id;
     
     -- Check if all interactions in this event are completed
     -- Get total number of interactions for this event
@@ -712,8 +725,19 @@ BEGIN
     FROM jsonb_array_elements(v_user_progress.completed_interactions) AS completed_interaction
     WHERE completed_interaction->>'event_id' = v_interaction.event_id::TEXT;
     
+    -- DEBUG: Log interaction counts
+    RAISE NOTICE 'DEBUG: Event ID: %', v_interaction.event_id;
+    RAISE NOTICE 'DEBUG: Total interactions: %', v_total_interactions;
+    RAISE NOTICE 'DEBUG: Completed interactions (before current): %', v_completed_interactions;
+    
     -- Check if all interactions are completed (including the current one)
     v_all_interactions_completed := (v_completed_interactions + 1) >= v_total_interactions;
+    
+    -- DEBUG: Log completion result
+    RAISE NOTICE 'DEBUG: All interactions completed: %', v_all_interactions_completed;
+    
+    -- Store current unlocked_events before update
+    v_current_unlocked_events := COALESCE(v_user_progress.unlocked_events, '[]'::jsonb);
     
     -- Update user progress with effects
     UPDATE public.user_progress
@@ -727,50 +751,86 @@ BEGIN
                     'completed_at', NOW()
                 )
             ),
-        -- Update unlocked content
+        
+        -- Update unlocked content with proper null handling and array deduplication
         unlocked_world_regions = CASE 
-            WHEN v_effects->'unlock_regions' IS NOT NULL 
-            THEN unlocked_world_regions || v_effects->'unlock_regions'
+            WHEN v_effects->'unlock_regions' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_regions') = 'array' AND jsonb_array_length(v_effects->'unlock_regions') > 0
+            THEN (
+                SELECT jsonb_agg(DISTINCT value) 
+                FROM (
+                    SELECT value FROM jsonb_array_elements(COALESCE(unlocked_world_regions, '[]'::jsonb))
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_regions')
+                ) t
+            )
             ELSE unlocked_world_regions 
         END,
+        
         unlocked_locations = CASE 
-            WHEN v_effects->'unlock_locations' IS NOT NULL 
-            THEN unlocked_locations || v_effects->'unlock_locations'
+            WHEN v_effects->'unlock_locations' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_locations') = 'array' AND jsonb_array_length(v_effects->'unlock_locations') > 0
+            THEN (
+                SELECT jsonb_agg(DISTINCT value) 
+                FROM (
+                    SELECT value FROM jsonb_array_elements(COALESCE(unlocked_locations, '[]'::jsonb))
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_locations')
+                ) t
+            )
             ELSE unlocked_locations 
         END,
+        
         unlocked_chapters = CASE 
-            WHEN v_effects->'unlock_chapters' IS NOT NULL 
-            THEN unlocked_chapters || v_effects->'unlock_chapters'
+            WHEN v_effects->'unlock_chapters' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_chapters') = 'array' AND jsonb_array_length(v_effects->'unlock_chapters') > 0
+            THEN (
+                SELECT jsonb_agg(DISTINCT value) 
+                FROM (
+                    SELECT value FROM jsonb_array_elements(COALESCE(unlocked_chapters, '[]'::jsonb))
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_chapters')
+                ) t
+            )
             ELSE unlocked_chapters 
         END,
+        
         unlocked_events = CASE 
-            WHEN v_effects->'unlock_events' IS NOT NULL 
-            THEN unlocked_events || v_effects->'unlock_events'
-            ELSE unlocked_events 
+            WHEN v_effects->'unlock_events' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_events') = 'array' AND jsonb_array_length(v_effects->'unlock_events') > 0
+            THEN (
+                SELECT jsonb_agg(DISTINCT value) 
+                FROM (
+                    SELECT value FROM jsonb_array_elements(v_current_unlocked_events)
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_events')
+                ) t
+            )
+            ELSE unlocked_events -- Keep existing value if no new events to unlock
         END,
         
-        -- Update completed events if this completes the event
+        -- Update completed events ONLY when ALL interactions are completed
         completed_events = CASE 
-            -- Mark event as completed when:
-            -- 1. All interactions in the event are completed, OR
-            -- 2. There's a next_event_id (explicit progression)
-            WHEN v_all_interactions_completed OR v_next_event_id IS NOT NULL
-            THEN completed_events || to_jsonb(v_interaction.event_id)
-            ELSE completed_events 
+            -- Mark event as completed ONLY when ALL interactions in the event are completed
+            WHEN v_all_interactions_completed
+            THEN (
+                SELECT jsonb_agg(DISTINCT value) 
+                FROM (
+                    SELECT value FROM jsonb_array_elements(COALESCE(completed_events, '[]'::jsonb))
+                    UNION
+                    SELECT to_jsonb(v_interaction.event_id::text)
+                ) t
+            )
+            ELSE completed_events -- Keep existing completed_events unchanged
         END,
         
-        -- Update character relationships
-        character_relationships = character_relationships || 
-            CASE 
-                WHEN v_effects->'relationship' IS NOT NULL 
-                THEN v_effects->'relationship' 
-                ELSE '{}'::jsonb 
-            END,
+        -- Update character relationships with proper merging
+        character_relationships = CASE 
+            WHEN v_effects->'relationship' IS NOT NULL 
+            THEN character_relationships || v_effects->'relationship'
+            ELSE character_relationships 
+        END,
         
-        -- Update inventory
+        -- Update inventory with proper item handling
         inventory = CASE 
-            WHEN v_effects->'items' IS NOT NULL 
-            THEN 
+            WHEN v_effects->'items' IS NOT NULL AND jsonb_typeof(v_effects->'items') = 'array' AND jsonb_array_length(v_effects->'items') > 0
+            THEN (
                 inventory || (
                     SELECT jsonb_agg(
                         jsonb_build_object(
@@ -783,13 +843,14 @@ BEGIN
                     )
                     FROM jsonb_array_elements(v_effects->'items') item
                 )
+            )
             ELSE inventory 
         END,
         
         -- Update party members
         party_members = CASE 
             WHEN v_effects->'party_join' IS NOT NULL 
-            THEN 
+            THEN (
                 party_members || jsonb_build_array(
                     jsonb_build_object(
                         'character_id', (v_effects->>'party_join')::UUID,
@@ -800,6 +861,7 @@ BEGIN
                         'party_position', COALESCE(jsonb_array_length(party_members), 0) + 1
                     )
                 )
+            )
             ELSE party_members 
         END,
         

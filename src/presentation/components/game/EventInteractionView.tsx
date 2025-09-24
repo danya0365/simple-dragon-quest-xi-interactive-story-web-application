@@ -85,8 +85,31 @@ export function EventInteractionView() {
             console.log("EventInteractionView: Setting event data:", eventData);
             console.log("EventInteractionView: Setting interactions:", interactions);
 
+            // Get completed interactions from user game state
+            const completedInteractions = userGameState?.completedInteractions as Array<{event_id: string; interaction_id: string}> || [];
+            const completedInteractionIds = completedInteractions
+              .filter(ci => ci.event_id === selectedEventId)
+              .map(ci => ci.interaction_id);
+            
+            console.log("EventInteractionView: Completed interaction IDs:", completedInteractionIds);
+            
+            // Filter out completed interactions
+            const availableInteractions = interactions.filter(
+              interaction => !completedInteractionIds.includes(interaction.id)
+            );
+            
+            console.log("EventInteractionView: Available interactions after filtering:", availableInteractions);
+            
+            // If all interactions are completed, go back to location view
+            if (availableInteractions.length === 0) {
+              console.log("EventInteractionView: All interactions completed, going back to location view");
+              setCurrentView("location");
+              setSelectedEventId(null);
+              return;
+            }
+            
             setEventData(eventData);
-            setInteractions(interactions);
+            setInteractions(availableInteractions);
             setCurrentInteractionIndex(0);
             setInteractionHistory([]);
             setSelectedChoice(null);
@@ -106,7 +129,7 @@ export function EventInteractionView() {
 
       loadInteractions();
     }
-  }, [selectedEventId, user?.id, loadEventInteractions, currentEvent]);
+  }, [selectedEventId, user?.id, loadEventInteractions, currentEvent, setCurrentView, setSelectedEventId, userGameState?.completedInteractions]);
 
   // Debug logging
   useEffect(() => {
