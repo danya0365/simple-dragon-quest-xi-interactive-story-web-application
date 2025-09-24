@@ -659,6 +659,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["profile_role"]
       }
+      get_all_items: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_auth_user_by_id: {
         Args: { p_id: string }
         Returns: Json

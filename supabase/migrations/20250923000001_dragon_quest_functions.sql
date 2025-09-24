@@ -895,3 +895,28 @@ EXCEPTION
         RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
 END;
 $$;
+
+-- =============================================================================
+-- Function to get all items from items table
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_all_items()
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    SELECT COALESCE(
+        (SELECT JSONB_AGG(
+            JSONB_BUILD_OBJECT(
+                'id', id,
+                'name', name,
+                'description', description,
+                'item_type', item_type,
+                'rarity', rarity,
+                'image_url', image_url
+            )
+        )
+        FROM public.items
+        ),
+        '[]'::JSONB
+    ) AS items;
+$$;

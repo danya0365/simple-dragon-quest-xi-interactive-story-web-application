@@ -333,6 +333,7 @@ interface GameActions {
     choiceData?: Json
   ) => Promise<void>;
   initializeUserProgress: (userId: string) => Promise<void>;
+  loadUserInventory: () => Promise<void>;
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
@@ -738,6 +739,70 @@ export const useGameStore = create<GameStore>()(
         } catch (error) {
           console.error("Error calling initialize_user_progress:", error);
           throw error;
+        }
+      },
+
+      loadUserInventory: async () => {
+        const supabase = createClientSupabaseClient();
+        set({ loading: true, error: null });
+
+        try {
+          const { data, error } = await supabase.rpc('get_all_items');
+          
+          if (error) throw error;
+          
+          const items = data as unknown as Array<{
+            id: string;
+            name: string;
+            description: string;
+            item_type: string;
+            rarity: string;
+            image_url: string;
+          }>;
+          
+          // Update user game state with inventory
+          const { userGameState } = get();
+          if (userGameState) {
+            // Map items with userGameState inventory to get actual quantities and data
+            const userInventory = userGameState.inventory as Array<{
+              item_id: string;
+              quantity: number;
+              obtained_at: string;
+              equipped?: boolean;
+              slot?: string;
+            }> || [];
+            
+            const inventoryItems = items.map(item => {
+              const userItem = userInventory.find(ui => ui.item_id === item.id);
+              return {
+                item_id: item.id,
+                name: item.name,
+                description: item.description,
+                item_type: item.item_type,
+                rarity: item.rarity,
+                image_url: item.image_url,
+                quantity: userItem?.quantity || 0,
+                obtained_at: userItem?.obtained_at || new Date().toISOString(),
+                equipped: userItem?.equipped || false,
+                slot: userItem?.slot || null
+              };
+            }).filter(item => item.quantity > 0); // Only show items user actually has
+            
+            set({
+              userGameState: {
+                ...userGameState,
+                inventory: inventoryItems
+              }
+            });
+          }
+          
+          set({ loading: false });
+        } catch (err) {
+          console.error('Error loading inventory:', err);
+          set({
+            error: 'ไม่สามารถโหลดข้อมูลไอเทมได้',
+            loading: false
+          });
         }
       },
     }),
