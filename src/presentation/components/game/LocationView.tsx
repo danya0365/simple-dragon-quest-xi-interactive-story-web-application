@@ -1,28 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
 import { useGameStore } from "@/src/stores/gameStore";
-import { useAuthStore } from "@/src/stores/authStore";
 
 export function LocationView() {
-  const { user } = useAuthStore();
   const {
     availableLocations,
     selectedRegionId,
     loading,
     error,
-    loadAvailableEvents,
     setSelectedEventId,
     setSelectedLocationId,
     setCurrentView,
     setSelectedRegion,
   } = useGameStore();
 
-  useEffect(() => {
-    if (user?.id && selectedRegionId) {
-      loadAvailableEvents();
-    }
-  }, [user?.id, selectedRegionId, loadAvailableEvents]);
+  // LocationView is for selecting locations, not loading events
 
   const handleLocationClick = (locationId: string) => {
     setSelectedLocationId(locationId); // Set selected location
@@ -54,7 +46,7 @@ export function LocationView() {
           <p className="text-red-400 font-medium mb-2">เกิดข้อผิดพลาด</p>
           <p className="text-blue-200 mb-4">{error}</p>
           <button
-            onClick={() => loadAvailableEvents()}
+            onClick={() => window.location.reload()}
             className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
           >
             ลองใหม่อีกครั้ง

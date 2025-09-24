@@ -58,7 +58,7 @@ export function EventInteractionView() {
   useEffect(() => {
     // Load real interaction data from database
     if (user?.id && selectedLocationId) {
-      loadAvailableEvents();
+      loadAvailableEvents(selectedLocationId);
     }
   }, [user?.id, selectedLocationId, loadAvailableEvents]);
 

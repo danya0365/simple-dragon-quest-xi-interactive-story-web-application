@@ -580,7 +580,10 @@ export const useGameStore = create<GameStore>()(
           if (result.success && !result.error) {
             // Reload game state after successful interaction
             await get().loadUserGameState();
-            await get().loadAvailableEvents();
+            const { selectedLocationId } = get();
+            if (selectedLocationId) {
+              await get().loadAvailableEvents(selectedLocationId);
+            }
 
             // If there's a next event, navigate to it
             if (result.next_event_id) {
