@@ -5,92 +5,92 @@
 -- Updated: 2025-09-24 - Fixed to match schema structure
 
 -- Insert World Map regions
-INSERT INTO public.world_map (id, name, description, image_url, unlock_requirements, display_order) VALUES
-('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.jpg', '{}', 1),
-('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2),
-('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3);
+INSERT INTO public.world_map (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress) VALUES
+('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.jpg', '{}', 1, true),
+('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false),
+('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false);
 
 -- Insert Locations
-INSERT INTO public.locations (id, world_map_id, name, description, location_type, unlock_requirements, display_order) VALUES
+INSERT INTO public.locations (id, world_map_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
 -- Cobblestone locations
-('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1),
-('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2),
-('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'landmark', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3),
+('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1, true),
+('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, false),
+('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'landmark', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3, false),
 
 -- Heliodor locations  
-('22222222-2222-2222-2222-222222222004', '11111111-1111-1111-1111-111111111002', 'Heliodor Castle', 'ปราสาทของกษัตริย์ Carnelian', 'castle', '{"level": 3, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1),
-('22222222-2222-2222-2222-222222222005', '11111111-1111-1111-1111-111111111002', 'Heliodor Town', 'เมืองใหญ่ที่คึกคัก', 'town', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2),
+('22222222-2222-2222-2222-222222222004', '11111111-1111-1111-1111-111111111002', 'Heliodor Castle', 'ปราสาทของกษัตริย์ Carnelian', 'castle', '{"level": 3, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false),
+('22222222-2222-2222-2222-222222222005', '11111111-1111-1111-1111-111111111002', 'Heliodor Town', 'เมืองใหญ่ที่คึกคัก', 'town', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2, false),
 
 -- Dungeon locations
-('22222222-2222-2222-2222-222222222006', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block A', 'ห้องขังส่วน A ของคุก Heliodor', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1),
-('22222222-2222-2222-2222-222222222007', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block B', 'ห้องขังส่วน B ที่มี Erik อยู่', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666004"]}', 2);
+('22222222-2222-2222-2222-222222222006', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block A', 'ห้องขังส่วน A ของคุก Heliodor', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false),
+('22222222-2222-2222-2222-222222222007', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block B', 'ห้องขังส่วน B ที่มี Erik อยู่', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666004"]}', 2, false);
 
 -- Insert Story Chapters
-INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order) VALUES
-('33333333-3333-3333-3333-333333333001', 1, 'The Darkspawn', 'จุดเริ่มต้นของการผจญภัย เมื่อ Hero ถูกเรียกว่า Darkspawn', '{}', 1),
-('33333333-3333-3333-3333-333333333002', 2, 'The Dungeons of Heliodor', 'Hero ถูกจับและขังในคุก Heliodor พบกับ Erik', '{"level": 1, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"ceremony_completed": true}}', 2),
-('33333333-3333-3333-3333-333333333003', 3, 'The Great Escape', 'การหลบหนีจากคุก Heliodor พร้อมกับ Erik', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333002"], "flags": {"met_erik": true}}', 3);
+INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress) VALUES
+('33333333-3333-3333-3333-333333333001', 1, 'The Darkspawn', 'จุดเริ่มต้นของการผจญภัย เมื่อ Hero ถูกเรียกว่า Darkspawn', '{}', 1, true),
+('33333333-3333-3333-3333-333333333002', 2, 'The Dungeons of Heliodor', 'Hero ถูกจับและขังในคุก Heliodor พบกับ Erik', '{"level": 1, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"ceremony_completed": true}}', 2, false),
+('33333333-3333-3333-3333-333333333003', 3, 'The Great Escape', 'การหลบหนีจากคุก Heliodor พร้อมกับ Erik', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333002"], "flags": {"met_erik": true}}', 3, false);
 
 -- Insert Characters
-INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_party_member) VALUES
+INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_party_member, is_initial_user_progress) VALUES
 -- Party members
 ('44444444-4444-4444-4444-444444444001', 'Hero', 'ตัวเอกของเรื่อง ผู้ถูกเรียกว่า Darkspawn', 'party_member', '/images/characters/hero.jpg', 
  '{"hp": 100, "mp": 50, "level": 1, "attack": 15, "defense": 10}', 
- '["Sword Strike", "Heal"]', true),
+ '["Sword Strike", "Heal"]', true, true),
  
 ('44444444-4444-4444-4444-444444444002', 'Erik', 'โจรหนุ่มที่ถูกขังในคุก Heliodor เชี่ยวชาญด้านการขโมยและมีดโยน', 'party_member', '/images/characters/erik.jpg',
  '{"hp": 80, "mp": 30, "level": 1, "attack": 18, "defense": 8}',
- '["Dagger Throw", "Steal", "Critical Hit"]', false),
+ '["Dagger Throw", "Steal", "Critical Hit"]', false, false),
 
 -- NPCs
 ('44444444-4444-4444-4444-444444444003', 'Grandpa', 'ปู่ของ Hero ผู้เลี้ยงดู Hero มาตั้งแต่เด็ก', 'npc', '/images/characters/grandpa.jpg',
- '{"hp": 50, "mp": 20, "level": 1}', '[]', false),
+ '{"hp": 50, "mp": 20, "level": 1}', '[]', false, false),
  
 ('44444444-4444-4444-4444-444444444004', 'King Carnelian', 'กษัตริย์แห่ง Heliodor ผู้เชื่อว่า Hero คือ Darkspawn', 'npc', '/images/characters/king.jpg',
- '{"hp": 200, "mp": 100, "level": 10}', '[]', false),
+ '{"hp": 200, "mp": 100, "level": 10}', '[]', false, false),
 
 ('44444444-4444-4444-4444-444444444005', 'Prison Guard', 'ยามคุก Heliodor', 'npc', '/images/characters/guard.jpg',
- '{"hp": 60, "mp": 10, "level": 3}', '[]', false);
+ '{"hp": 60, "mp": 10, "level": 3}', '[]', false, false);
 
 -- Insert Items
-INSERT INTO public.items (id, name, description, item_type, rarity, stats, effects, image_url) VALUES
+INSERT INTO public.items (id, name, description, item_type, rarity, stats, effects, image_url, is_initial_user_progress) VALUES
 ('55555555-5555-5555-5555-555555555001', 'Rusty Sword', 'ดาบเก่า ๆ ที่เป็นสนิม', 'weapon', 'common', 
- '{"attack": 5}', '{}', '/images/items/rusty_sword.jpg'),
+ '{"attack": 5}', '{}', '/images/items/rusty_sword.jpg', true),
  
 ('55555555-5555-5555-5555-555555555002', 'Prison Clothes', 'เสื้อผ้านักโทษ', 'armor', 'common',
- '{"defense": 2}', '{}', '/images/items/prison_clothes.jpg'),
+ '{"defense": 2}', '{}', '/images/items/prison_clothes.jpg', false),
  
 ('55555555-5555-5555-5555-555555555003', 'Medicinal Herb', 'สมุนไพรรักษา ฟื้นฟู HP', 'consumable', 'common',
- '{}', '{"heal": 30}', '/images/items/herb.jpg'),
+ '{}', '{"heal": 30}', '/images/items/herb.jpg', false),
  
 ('55555555-5555-5555-5555-555555555004', 'Prison Key', 'กุญแจคุก สำหรับปลดล็อคประตูคุก', 'key_item', 'rare',
- '{}', '{"unlock": "prison_door"}', '/images/items/key.jpg'),
+ '{}', '{"unlock": "prison_door"}', '/images/items/key.jpg', false),
  
 ('55555555-5555-5555-5555-555555555005', 'Erik''s Dagger', 'มีดโยนของ Erik อาวุธที่คมกริบ', 'weapon', 'uncommon',
- '{"attack": 12, "critical": 15}', '{}', '/images/items/dagger.jpg');
+ '{"attack": 12, "critical": 15}', '{}', '/images/items/dagger.jpg', false);
 
 -- Insert Story Events
-INSERT INTO public.story_events (id, chapter_id, location_id, title, description, event_type, unlock_requirements, display_order) VALUES
+INSERT INTO public.story_events (id, chapter_id, location_id, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
 -- Chapter 1 events
 ('66666666-6666-6666-6666-666666666001', '33333333-3333-3333-3333-333333333001', '22222222-2222-2222-2222-222222222001', 
- 'Morning at Home', 'เช้าวันหนึ่งที่บ้าน Hero ตื่นขึ้นมาและพูดคุยกับปู่', 'dialogue', '{}', 1),
+ 'Morning at Home', 'เช้าวันหนึ่งที่บ้าน Hero ตื่นขึ้นมาและพูดคุยกับปู่', 'dialogue', '{}', 1, true),
 
 ('66666666-6666-6666-6666-666666666002', '33333333-3333-3333-3333-333333333001', '22222222-2222-2222-2222-222222222003',
- 'The Sacred Tree Ceremony', 'พิธีกรรมที่ต้นไม้ศักดิ์สิทธิ์ เหตุการณ์ที่เปลี่ยนชีวิต Hero', 'story', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 2),
+ 'The Sacred Tree Ceremony', 'พิธีกรรมที่ต้นไม้ศักดิ์สิทธิ์ เหตุการณ์ที่เปลี่ยนชีวิต Hero', 'story', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 2, false),
 
 -- Chapter 2 events  
 ('66666666-6666-6666-6666-666666666003', '33333333-3333-3333-3333-333333333002', '22222222-2222-2222-2222-222222222006',
- 'Imprisoned', 'Hero ถูกจับและขังในคุก Heliodor', 'story', '{"completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"ceremony_completed": true}}', 1),
+ 'Imprisoned', 'Hero ถูกจับและขังในคุก Heliodor', 'story', '{"completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"ceremony_completed": true}}', 1, false),
 
 ('66666666-6666-6666-6666-666666666004', '33333333-3333-3333-3333-333333333002', '22222222-2222-2222-2222-222222222007',
- 'Meeting Erik', 'Hero พบกับ Erik ในคุก และเริ่มวางแผนหลบหนี', 'dialogue', '{"completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2),
+ 'Meeting Erik', 'Hero พบกับ Erik ในคุก และเริ่มวางแผนหลบหนี', 'dialogue', '{"completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2, false),
 
 -- Chapter 3 events
 ('66666666-6666-6666-6666-666666666005', '33333333-3333-3333-3333-333333333003', '22222222-2222-2222-2222-222222222007',
- 'Planning the Escape', 'วางแผนการหลบหนีจากคุกพร้อมกับ Erik', 'choice', '{"completed_events": ["66666666-6666-6666-6666-666666666004"], "flags": {"erik_trust": 5}}', 1),
+ 'Planning the Escape', 'วางแผนการหลบหนีจากคุกพร้อมกับ Erik', 'choice', '{"completed_events": ["66666666-6666-6666-6666-666666666004"], "flags": {"erik_trust": 5}}', 1, false),
 
 ('66666666-6666-6666-6666-666666666006', '33333333-3333-3333-3333-333333333003', '22222222-2222-2222-2222-222222222006',
- 'The Great Escape', 'การหลบหนีที่ยิ่งใหญ่จากคุก Heliodor', 'story', '{"completed_events": ["66666666-6666-6666-6666-666666666005"]}', 2);
+ 'The Great Escape', 'การหลบหนีที่ยิ่งใหญ่จากคุก Heliodor', 'story', '{"completed_events": ["66666666-6666-6666-6666-666666666005"]}', 2, false);
 
 -- Insert Event Interactions
 INSERT INTO public.event_interactions (id, event_id, interaction_type, title, description, dialogue_text, character_speaker, choices, requirements, display_order) VALUES

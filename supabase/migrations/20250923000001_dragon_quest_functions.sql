@@ -34,66 +34,66 @@ BEGIN
         RETURN to_jsonb(v_progress_record);
     END IF;
     
-    -- Get default content from database with unlock_requirements = '{}' (FIX: Dynamic queries)
-    -- Hero character (first party member with empty join requirements)
+    -- Get default content from database with is_initial_user_progress = true (SIMPLIFIED: Use is_initial_user_progress flag)
+    -- Hero character (initial party member)
     SELECT id INTO v_hero_character_id
     FROM public.characters 
-    WHERE join_requirements = '{}'::JSONB AND is_party_member = true
+    WHERE is_initial_user_progress = true
     ORDER BY display_order
     LIMIT 1;
     
-    -- Rusty sword item (first weapon with no specific requirements)
+    -- Rusty sword item (initial equipment)
     SELECT id INTO v_rusty_sword_item_id
     FROM public.items 
-    WHERE item_type = 'weapon'
-    ORDER BY id
+    WHERE is_initial_user_progress = true
+    ORDER BY display_order
     LIMIT 1;
     
-    -- Chapter 1 (first chapter with empty unlock requirements)
+    -- Chapter 1 (initial chapter)
     SELECT id INTO v_chapter_1_id
     FROM public.story_chapters 
-    WHERE unlock_requirements = '{}'::JSONB
+    WHERE is_initial_user_progress = true
     ORDER BY display_order
     LIMIT 1;
     
-    -- Morning at home event (first event with empty unlock requirements)
+    -- Morning at home event (initial event)
     SELECT id INTO v_morning_at_home_event_id
     FROM public.story_events 
-    WHERE unlock_requirements = '{}'::JSONB
+    WHERE is_initial_user_progress = true
     ORDER BY display_order
     LIMIT 1;
     
-    -- Hero's house location (first location with empty unlock requirements)
+    -- Hero's house location (initial location)
     SELECT id INTO v_heros_house_location_id
     FROM public.locations 
-    WHERE unlock_requirements = '{}'::JSONB
+    WHERE is_initial_user_progress = true
     ORDER BY display_order
     LIMIT 1;
     
-    -- Get unlocked content from each table separately (FIX: No more UNION ALL mixing)
-    -- World Maps with empty requirements
+    -- Get unlocked content from each table separately (SIMPLIFIED: Use is_initial_user_progress flag)
+    -- World Maps with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_world_maps
     FROM public.world_map 
-    WHERE unlock_requirements = '{}'::JSONB;
+    WHERE is_initial_user_progress = true;
     
-    -- Locations with empty requirements  
+    -- Locations with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_locations
     FROM public.locations 
-    WHERE unlock_requirements = '{}'::JSONB;
+    WHERE is_initial_user_progress = true;
     
-    -- Chapters with empty requirements
+    -- Chapters with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_chapters
     FROM public.story_chapters 
-    WHERE unlock_requirements = '{}'::JSONB;
+    WHERE is_initial_user_progress = true;
     
-    -- Events with empty requirements
+    -- Events with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_events
     FROM public.story_events 
-    WHERE unlock_requirements = '{}'::JSONB;
+    WHERE is_initial_user_progress = true;
     
     -- Insert new user progress with comprehensive initialization (FIX: Proper data types)
     INSERT INTO public.user_progress (

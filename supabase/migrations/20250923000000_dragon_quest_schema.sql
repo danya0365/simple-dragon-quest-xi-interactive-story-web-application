@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS public.world_map (
     -- Format: {"level": integer, "completed_chapters": [uuid], "flags": {string: any}}
     -- Example: {"level": 3, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}
     display_order INTEGER NOT NULL DEFAULT 0,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this world map region is part of initial user progress setup
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -37,6 +39,8 @@ CREATE TABLE IF NOT EXISTS public.locations (
     -- Format: {"level": integer, "completed_events": [uuid], "items": [uuid], "flags": {string: any}}
     -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"talked_to_king": true}}
     display_order INTEGER NOT NULL DEFAULT 0,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this location is part of initial user progress setup
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -53,6 +57,8 @@ CREATE TABLE IF NOT EXISTS public.story_chapters (
     -- Format: {"level": integer, "completed_chapters": [uuid], "flags": {string: any}}
     -- Example: {"level": 1, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"ceremony_completed": true}}
     display_order INTEGER NOT NULL DEFAULT 0,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this story chapter is part of initial user progress setup
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -79,6 +85,8 @@ CREATE TABLE IF NOT EXISTS public.story_events (
     -- Format: {"experience": integer, "gold": integer, "items": [{"id": uuid, "quantity": integer}]}
     -- Example: {"experience": 100, "gold": 50, "items": [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1}]}
     display_order INTEGER NOT NULL DEFAULT 0,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this story event is part of initial user progress setup
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -156,6 +164,8 @@ CREATE TABLE IF NOT EXISTS public.characters (
     -- Format: {"level": integer, "completed_events": [uuid], "flags": {string: any}}
     -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"erik_trust": 10}}
     is_joinable BOOLEAN DEFAULT false,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this character is part of initial user progress setup
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -179,6 +189,8 @@ CREATE TABLE IF NOT EXISTS public.items (
     image_url VARCHAR(500),
     is_tradeable BOOLEAN DEFAULT true,
     is_consumable BOOLEAN DEFAULT false,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this item is part of initial user progress setup
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
