@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS public.characters (
     -- Requirements for character to join party
     -- Format: {"level": integer, "completed_events": [uuid], "flags": {string: any}}
     -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"erik_trust": 10}}
-    is_party_member BOOLEAN DEFAULT false,
+    is_joinable BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
