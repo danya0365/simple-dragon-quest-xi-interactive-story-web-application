@@ -446,7 +446,8 @@ BEGIN
 END;
 $$;
 
--- Function to get event interactionsCREATE OR REPLACE FUNCTION public.get_event_interactions(
+-- Function to get event interactions
+CREATE OR REPLACE FUNCTION public.get_event_interactions(
     user_uuid UUID,
     event_uuid UUID
 )
