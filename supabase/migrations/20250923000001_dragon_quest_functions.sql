@@ -3,8 +3,283 @@
 -- Author: Marosdee Uma
 -- Description: API functions for Dragon Quest XI Interactive Story Web Application
 
--- Function to get available events for a user
-CREATE OR REPLACE FUNCTION public.get_available_events(user_uuid UUID)
+
+-- =============================================================================
+-- Initialize user progress with comprehensive initialization
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION public.initialize_user_progress(p_user_uuid UUID)
+RETURNS UUID AS $$
+DECLARE
+    v_progress_id UUID;
+    v_hero_character_id UUID := '44444444-4444-4444-4444-444444444001';
+    v_rusty_sword_item_id UUID := '55555555-5555-5555-5555-555555555001';
+    v_chapter_1_id UUID := '33333333-3333-3333-3333-333333333001';
+    v_morning_at_home_event_id UUID := '66666666-6666-6666-6666-666666666001';
+    v_heros_house_location_id UUID := '22222222-2222-2222-2222-222222222001';
+BEGIN
+    -- Check if user progress already exists
+    SELECT id INTO v_progress_id FROM public.user_progress WHERE user_id = p_user_uuid;
+    
+    IF v_progress_id IS NOT NULL THEN
+        -- User progress already exists, return existing ID
+        RETURN v_progress_id;
+    END IF;
+    
+    -- Insert new user progress with comprehensive initialization
+    -- Dynamically unlock all content with empty requirements
+    INSERT INTO public.user_progress (
+        user_id,
+        
+        -- Current state
+        current_chapter_id,
+        current_location_id,
+        current_event_id,
+        
+        -- Player progression
+        player_level,
+        player_experience,
+        
+        -- Game content - UNLOCKED (all items with empty requirements)
+        unlocked_world_maps,
+        unlocked_locations,
+        unlocked_chapters,
+        unlocked_events,
+        
+        -- Completed content (empty for new user)
+        completed_chapters,
+        completed_events,
+        
+        -- Player inventory and equipment
+        inventory,
+        
+        -- Party members
+        party_members,
+        
+        -- Character relationships
+        character_relationships,
+        
+        -- Player position
+        player_position,
+        
+        -- Achievements (empty for new user)
+        achievements,
+        
+        -- Play history (empty for new user)
+        play_history,
+        
+        -- Active content
+        active_quests,
+        game_flags,
+        
+        -- Game statistics and save data
+        game_stats,
+        game_settings,
+        save_data,
+        
+        -- Timestamps
+        last_played_at,
+        created_at,
+        updated_at
+    ) SELECT 
+        p_user_uuid,
+        
+        -- Current state
+        v_chapter_1_id,                    -- Start with Chapter 1: The Darkspawn
+        v_heros_house_location_id,        -- Start at Hero's House
+        v_morning_at_home_event_id,       -- Start with Morning at Home event
+        
+        -- Player progression
+        1,                                 -- Level 1
+        0,                                 -- 0 experience
+        
+        -- Game content - UNLOCKED (all items with empty requirements)
+        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- World Maps
+        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- Locations
+        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- Chapters
+        COALESCE(ARRAY_AGG(id ORDER BY display_order) FILTER (WHERE unlock_requirements = '{}'::JSONB), ARRAY[]::UUID[]), -- Events
+        
+        -- Completed content (empty for new user)
+        ARRAY[]::UUID[],                  -- No completed chapters
+        ARRAY[]::UUID[],                  -- No completed events
+        
+        -- Player inventory and equipment
+        ARRAY[
+            jsonb_build_object(
+                'item_id', v_rusty_sword_item_id,
+                'quantity', 1,
+                'obtained_at', NOW(),
+                'equipped', true,
+                'slot', 'weapon'
+            )
+        ]::JSONB[],
+        
+        -- Party members
+        ARRAY[
+            jsonb_build_object(
+                'character_id', v_hero_character_id,
+                'joined_at', NOW(),
+                'current_stats', jsonb_build_object(
+                    'hp', 100,
+                    'mp', 50,
+                    'level', 1,
+                    'attack', 15,
+                    'defense', 10
+                ),
+                'equipment', jsonb_build_object(
+                    'weapon', v_rusty_sword_item_id
+                ),
+                'is_active', true,
+                'party_position', 1
+            )
+        ]::JSONB[],
+        
+        -- Character relationships
+        jsonb_build_object(
+            'grandpa', 50,                -- Good relationship with Grandpa
+            'erik', 0,                    -- Haven't met Erik yet
+            'king_carnelian', 0           -- Haven't met King yet
+        ),
+        
+        -- Player position
+        jsonb_build_object(
+            'x', 100,
+            'y', 200,
+            'map_id', v_heros_house_location_id
+        ),
+        
+        -- Achievements (empty for new user)
+        ARRAY[]::JSONB[],
+        
+        -- Play history (empty for new user)
+        ARRAY[]::JSONB[],
+        
+        -- Active content
+        ARRAY[]::UUID[],                  -- No active quests initially
+        jsonb_build_object(
+            'tutorial_completed', false,
+            'met_grandpa', false,
+            'ceremony_started', false,
+            'game_started', true
+        ),
+        
+        -- Game statistics and save data
+        jsonb_build_object(
+            'play_time', 0,
+            'interactions_completed', 0,
+            'events_completed', 0,
+            'chapters_completed', 0,
+            'completion_percentage', 0.0,
+            'last_save_time', NOW()
+        ),
+        jsonb_build_object(
+            'sound_volume', 0.8,
+            'music_volume', 0.6,
+            'difficulty', 'normal',
+            'language', 'th',
+            'text_speed', 'normal'
+        ),
+        jsonb_build_object(
+            'last_checkpoint', 'game_start',
+            'auto_save_enabled', true
+        ),
+        
+        -- Timestamps
+        NOW(),                            -- last_played_at
+        NOW(),                            -- created_at
+        NOW()                             -- updated_at
+    FROM (
+        -- Combine all tables with unlock_requirements columns
+        SELECT id, unlock_requirements, display_order FROM public.world_map
+        UNION ALL
+        SELECT id, unlock_requirements, display_order FROM public.locations
+        UNION ALL
+        SELECT id, unlock_requirements, display_order FROM public.story_chapters
+        UNION ALL
+        SELECT id, unlock_requirements, display_order FROM public.story_events
+    ) AS all_content
+    WHERE unlock_requirements = '{}'::JSONB
+    LIMIT 1;  -- We only need one row to generate the arrays
+    
+    -- Get the inserted progress ID
+    SELECT id INTO v_progress_id FROM public.user_progress WHERE user_id = p_user_uuid;
+    
+    RETURN v_progress_id;
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Log error and re-raise
+        RAISE EXCEPTION 'Failed to initialize user progress for user %: %', p_user_uuid, SQLERRM;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- =============================================================================
+-- Function to get user game state with comprehensive data
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_user_game_state_for_user_progress(p_user_progress_uuid UUID)
+RETURNS TABLE (
+    progress_id UUID,
+    user_id UUID,
+    current_chapter_id UUID,
+    current_chapter_title TEXT,
+    current_location_id UUID,
+    current_location_name TEXT,
+    current_event_id UUID,
+    current_event_title TEXT,
+    player_level INTEGER,
+    player_experience INTEGER,
+    unlocked_world_maps JSONB,
+    unlocked_locations JSONB,
+    unlocked_chapters JSONB,
+    unlocked_events JSONB,
+    completed_chapters JSONB,
+    completed_events JSONB,
+    inventory JSONB,
+    party_members JSONB,
+    character_relationships JSONB,
+    player_position JSONB,
+    game_flags JSONB,
+    game_stats JSONB,
+    last_played_at TIMESTAMP WITH TIME ZONE
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        up.id,
+        up.user_id,
+        up.current_chapter_id,
+        COALESCE(sc.title, 'Unknown Chapter') as current_chapter_title,
+        up.current_location_id,
+        COALESCE(sl.name, 'Unknown Location') as current_location_name,
+        up.current_event_id,
+        COALESCE(se.title, 'Unknown Event') as current_event_title,
+        up.player_level,
+        up.player_experience,
+        up.unlocked_world_maps,
+        up.unlocked_locations,
+        up.unlocked_chapters,
+        up.unlocked_events,
+        up.completed_chapters,
+        up.completed_events,
+        up.inventory,
+        up.party_members,
+        up.character_relationships,
+        up.player_position,
+        up.game_flags,
+        up.game_stats,
+        up.last_played_at
+    FROM public.user_progress up
+    LEFT JOIN public.story_chapters sc ON up.current_chapter_id = sc.id
+    LEFT JOIN public.locations sl ON up.current_location_id = sl.id
+    LEFT JOIN public.story_events se ON up.current_event_id = se.id
+    WHERE up.id = user_progress_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =============================================================================
+-- Function to get available events for a user_progress
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_available_events_for_user_progress(p_user_progress_uuid UUID)
 RETURNS TABLE (
     event_id UUID,
     event_title VARCHAR(255),
@@ -31,7 +306,7 @@ BEGIN
     LEFT JOIN public.story_chapters sc ON se.chapter_id = sc.id
     LEFT JOIN public.locations l ON se.location_id = l.id
     LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
-    LEFT JOIN public.user_progress up ON up.user_id = user_uuid
+    LEFT JOIN public.user_progress up ON up.id = p_user_progress_uuid
     WHERE 
         -- Event must be unlocked by user (in unlocked_events array)
         up.unlocked_events IS NOT NULL
@@ -46,12 +321,58 @@ BEGIN
 END;
 $$;
 
--- Function to complete an interaction and update user progress
+-- =============================================================================
+-- Function to get completed events for a user_progress
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_completed_events_for_user_progress(p_user_progress_uuid UUID)
+RETURNS TABLE (
+    event_id UUID,
+    event_title VARCHAR(255),
+    event_description TEXT,
+    event_type VARCHAR(50),
+    chapter_title VARCHAR(255),
+    location_name VARCHAR(255),
+    interactions_count BIGINT
+) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        se.id as event_id,
+        se.title as event_title,
+        se.description as event_description,
+        se.event_type,
+        sc.title as chapter_title,
+        l.name as location_name,
+        COUNT(ei.id) as interactions_count
+    FROM public.story_events se
+    LEFT JOIN public.story_chapters sc ON se.chapter_id = sc.id
+    LEFT JOIN public.locations l ON se.location_id = l.id
+    LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
+    LEFT JOIN public.user_progress up ON up.id = p_user_progress_uuid
+    WHERE 
+        -- Event must be unlocked by user (in unlocked_events array)
+        up.unlocked_events IS NOT NULL
+        AND se.id = ANY((SELECT jsonb_array_elements_text(up.unlocked_events))::UUID[])
+        -- Event must be completed
+        AND (
+            up.completed_events IS NOT NULL 
+            AND se.id = ANY((SELECT jsonb_array_elements_text(up.completed_events))::UUID[])
+        )
+    GROUP BY se.id, se.title, se.description, se.event_type, sc.title, l.name
+    ORDER BY se.display_order;
+END;
+$$;
 
-CREATE OR REPLACE FUNCTION public.complete_interaction(
-    user_uuid UUID,
-    interaction_uuid UUID,
-    choice_data JSONB DEFAULT '{}'::JSONB
+-- =============================================================================
+-- Function to complete an interaction and update user progress
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.complete_interaction_for_user_progress(
+    p_user_progress_uuid UUID,
+    p_interaction_uuid UUID,
+    p_choice_data JSONB DEFAULT '{}'::JSONB
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -79,7 +400,7 @@ BEGIN
     -- Get interaction details
     SELECT * INTO interaction_record
     FROM public.event_interactions
-    WHERE id = interaction_uuid;
+    WHERE id = p_interaction_uuid;
     
     IF NOT FOUND THEN
         result := jsonb_set(result, '{success}', 'false');
@@ -115,7 +436,7 @@ BEGIN
     -- Get user progress (must exist)
     SELECT * INTO user_progress_record
     FROM public.user_progress
-    WHERE user_id = user_uuid;
+    WHERE id = p_user_progress_uuid;
     
     IF NOT FOUND THEN
         result := jsonb_set(result, '{success}', 'false');
@@ -138,7 +459,7 @@ BEGIN
     -- Find matching outcome based on choice
     SELECT * INTO outcome_record
     FROM public.event_outcomes
-    WHERE interaction_id = interaction_uuid
+    WHERE interaction_id = p_interaction_uuid
     AND (
         choice_data->>'choice_key' IS NULL 
         OR choice_key = choice_data->>'choice_key'
@@ -151,7 +472,7 @@ BEGIN
         -- Create a default outcome record
         outcome_record := ROW(
             gen_random_uuid(),
-            interaction_uuid,
+            p_interaction_uuid,
             'default',
             'story',
             'Default Action',
@@ -166,8 +487,8 @@ BEGIN
         SELECT id INTO next_event_to_unlock
         FROM public.event_interactions
         WHERE event_id = event_record.id
-        AND id != interaction_uuid
-        AND display_order = (SELECT display_order FROM public.event_interactions WHERE id = interaction_uuid) + 1
+        AND id != p_interaction_uuid
+        AND display_order = (SELECT display_order FROM public.event_interactions WHERE id = p_interaction_uuid) + 1
         LIMIT 1;
         
         -- If there's a next interaction, check if it's the last one in this event
@@ -207,7 +528,7 @@ BEGIN
                     )
                 )
             )
-            WHERE user_id = user_uuid;
+            WHERE id = p_user_progress_uuid;
         END IF;
         
         -- Handle item rewards (CENTRALIZED)
@@ -245,28 +566,28 @@ BEGIN
                     )
                 ) AS combined_items
             )
-            WHERE user_id = user_uuid;
+            WHERE id = p_user_progress_uuid;
         END IF;
         
         -- Handle location unlocks
         IF outcome_record.effects ? 'unlock_locations' THEN
             UPDATE public.user_progress
             SET unlocked_locations = unlocked_locations || outcome_record.effects->'unlock_locations'
-            WHERE user_id = user_uuid;
+            WHERE id = p_user_progress_uuid;
         END IF;
         
         -- Handle chapter unlocks
         IF outcome_record.effects ? 'unlock_chapters' THEN
             UPDATE public.user_progress
             SET unlocked_chapters = unlocked_chapters || outcome_record.effects->'unlock_chapters'
-            WHERE user_id = user_uuid;
+            WHERE id = p_user_progress_uuid;
         END IF;
         
         -- Handle event unlocks
         IF outcome_record.effects ? 'unlock_events' THEN
             UPDATE public.user_progress
             SET unlocked_events = unlocked_events || outcome_record.effects->'unlock_events'
-            WHERE user_id = user_uuid;
+            WHERE id = p_user_progress_uuid;
         END IF;
     END IF;
     
@@ -274,7 +595,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM public.event_interactions ei
         WHERE ei.event_id = event_record.id
-        AND ei.id != interaction_uuid
+        AND ei.id != p_interaction_uuid
         AND ei.is_available = true
     ) THEN
         -- Add event to completed events
@@ -282,7 +603,7 @@ BEGIN
         SET 
             completed_events = completed_events || jsonb_build_array(event_record.id),
             last_played_at = NOW()
-        WHERE user_id = user_uuid;
+        WHERE id = p_user_progress_uuid;
         
         -- Note: We don't update story_events.is_completed anymore
         -- Event completion is tracked in user_progress.completed_events only
@@ -292,7 +613,7 @@ BEGIN
     result := jsonb_build_object(
         'success', true,
         'transaction_id', transaction_id,
-        'interaction_id', interaction_uuid,
+        'interaction_id', p_interaction_uuid,
         'event_id', event_record.id,
         'outcome', row_to_json(outcome_record),
         'next_event_id', outcome_record.next_event_id,
@@ -317,255 +638,31 @@ EXCEPTION
 END;
 $$;
 
--- Function to get user's current game state (CENTRALIZED)
-CREATE OR REPLACE FUNCTION public.get_user_game_state(user_uuid UUID)
+
+-- =============================================================================
+-- Function to get world map with unlock status for user_progress
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_world_map_for_user_progress(p_user_progress_uuid UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
-DECLARE
-    progress_record RECORD;
-    result JSONB;
 BEGIN
-    -- Get user progress
-    SELECT * INTO progress_record
-    FROM public.user_progress
-    WHERE user_id = user_uuid;
-    
-    -- If no progress found, return default state
-    IF NOT FOUND THEN
-        RETURN jsonb_build_object(
-            'user_id', user_uuid,
-            'current_chapter_id', NULL,
-            'current_location_id', NULL,
-            'current_event_id', NULL,
-            'player_level', 1,
-            'player_experience', 0,
-            'unlocked_world_maps', '[]'::JSONB,
-            'unlocked_locations', '[]'::JSONB,
-            'unlocked_chapters', '[]'::JSONB,
-            'unlocked_events', '[]'::JSONB,
-            'completed_chapters', '[]'::JSONB,
-            'completed_events', '[]'::JSONB,
-            'inventory', '[]'::JSONB,
-            'party_members', '[]'::JSONB,
-            'character_relationships', '{}'::JSONB,
-            'player_position', '{}'::JSONB,
-            'achievements', '[]'::JSONB,
-            'play_history', '[]'::JSONB,
-            'active_quests', '[]'::JSONB,
-            'game_flags', '{}'::JSONB,
-            'game_stats', '{}'::JSONB,
-            'game_settings', '{}'::JSONB,
-            'save_data', '{}'::JSONB,
-            'last_played_at', NOW(),
-            'created_at', NOW(),
-            'updated_at', NOW()
-        );
-    END IF;
-    
-    -- Build result with all centralized data
-    result := jsonb_build_object(
-        'user_id', progress_record.user_id,
-        'current_chapter_id', progress_record.current_chapter_id,
-        'current_location_id', progress_record.current_location_id,
-        'current_event_id', progress_record.current_event_id,
-        'player_level', progress_record.player_level,
-        'player_experience', progress_record.player_experience,
-        'unlocked_world_maps', COALESCE(progress_record.unlocked_world_maps, '[]'::JSONB),
-        'unlocked_locations', COALESCE(progress_record.unlocked_locations, '[]'::JSONB),
-        'unlocked_chapters', COALESCE(progress_record.unlocked_chapters, '[]'::JSONB),
-        'unlocked_events', COALESCE(progress_record.unlocked_events, '[]'::JSONB),
-        'completed_chapters', COALESCE(progress_record.completed_chapters, '[]'::JSONB),
-        'completed_events', COALESCE(progress_record.completed_events, '[]'::JSONB),
-        'inventory', COALESCE(progress_record.inventory, '[]'::JSONB),
-        'party_members', COALESCE(progress_record.party_members, '[]'::JSONB),
-        'character_relationships', COALESCE(progress_record.character_relationships, '{}'::JSONB),
-        'player_position', COALESCE(progress_record.player_position, '{}'::JSONB),
-        'achievements', COALESCE(progress_record.achievements, '[]'::JSONB),
-        'play_history', COALESCE(progress_record.play_history, '[]'::JSONB),
-        'active_quests', COALESCE(progress_record.active_quests, '[]'::JSONB),
-        'game_flags', COALESCE(progress_record.game_flags, '{}'::JSONB),
-        'game_stats', COALESCE(progress_record.game_stats, '{}'::JSONB),
-        'game_settings', COALESCE(progress_record.game_settings, '{}'::JSONB),
-        'save_data', COALESCE(progress_record.save_data, '{}'::JSONB),
-        'last_played_at', progress_record.last_played_at,
-        'created_at', progress_record.created_at,
-        'updated_at', progress_record.updated_at
+    RETURN jsonb_build_object(
+        'unlocked_world_maps', 
+        (SELECT unlocked_world_maps FROM public.user_progress WHERE id = p_user_progress_uuid),
+        'unlocked_locations', 
+        (SELECT unlocked_locations FROM public.user_progress WHERE id = p_user_progress_uuid)
     );
-    
-    RETURN result;
 END;
 $$;
 
--- Function to initialize new user's game progress
-CREATE OR REPLACE FUNCTION public.initialize_user_progress(user_uuid UUID)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    first_chapter_id UUID;
-    first_location_id UUID;
-    first_region_id UUID;
-    protagonist_id UUID;
-BEGIN
-    -- Get first chapter and location
-    SELECT id INTO first_chapter_id
-    FROM public.story_chapters
-    WHERE chapter_number = 1
-    LIMIT 1;
-    
-    -- Fix: Get first location with display_order = 1 (not 0)
-    SELECT id INTO first_location_id
-    FROM public.locations
-    WHERE display_order = 1
-    LIMIT 1;
-    
-    -- Get first unlocked world map
-    SELECT id INTO first_region_id
-    FROM public.world_map
-    WHERE display_order = 1
-    ORDER BY display_order
-    LIMIT 1;
-    
-    -- Get protagonist character
-    SELECT id INTO protagonist_id
-    FROM public.characters
-    WHERE character_type = 'party_member' AND (name ILIKE '%hero%' OR name ILIKE '%protagonist%')
-    LIMIT 1;
-    
-    -- Create user progress with all required fields
-    INSERT INTO public.user_progress (
-        user_id,
-        current_chapter_id,
-        current_location_id,
-        player_level,
-        player_experience,
-        unlocked_world_maps,
-        unlocked_locations,
-        unlocked_chapters,
-        unlocked_events,
-        completed_chapters,
-        completed_events,
-        inventory,
-        equipment,
-        active_quests,
-        game_flags,
-        game_stats,
-        game_settings,
-        save_data
-    ) VALUES (
-        user_uuid,
-        first_chapter_id,
-        first_location_id,
-        1,
-        0,
-        jsonb_build_array(COALESCE(first_region_id, ''::UUID)),
-        jsonb_build_array(first_location_id),
-        jsonb_build_array(first_chapter_id),
-        '[]'::JSONB,
-        '[]'::JSONB,
-        '[]'::JSONB,
-        '[]'::JSONB,
-        '{}'::JSONB,
-        '[]'::JSONB,
-        '{}'::JSONB,
-        jsonb_build_object('play_time', 0, 'completion_percentage', 0),
-        '{}'::JSONB,
-        '{}'::JSONB
-    ) ON CONFLICT (user_id) DO UPDATE SET
-        unlocked_world_maps = CASE 
-            WHEN user_progress.unlocked_world_maps IS NULL OR jsonb_array_length(user_progress.unlocked_world_maps) = 0
-            THEN jsonb_build_array(COALESCE(first_region_id, ''::UUID))
-            ELSE user_progress.unlocked_world_maps
-        END;
-    
-    -- Add protagonist to party if exists
-    IF protagonist_id IS NOT NULL THEN
-        INSERT INTO public.user_party_members (
-            user_id,
-            character_id,
-            party_position,
-            current_stats
-        ) VALUES (
-            user_uuid,
-            protagonist_id,
-            1,
-            jsonb_build_object('hp', 100, 'mp', 50, 'level', 1)
-        ) ON CONFLICT (user_id, character_id) DO NOTHING;
-    END IF;
-    
-    RETURN jsonb_build_object('success', true, 'message', 'User progress initialized');
-END;
-$$;
-
--- Function to unlock world maps
-CREATE OR REPLACE FUNCTION public.unlock_region(user_uuid UUID, region_id UUID)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-    -- Add region to unlocked_world_maps if not already there
-    UPDATE public.user_progress
-    SET unlocked_world_maps = 
-        CASE 
-            WHEN unlocked_world_maps IS NULL THEN jsonb_build_array(region_id::text)
-            WHEN NOT (region_id::text = ANY(SELECT jsonb_array_elements_text(unlocked_world_maps))) 
-            THEN unlocked_world_maps || region_id::text
-            ELSE unlocked_world_maps
-        END
-    WHERE user_id = user_uuid;
-    
-    RETURN jsonb_build_object('success', true, 'message', 'World map unlocked');
-END;
-$$;
-
--- Function to get world map with unlock status for user
-CREATE OR REPLACE FUNCTION public.get_world_map_for_user(user_uuid UUID)
-RETURNS TABLE (
-    region_id UUID,
-    region_name VARCHAR(255),
-    region_description TEXT,
-    region_image_url VARCHAR(500),
-    is_unlocked BOOLEAN,
-    locations_count BIGINT,
-    unlocked_locations_count BIGINT
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        wm.id as region_id,
-        wm.name as region_name,
-        wm.description as region_description,
-        wm.image_url as region_image_url,
-        (
-            -- Check if region is unlocked by user progress
-            up.unlocked_world_maps IS NOT NULL 
-            AND wm.id = ANY((SELECT jsonb_array_elements_text(up.unlocked_world_maps))::UUID[])
-        ) as is_unlocked,
-        COUNT(l.id) as locations_count,
-        COUNT(CASE 
-            WHEN up.unlocked_locations IS NOT NULL 
-            AND l.id = ANY((SELECT jsonb_array_elements_text(up.unlocked_locations))::UUID[])
-            THEN 1 
-        END) as unlocked_locations_count
-    FROM public.world_map wm
-    LEFT JOIN public.locations l ON wm.id = l.world_map_id
-    LEFT JOIN public.user_progress up ON up.user_id = user_uuid
-    GROUP BY wm.id, wm.name, wm.description, wm.image_url, up.unlocked_locations, up.unlocked_world_maps
-    ORDER BY wm.display_order;
-END;
-$$;
-
--- Function to get event interactions
-CREATE OR REPLACE FUNCTION public.get_event_interactions(
-    user_uuid UUID,
-    event_uuid UUID
+-- =============================================================================
+-- Function to get event interactions for user_progress
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_event_interactions_for_user_progress(
+    p_user_progress_uuid UUID,
+    p_event_uuid UUID
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -582,7 +679,7 @@ BEGIN
     FROM public.story_events se
     JOIN public.story_chapters sc ON se.chapter_id = sc.id
     LEFT JOIN public.locations l ON se.location_id = l.id
-    WHERE se.id = event_uuid;
+    WHERE se.id = p_event_uuid;
     
     IF NOT FOUND THEN
         RETURN jsonb_build_object('error', 'Event not found');
@@ -618,7 +715,7 @@ BEGIN
         ) ORDER BY ei.display_order
     ) INTO interactions
     FROM public.event_interactions ei
-    WHERE ei.event_id = event_uuid
+    WHERE ei.event_id = p_event_uuid
     AND ei.is_available = true;
     
     -- Build result
@@ -637,11 +734,3 @@ BEGIN
     RETURN result;
 END;
 $$;
-
--- Grant execute permissions to authenticated users
-GRANT EXECUTE ON FUNCTION public.get_available_events(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.complete_interaction(UUID, UUID, JSONB) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_user_game_state(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.initialize_user_progress(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_world_map_for_user(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.get_event_interactions(UUID, UUID) TO authenticated;
