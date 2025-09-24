@@ -9,9 +9,9 @@
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.initialize_user_progress(p_user_uuid UUID)
-RETURNS UUID AS $$
+RETURNS JSONB AS $$
 DECLARE
-    v_progress_id UUID;
+    v_progress_record RECORD;
     v_hero_character_id UUID := '44444444-4444-4444-4444-444444444001';
     v_rusty_sword_item_id UUID := '55555555-5555-5555-5555-555555555001';
     v_chapter_1_id UUID := '33333333-3333-3333-3333-333333333001';
@@ -19,11 +19,11 @@ DECLARE
     v_heros_house_location_id UUID := '22222222-2222-2222-2222-222222222001';
 BEGIN
     -- Check if user progress already exists
-    SELECT id INTO v_progress_id FROM public.user_progress WHERE user_id = p_user_uuid;
+    SELECT * INTO v_progress_record FROM public.user_progress WHERE user_id = p_user_uuid;
     
-    IF v_progress_id IS NOT NULL THEN
-        -- User progress already exists, return existing ID
-        RETURN v_progress_id;
+    IF v_progress_record IS NOT NULL THEN
+        -- User progress already exists, return all columns as JSONB object
+        RETURN to_jsonb(v_progress_record);
     END IF;
     
     -- Insert new user progress with comprehensive initialization
@@ -201,10 +201,11 @@ BEGIN
     WHERE unlock_requirements = '{}'::JSONB
     LIMIT 1;  -- We only need one row to generate the arrays
     
-    -- Get the inserted progress ID
-    SELECT id INTO v_progress_id FROM public.user_progress WHERE user_id = p_user_uuid;
+    -- Get the complete user progress record
+    SELECT * INTO v_progress_record FROM public.user_progress WHERE user_id = p_user_uuid;
     
-    RETURN v_progress_id;
+    -- Return all columns as JSONB object
+    RETURN to_jsonb(v_progress_record);
 EXCEPTION
     WHEN OTHERS THEN
         -- Log error and re-raise
