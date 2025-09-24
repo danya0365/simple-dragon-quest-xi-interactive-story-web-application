@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export function DashboardView() {
   const router = useRouter();
-  const { user, signOut, loading: authLoading, initialized, initialize } = useAuthStore();
+  const { user, signOut, loading: authLoading } = useAuthStore();
   const {
     currentView,
     userGameState,
@@ -26,19 +26,17 @@ export function DashboardView() {
 
   // Initialize auth store and user data
   useEffect(() => {
-    if (!initialized) {
-      initialize();
-    } else if (user?.id) {
+    if (user?.id) {
       loadUserGameState(user.id);
     }
-  }, [user?.id, initialized, initialize, loadUserGameState]);
+  }, [user?.id, loadUserGameState]);
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (initialized && !user) {
+    if (!user) {
       router.push("/login");
     }
-  }, [user, initialized, router]);
+  }, [user, router]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -51,7 +49,7 @@ export function DashboardView() {
   };
 
   // Show loading while initializing or if not properly initialized
-  if (!initialized || (authLoading && !user)) {
+  if (authLoading && !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
