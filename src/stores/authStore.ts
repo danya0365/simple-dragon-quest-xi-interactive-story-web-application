@@ -2,6 +2,7 @@ import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase
 import type { Session, User } from "@supabase/supabase-js";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useGameStore } from "./gameStore";
 
 interface AuthState {
   user: User | null;
@@ -16,7 +17,6 @@ interface AuthActions {
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
-  initializeUserProgress: () => Promise<void>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             // Initialize user progress if this is first time
-            await get().initializeUserProgress();
+            await useGameStore.getState().initializeUserProgress(data.user.id);
           }
 
           return {};
@@ -162,26 +162,6 @@ export const useAuthStore = create<AuthStore>()(
             session: null,
             loading: false,
           });
-        }
-      },
-
-      initializeUserProgress: async () => {
-        const { user } = get();
-        if (!user) return;
-
-        const supabase = createClientSupabaseClient();
-
-        try {
-          // Call the initialize_user_progress function
-          const { error } = await supabase.rpc("initialize_user_progress", {
-            p_user_uuid: user.id,
-          });
-
-          if (error) {
-            console.error("Error initializing user progress:", error);
-          }
-        } catch (error) {
-          console.error("Error calling initialize_user_progress:", error);
         }
       },
     }),

@@ -67,6 +67,31 @@ type UserGameStateRpcResponse = {
   updated_at: string;
 };
 
+type InitializeUserProgressResponse = {
+  id: string;
+  user_id: string;
+  current_chapter_id: string | null;
+  current_location_id: string | null;
+  current_event_id: string | null;
+  player_level: number;
+  player_experience: number;
+  unlocked_world_maps: string[];
+  unlocked_locations: string[];
+  unlocked_chapters: string[];
+  unlocked_events: string[];
+  completed_chapters: string[];
+  completed_events: string[];
+  inventory: Record<string, unknown>[];
+  party_members: Record<string, unknown>[];
+  character_relationships: Record<string, unknown>;
+  player_position: Record<string, unknown>;
+  game_flags: Record<string, unknown>;
+  game_stats: Record<string, unknown>;
+  last_played_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
 // Mapping function to convert UserGameStateResponse to UserGameState
 function mapUserGameStateResponseToUserGameState(
   response: UserGameStateRpcResponse
@@ -220,6 +245,7 @@ interface GameState {
 
   // User progress
   userGameState: UserGameState | null;
+  userProgressId: string | null;
 
   // UI state
   loading: boolean;
@@ -238,14 +264,12 @@ interface GameActions {
     userProgressId: string,
     eventId: string
   ) => Promise<unknown>;
-
-  // Game interactions
   completeInteraction: (
     userProgressId: string,
     interactionId: string,
     choiceData?: Record<string, unknown>
   ) => Promise<void>;
-
+  initializeUserProgress: (userId: string) => Promise<void>;
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
@@ -268,6 +292,7 @@ export const useGameStore = create<GameStore>()(
       currentLocation: null,
       availableEvents: [],
       userGameState: null,
+      userProgressId: null,
       loading: false,
       error: null,
       currentView: "world_map",
@@ -486,27 +511,58 @@ export const useGameStore = create<GameStore>()(
       setCurrentLocation: (location) => set({ currentLocation: location }),
       setLoading: (loading) => set({ loading }),
       setError: (error) => set({ error }),
-
-      reset: () =>
+      reset: () => {
         set({
           worldRegions: [],
           currentLocation: null,
           availableEvents: [],
           userGameState: null,
+          userProgressId: null,
           loading: false,
           error: null,
           currentView: "world_map",
           selectedRegionId: null,
           selectedEventId: null,
-        }),
-    }),
-    {
-      name: "dragon-quest-game",
-      partialize: (state) => ({
-        currentView: state.currentView,
-        selectedRegionId: state.selectedRegionId,
-        selectedEventId: state.selectedEventId,
-      }),
+        });
+      },
+
+      initializeUserProgress: async (userId: string) => {
+        const supabase = createClientSupabaseClient();
+
+        try {
+          // Call the initialize_user_progress function
+          const { data, error } = await supabase.rpc("initialize_user_progress", {
+            p_user_uuid: userId,
+          });
+
+          if (error) {
+            console.error("Error initializing user progress:", error);
+            throw error;
+          }
+
+          if (data) {
+            // Extract the user progress ID from the response
+            const response = data as unknown as InitializeUserProgressResponse;
+            if (response.id) {
+              set({ userProgressId: response.id });
+              console.log("User progress initialized with ID:", response.id);
+            }
+          }
+        } catch (error) {
+          console.error("Error calling initialize_user_progress:", error);
+          throw error;
+        }
+      },
     }
-  )
+  ),
+  {
+    name: "dragon-quest-game",
+    partialize: (state) => ({
+      userGameState: state.userGameState,
+      userProgressId: state.userProgressId,
+      currentLocation: state.currentLocation,
+      currentView: state.currentView,
+    }),
+  }
+)
 );
