@@ -2,26 +2,26 @@
 -- Created: 2025-09-23
 -- Author: Marosdee Uma
 -- Description: Database schema for Dragon Quest XI Interactive Story Web Application
+-- Updated: 2025-09-24 - Fixed state redundancy by using user state only
 
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- World Map Table
--- เก็บข้อมูลแผนที่โลกและภูมิภาคต่าง ๆ
+-- เก็บข้อมูลแผนที่โลกและภูมิภาคต่าง ๆ (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.world_map (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image_url VARCHAR(500),
     unlock_requirements JSONB DEFAULT '{}',
-    is_unlocked BOOLEAN DEFAULT false,
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Locations Table
--- เก็บข้อมูลสถานที่ต่าง ๆ ในแต่ละภูมิภาค
+-- เก็บข้อมูลสถานที่ต่าง ๆ ในแต่ละภูมิภาค (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.locations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     world_map_id UUID NOT NULL REFERENCES public.world_map(id) ON DELETE CASCADE,
@@ -30,29 +30,26 @@ CREATE TABLE IF NOT EXISTS public.locations (
     image_url VARCHAR(500),
     location_type VARCHAR(50) DEFAULT 'town', -- town, dungeon, field, castle, etc.
     unlock_requirements JSONB DEFAULT '{}',
-    is_unlocked BOOLEAN DEFAULT false,
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Story Chapters Table
--- เก็บข้อมูลบทต่าง ๆ ของเรื่อง
+-- เก็บข้อมูลบทต่าง ๆ ของเรื่อง (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.story_chapters (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chapter_number INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     unlock_requirements JSONB DEFAULT '{}',
-    is_unlocked BOOLEAN DEFAULT false,
-    is_completed BOOLEAN DEFAULT false,
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Story Events Table
--- เก็บข้อมูลเหตุการณ์ต่าง ๆ ในเรื่อง
+-- เก็บข้อมูลเหตุการณ์ต่าง ๆ ในเรื่อง (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.story_events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chapter_id UUID NOT NULL REFERENCES public.story_chapters(id) ON DELETE CASCADE,
@@ -63,8 +60,6 @@ CREATE TABLE IF NOT EXISTS public.story_events (
     unlock_requirements JSONB DEFAULT '{}',
     completion_requirements JSONB DEFAULT '{}',
     rewards JSONB DEFAULT '{}',
-    is_unlocked BOOLEAN DEFAULT false,
-    is_completed BOOLEAN DEFAULT false,
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -138,21 +133,48 @@ CREATE TABLE IF NOT EXISTS public.items (
 );
 
 -- User Progress Table
--- เก็บความคืบหน้าของผู้เล่นแต่ละคน
+-- เก็บความคืบหน้าของผู้เล่นแต่ละคน (Single source of truth for user state)
 CREATE TABLE IF NOT EXISTS public.user_progress (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    
+    -- Current state
     current_chapter_id UUID REFERENCES public.story_chapters(id) ON DELETE SET NULL,
     current_location_id UUID REFERENCES public.locations(id) ON DELETE SET NULL,
-    completed_events JSONB DEFAULT '[]', -- Array of completed event IDs
-    unlocked_regions JSONB DEFAULT '[]'::JSONB,
+    current_event_id UUID REFERENCES public.story_events(id) ON DELETE SET NULL,
+    
+    -- Player progression
+    player_level INTEGER DEFAULT 1,
+    player_experience INTEGER DEFAULT 0,
+    
+    -- Game content
+    unlocked_world_maps JSONB DEFAULT '[]', -- Array of unlocked world map IDs
     unlocked_locations JSONB DEFAULT '[]', -- Array of unlocked location IDs
     unlocked_chapters JSONB DEFAULT '[]', -- Array of unlocked chapter IDs
+    unlocked_events JSONB DEFAULT '[]', -- Array of unlocked event IDs
+    
+    -- Completed content
+    completed_chapters JSONB DEFAULT '[]', -- Array of completed chapter IDs
+    completed_events JSONB DEFAULT '[]', -- Array of completed event IDs
+    
+    -- Player inventory and equipment
+    inventory JSONB DEFAULT '[]', -- Array of item IDs with quantities
+    equipment JSONB DEFAULT '{}', -- Currently equipped items
+    
+    -- Active content
+    active_quests JSONB DEFAULT '[]', -- Array of active quest/event IDs
+    game_flags JSONB DEFAULT '{}', -- Story flags and variables for branching narratives
+    
+    -- Game statistics and save data
     game_stats JSONB DEFAULT '{}', -- Play time, completion percentage, etc.
+    game_settings JSONB DEFAULT '{}', -- Player preferences (sound, difficulty, etc.)
     save_data JSONB DEFAULT '{}', -- Additional save data
+    
+    -- Timestamps
     last_played_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
     UNIQUE(user_id)
 );
 
