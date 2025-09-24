@@ -33,8 +33,10 @@ BEGIN
     LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
     LEFT JOIN public.user_progress up ON up.user_id = user_uuid
     WHERE 
-        se.is_unlocked = true 
-        AND se.is_completed = false
+        -- Event must be unlocked by user (in unlocked_events array)
+        up.unlocked_events IS NOT NULL
+        AND se.id::text = ANY(SELECT jsonb_array_elements_text(up.unlocked_events))
+        -- Event must not be completed yet
         AND (
             up.completed_events IS NULL 
             OR NOT (se.id::text = ANY(SELECT jsonb_array_elements_text(up.completed_events)))
@@ -84,8 +86,38 @@ BEGIN
     WHERE user_id = user_uuid;
     
     IF NOT FOUND THEN
-        INSERT INTO public.user_progress (user_id, completed_events, unlocked_locations, unlocked_chapters)
-        VALUES (user_uuid, '[]'::JSONB, '[]'::JSONB, '[]'::JSONB)
+        INSERT INTO public.user_progress (
+            user_id, 
+            completed_events, 
+            unlocked_events,
+            unlocked_world_maps, 
+            unlocked_locations, 
+            unlocked_chapters,
+            completed_chapters,
+            inventory,
+            equipment,
+            active_quests,
+            game_flags,
+            game_stats,
+            game_settings,
+            save_data
+        )
+        VALUES (
+            user_uuid, 
+            '[]'::JSONB, 
+            '[]'::JSONB,
+            '[]'::JSONB, 
+            '[]'::JSONB, 
+            '[]'::JSONB,
+            '[]'::JSONB,
+            '[]'::JSONB,
+            '{}'::JSONB,
+            '[]'::JSONB,
+            '{}'::JSONB,
+            '{}'::JSONB,
+            '{}'::JSONB,
+            '{}'::JSONB
+        )
         RETURNING * INTO user_progress_record;
     END IF;
     
@@ -190,10 +222,9 @@ BEGIN
         
         -- Handle event unlocks
         IF outcome_record.effects ? 'unlock_events' THEN
-            UPDATE public.story_events
-            SET is_unlocked = true
-            WHERE id = ANY((SELECT array_agg(elem::UUID) FROM jsonb_array_elements_text(outcome_record.effects->'unlock_events') as elem))
-            AND id NOT IN (SELECT unnest(completed_events::UUID[]) FROM public.user_progress WHERE user_id = user_uuid);
+            UPDATE public.user_progress
+            SET unlocked_events = unlocked_events || outcome_record.effects->'unlock_events'
+            WHERE user_id = user_uuid;
         END IF;
     END IF;
     
@@ -211,10 +242,8 @@ BEGIN
             last_played_at = NOW()
         WHERE user_id = user_uuid;
         
-        -- Mark event as completed
-        UPDATE public.story_events
-        SET is_completed = true
-        WHERE id = event_record.id;
+        -- Note: We don't update story_events.is_completed anymore
+        -- Event completion is tracked in user_progress.completed_events only
     END IF;
     
     -- Build result
@@ -286,12 +315,23 @@ BEGIN
         'user_id', user_uuid,
         'current_chapter_id', progress_record.current_chapter_id,
         'current_location_id', progress_record.current_location_id,
-        'completed_events', COALESCE(progress_record.completed_events, '[]'::JSONB),
+        'current_event_id', progress_record.current_event_id,
+        'player_level', COALESCE(progress_record.player_level, 1),
+        'player_experience', COALESCE(progress_record.player_experience, 0),
+        'unlocked_world_maps', COALESCE(progress_record.unlocked_world_maps, '[]'::JSONB),
         'unlocked_locations', COALESCE(progress_record.unlocked_locations, '[]'::JSONB),
         'unlocked_chapters', COALESCE(progress_record.unlocked_chapters, '[]'::JSONB),
+        'unlocked_events', COALESCE(progress_record.unlocked_events, '[]'::JSONB),
+        'completed_chapters', COALESCE(progress_record.completed_chapters, '[]'::JSONB),
+        'completed_events', COALESCE(progress_record.completed_events, '[]'::JSONB),
+        'inventory', COALESCE(progress_record.inventory, '[]'::JSONB),
+        'equipment', COALESCE(progress_record.equipment, '{}'::JSONB),
+        'active_quests', COALESCE(progress_record.active_quests, '[]'::JSONB),
+        'game_flags', COALESCE(progress_record.game_flags, '{}'::JSONB),
         'game_stats', COALESCE(progress_record.game_stats, '{}'::JSONB),
+        'game_settings', COALESCE(progress_record.game_settings, '{}'::JSONB),
+        'save_data', COALESCE(progress_record.save_data, '{}'::JSONB),
         'party_members', COALESCE(party_members, '[]'::JSONB),
-        'inventory', COALESCE(inventory, '[]'::JSONB),
         'last_played_at', progress_record.last_played_at
     );
     
@@ -323,10 +363,10 @@ BEGIN
     WHERE display_order = 1
     LIMIT 1;
     
-    -- Get first unlocked region
+    -- Get first unlocked world map
     SELECT id INTO first_region_id
     FROM public.world_map
-    WHERE is_unlocked = true
+    WHERE display_order = 1
     ORDER BY display_order
     LIMIT 1;
     
@@ -336,30 +376,50 @@ BEGIN
     WHERE character_type = 'party_member' AND (name ILIKE '%hero%' OR name ILIKE '%protagonist%')
     LIMIT 1;
     
-    -- Create user progress with unlocked regions
+    -- Create user progress with all required fields
     INSERT INTO public.user_progress (
         user_id,
         current_chapter_id,
         current_location_id,
-        completed_events,
+        player_level,
+        player_experience,
+        unlocked_world_maps,
         unlocked_locations,
-        unlocked_regions,
         unlocked_chapters,
-        game_stats
+        unlocked_events,
+        completed_chapters,
+        completed_events,
+        inventory,
+        equipment,
+        active_quests,
+        game_flags,
+        game_stats,
+        game_settings,
+        save_data
     ) VALUES (
         user_uuid,
         first_chapter_id,
         first_location_id,
-        '[]'::JSONB,
-        jsonb_build_array(first_location_id::text),
+        1,
+        0,
         jsonb_build_array(COALESCE(first_region_id::text, '')),
+        jsonb_build_array(first_location_id::text),
         jsonb_build_array(first_chapter_id::text),
-        jsonb_build_object('play_time', 0, 'completion_percentage', 0)
+        '[]'::JSONB,
+        '[]'::JSONB,
+        '[]'::JSONB,
+        '[]'::JSONB,
+        '{}'::JSONB,
+        '[]'::JSONB,
+        '{}'::JSONB,
+        jsonb_build_object('play_time', 0, 'completion_percentage', 0),
+        '{}'::JSONB,
+        '{}'::JSONB
     ) ON CONFLICT (user_id) DO UPDATE SET
-        unlocked_regions = CASE 
-            WHEN user_progress.unlocked_regions IS NULL OR jsonb_array_length(user_progress.unlocked_regions) = 0
+        unlocked_world_maps = CASE 
+            WHEN user_progress.unlocked_world_maps IS NULL OR jsonb_array_length(user_progress.unlocked_world_maps) = 0
             THEN jsonb_build_array(COALESCE(first_region_id::text, ''))
-            ELSE user_progress.unlocked_regions
+            ELSE user_progress.unlocked_world_maps
         END;
     
     -- Add protagonist to party if exists
@@ -381,25 +441,25 @@ BEGIN
 END;
 $$;
 
--- Function to unlock regions
+-- Function to unlock world maps
 CREATE OR REPLACE FUNCTION public.unlock_region(user_uuid UUID, region_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Add region to unlocked_regions if not already there
+    -- Add region to unlocked_world_maps if not already there
     UPDATE public.user_progress
-    SET unlocked_regions = 
+    SET unlocked_world_maps = 
         CASE 
-            WHEN unlocked_regions IS NULL THEN jsonb_build_array(region_id::text)
-            WHEN NOT (region_id::text = ANY(SELECT jsonb_array_elements_text(unlocked_regions))) 
-            THEN unlocked_regions || region_id::text
-            ELSE unlocked_regions
+            WHEN unlocked_world_maps IS NULL THEN jsonb_build_array(region_id::text)
+            WHEN NOT (region_id::text = ANY(SELECT jsonb_array_elements_text(unlocked_world_maps))) 
+            THEN unlocked_world_maps || region_id::text
+            ELSE unlocked_world_maps
         END
     WHERE user_id = user_uuid;
     
-    RETURN jsonb_build_object('success', true, 'message', 'Region unlocked');
+    RETURN jsonb_build_object('success', true, 'message', 'World map unlocked');
 END;
 $$;
 
@@ -425,12 +485,9 @@ BEGIN
         wm.description as region_description,
         wm.image_url as region_image_url,
         (
-            -- Check if region is unlocked by user progress OR if it's inherently unlocked
-            wm.is_unlocked = true 
-            OR (
-                up.unlocked_regions IS NOT NULL 
-                AND wm.id::text = ANY(SELECT jsonb_array_elements_text(up.unlocked_regions))
-            )
+            -- Check if region is unlocked by user progress
+            up.unlocked_world_maps IS NOT NULL 
+            AND wm.id::text = ANY(SELECT jsonb_array_elements_text(up.unlocked_world_maps))
         ) as is_unlocked,
         COUNT(l.id) as locations_count,
         COUNT(CASE 
@@ -441,7 +498,7 @@ BEGIN
     FROM public.world_map wm
     LEFT JOIN public.locations l ON wm.id = l.world_map_id
     LEFT JOIN public.user_progress up ON up.user_id = user_uuid
-    GROUP BY wm.id, wm.name, wm.description, wm.image_url, wm.is_unlocked, up.unlocked_locations, up.unlocked_regions
+    GROUP BY wm.id, wm.name, wm.description, wm.image_url, up.unlocked_locations, up.unlocked_world_maps
     ORDER BY wm.display_order;
 END;
 $$;
