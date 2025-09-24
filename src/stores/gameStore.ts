@@ -87,42 +87,42 @@ function mapUserGameStateResponseToUserGameState(
 ): UserGameState {
   return {
     id: response.id,
-    user_id: response.user_id,
-    current_world_map_id: null, // Not provided by RPC, set to null
-    current_location_id: response.current_location_id,
-    current_chapter_id: response.current_chapter_id,
-    current_event_id: response.current_event_id,
-    completed_chapters: response.completed_chapters,
-    completed_events: response.completed_events,
-    unlocked_world_maps: response.unlocked_world_maps,
-    unlocked_locations: response.unlocked_locations,
-    unlocked_chapters: response.unlocked_chapters,
-    unlocked_events: response.unlocked_events,
-    active_quests: response.active_quests as unknown as Record<
+    userId: response.user_id,
+    currentWorldMapId: null, // Not provided by RPC, set to null
+    currentLocationId: response.current_location_id,
+    currentChapterId: response.current_chapter_id,
+    currentEventId: response.current_event_id,
+    completedChapters: response.completed_chapters,
+    completedEvents: response.completed_events,
+    unlockedWorldMaps: response.unlocked_world_maps,
+    unlockedLocations: response.unlocked_locations,
+    unlockedChapters: response.unlocked_chapters,
+    unlockedEvents: response.unlocked_events,
+    activeQuests: response.active_quests as unknown as Record<
       string,
       string | number
     >[],
-    game_flags: response.game_flags as unknown as Record<
+    gameFlags: response.game_flags as unknown as Record<
       string,
       string | number
     >[],
-    game_settings: response.game_settings as unknown as Record<
+    gameSettings: response.game_settings as unknown as Record<
       string,
       string | number
     >[],
-    game_stats: response.game_stats as unknown as Record<
+    gameStats: response.game_stats as unknown as Record<
       string,
       string | number
     >,
-    player_level: response.player_level,
-    player_experience: response.player_experience,
-    party_members: response.party_members as unknown as PartyMember[],
-    character_relationships:
+    playerLevel: response.player_level,
+    playerExperience: response.player_experience,
+    partyMembers: response.party_members as unknown as PartyMember[],
+    characterRelationships:
       response.character_relationships as unknown as Record<
         string,
         string | number
       >[],
-    player_position: response.player_position as unknown as Record<
+    playerPosition: response.player_position as unknown as Record<
       string,
       string | number
     >,
@@ -131,11 +131,11 @@ function mapUserGameStateResponseToUserGameState(
       string,
       string | number
     >[],
-    play_history: response.play_history as unknown as Record<
+    playHistory: response.play_history as unknown as Record<
       string,
       string | number
     >[],
-    last_played_at: response.last_played_at,
+    lastPlayedAt: response.last_played_at,
   };
 }
 
@@ -204,36 +204,36 @@ interface InventoryItem {
 
 interface UserGameState {
   id: string;
-  user_id: string;
-  current_world_map_id: string | null;
-  current_location_id: string | null;
-  current_chapter_id: string | null;
-  current_event_id: string | null;
+  userId: string;
+  currentWorldMapId: string | null;
+  currentLocationId: string | null;
+  currentChapterId: string | null;
+  currentEventId: string | null;
 
-  completed_chapters: string[];
-  completed_events: string[];
+  completedChapters: string[];
+  completedEvents: string[];
 
-  unlocked_world_maps: string[];
-  unlocked_locations: string[];
-  unlocked_chapters: string[];
-  unlocked_events: string[];
+  unlockedWorldMaps: string[];
+  unlockedLocations: string[];
+  unlockedChapters: string[];
+  unlockedEvents: string[];
 
-  active_quests: Record<string, number | string>[];
-  game_flags: Record<string, number | string>[];
-  game_settings: Record<string, number | string>[];
+  activeQuests: Record<string, number | string>[];
+  gameFlags: Record<string, number | string>[];
+  gameSettings: Record<string, number | string>[];
 
-  game_stats: Record<string, number | string>;
-  player_level: number;
-  player_experience: number;
-  party_members: PartyMember[];
-  character_relationships: Record<string, number | string>[];
-  player_position: Record<string, number | string>;
+  gameStats: Record<string, number | string>;
+  playerLevel: number;
+  playerExperience: number;
+  partyMembers: PartyMember[];
+  characterRelationships: Record<string, number | string>[];
+  playerPosition: Record<string, number | string>;
 
   inventory: InventoryItem[];
 
   achievements: Record<string, number | string>[];
-  play_history: Record<string, number | string>[];
-  last_played_at: string;
+  playHistory: Record<string, number | string>[];
+  lastPlayedAt: string;
 }
 
 interface GameState {
@@ -314,8 +314,8 @@ export const useGameStore = create<GameStore>()(
             allWorldMapsData as unknown as WorldMapsRpcResponse[];
 
           // Use unlocked data from userGameState
-          const unlockedWorldMapIds = new Set(userGameState.unlocked_world_maps);
-          const unlockedLocationIds = new Set(userGameState.unlocked_locations);
+          const unlockedWorldMapIds = new Set(userGameState.unlockedWorldMaps);
+          const unlockedLocationIds = new Set(userGameState.unlockedLocations);
 
           // Transform the data to match our WorldRegion interface
           const transformedData = allWorldMaps.map((worldMap) => {
