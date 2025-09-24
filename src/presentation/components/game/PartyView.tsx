@@ -1,7 +1,6 @@
 "use client";
 
 import { useGameStore } from "@/src/stores/gameStore";
-import { useAuthStore } from "@/src/stores/authStore";
 
 interface PartyMember {
   character_id: string;
@@ -15,33 +14,60 @@ interface PartyMember {
 }
 
 export function PartyView() {
-  const { user } = useAuthStore();
   const { userGameState, loading, error } = useGameStore();
 
-  const partyMembers = userGameState?.party_members || [];
+  const partyMembers = userGameState?.partyMembers || [];
 
   const getStatIcon = (statName: string) => {
     switch (statName.toLowerCase()) {
-      case 'hp': case 'health': return '❤️';
-      case 'mp': case 'mana': return '💙';
-      case 'attack': case 'str': case 'strength': return '⚔️';
-      case 'defense': case 'def': return '🛡️';
-      case 'speed': case 'agility': return '💨';
-      case 'magic': case 'int': case 'intelligence': return '✨';
-      case 'level': return '⭐';
-      default: return '📊';
+      case "hp":
+      case "health":
+        return "❤️";
+      case "mp":
+      case "mana":
+        return "💙";
+      case "attack":
+      case "str":
+      case "strength":
+        return "⚔️";
+      case "defense":
+      case "def":
+        return "🛡️";
+      case "speed":
+      case "agility":
+        return "💨";
+      case "magic":
+      case "int":
+      case "intelligence":
+        return "✨";
+      case "level":
+        return "⭐";
+      default:
+        return "📊";
     }
   };
 
   const getEquipmentIcon = (equipType: string) => {
     switch (equipType.toLowerCase()) {
-      case 'weapon': return '⚔️';
-      case 'helmet': case 'head': return '⛑️';
-      case 'armor': case 'chest': return '🛡️';
-      case 'gloves': case 'hands': return '🧤';
-      case 'boots': case 'feet': return '👢';
-      case 'accessory': case 'ring': return '💍';
-      default: return '📦';
+      case "weapon":
+        return "⚔️";
+      case "helmet":
+      case "head":
+        return "⛑️";
+      case "armor":
+      case "chest":
+        return "🛡️";
+      case "gloves":
+      case "hands":
+        return "🧤";
+      case "boots":
+      case "feet":
+        return "👢";
+      case "accessory":
+      case "ring":
+        return "💍";
+      default:
+        return "📦";
     }
   };
 
@@ -84,7 +110,9 @@ export function PartyView() {
       {partyMembers.length === 0 ? (
         <div className="text-center py-8 lg:py-12">
           <div className="text-blue-400 text-4xl lg:text-6xl mb-4">👤</div>
-          <p className="text-blue-200 font-medium mb-2">ยังไม่มีสมาชิกในปาร์ตี้</p>
+          <p className="text-blue-200 font-medium mb-2">
+            ยังไม่มีสมาชิกในปาร์ตี้
+          </p>
           <p className="text-blue-300 text-sm lg:text-base">
             ผจญภัยต่อไปเพื่อพบเพื่อนร่วมทาง!
           </p>
@@ -92,7 +120,10 @@ export function PartyView() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {partyMembers
-            .sort((a: PartyMember, b: PartyMember) => a.party_position - b.party_position)
+            .sort(
+              (a: PartyMember, b: PartyMember) =>
+                a.party_position - b.party_position
+            )
             .map((member: PartyMember) => (
               <div
                 key={member.character_id}
@@ -123,10 +154,15 @@ export function PartyView() {
 
                   {/* Member Info */}
                   <div className="flex-1">
-                    <h3 className="text-white font-bold text-lg">{member.name}</h3>
-                    <p className="text-blue-200 text-sm mb-2">{member.description}</p>
+                    <h3 className="text-white font-bold text-lg">
+                      {member.name}
+                    </h3>
+                    <p className="text-blue-200 text-sm mb-2">
+                      {member.description}
+                    </p>
                     <div className="text-blue-300 text-xs">
-                      เข้าร่วม: {new Date(member.joined_at).toLocaleDateString('th-TH')}
+                      เข้าร่วม:{" "}
+                      {new Date(member.joined_at).toLocaleDateString("th-TH")}
                     </div>
                   </div>
                 </div>
@@ -135,22 +171,28 @@ export function PartyView() {
                 <div className="mb-6">
                   <h4 className="text-yellow-400 font-medium mb-3">สถานะ</h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {Object.entries(member.current_stats).map(([statName, value]) => (
-                      <div
-                        key={statName}
-                        className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-3"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">{getStatIcon(statName)}</span>
-                            <span className="text-blue-200 text-sm capitalize">
-                              {statName}
+                    {Object.entries(member.current_stats).map(
+                      ([statName, value]) => (
+                        <div
+                          key={statName}
+                          className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-3"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-lg">
+                                {getStatIcon(statName)}
+                              </span>
+                              <span className="text-blue-200 text-sm capitalize">
+                                {statName}
+                              </span>
+                            </div>
+                            <span className="text-white font-bold">
+                              {value}
                             </span>
                           </div>
-                          <span className="text-white font-bold">{value}</span>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 </div>
 
@@ -164,13 +206,15 @@ export function PartyView() {
                         className="bg-black/20 rounded-lg border border-white/10 p-2"
                       >
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm">{getEquipmentIcon(slot)}</span>
+                          <span className="text-sm">
+                            {getEquipmentIcon(slot)}
+                          </span>
                           <div className="flex-1 min-w-0">
                             <div className="text-blue-300 text-xs capitalize">
                               {slot}
                             </div>
                             <div className="text-white text-xs truncate">
-                              {item || 'ไม่มี'}
+                              {item || "ไม่มี"}
                             </div>
                           </div>
                         </div>
@@ -190,15 +234,19 @@ export function PartyView() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="text-center">
               <div className="text-2xl mb-1">👥</div>
-              <div className="text-white font-medium">{partyMembers.length}</div>
+              <div className="text-white font-medium">
+                {partyMembers.length}
+              </div>
               <div className="text-blue-300">สมาชิก</div>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-1">⭐</div>
               <div className="text-white font-medium">
                 {Math.round(
-                  partyMembers.reduce((sum: number, member: PartyMember) => 
-                    sum + (Number(member.current_stats.level) || 1), 0
+                  partyMembers.reduce(
+                    (sum: number, member: PartyMember) =>
+                      sum + (Number(member.current_stats.level) || 1),
+                    0
                   ) / partyMembers.length
                 )}
               </div>
@@ -207,8 +255,10 @@ export function PartyView() {
             <div className="text-center">
               <div className="text-2xl mb-1">❤️</div>
               <div className="text-white font-medium">
-                {partyMembers.reduce((sum: number, member: PartyMember) => 
-                  sum + (Number(member.current_stats.hp) || 0), 0
+                {partyMembers.reduce(
+                  (sum: number, member: PartyMember) =>
+                    sum + (Number(member.current_stats.hp) || 0),
+                  0
                 )}
               </div>
               <div className="text-blue-300">HP รวม</div>
@@ -216,8 +266,10 @@ export function PartyView() {
             <div className="text-center">
               <div className="text-2xl mb-1">⚔️</div>
               <div className="text-white font-medium">
-                {partyMembers.reduce((sum: number, member: PartyMember) => 
-                  sum + (Number(member.current_stats.attack) || 0), 0
+                {partyMembers.reduce(
+                  (sum: number, member: PartyMember) =>
+                    sum + (Number(member.current_stats.attack) || 0),
+                  0
                 )}
               </div>
               <div className="text-blue-300">พลังโจมตีรวม</div>

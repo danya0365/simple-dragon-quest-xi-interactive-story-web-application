@@ -224,7 +224,7 @@ export type Database = {
           name: string
           unlock_requirements: Json | null
           updated_at: string | null
-          world_map_id: string
+          world_region_id: string
         }
         Insert: {
           created_at?: string | null
@@ -237,7 +237,7 @@ export type Database = {
           name: string
           unlock_requirements?: Json | null
           updated_at?: string | null
-          world_map_id: string
+          world_region_id: string
         }
         Update: {
           created_at?: string | null
@@ -250,14 +250,14 @@ export type Database = {
           name?: string
           unlock_requirements?: Json | null
           updated_at?: string | null
-          world_map_id?: string
+          world_region_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "locations_world_map_id_fkey"
-            columns: ["world_map_id"]
+            foreignKeyName: "locations_world_region_id_fkey"
+            columns: ["world_region_id"]
             isOneToOne: false
-            referencedRelation: "world_map"
+            referencedRelation: "world_regions"
             referencedColumns: ["id"]
           },
         ]
@@ -485,7 +485,7 @@ export type Database = {
           unlocked_chapters: Json | null
           unlocked_events: Json | null
           unlocked_locations: Json | null
-          unlocked_world_maps: Json | null
+          unlocked_world_regions: Json | null
           updated_at: string | null
           user_id: string
         }
@@ -514,7 +514,7 @@ export type Database = {
           unlocked_chapters?: Json | null
           unlocked_events?: Json | null
           unlocked_locations?: Json | null
-          unlocked_world_maps?: Json | null
+          unlocked_world_regions?: Json | null
           updated_at?: string | null
           user_id: string
         }
@@ -543,7 +543,7 @@ export type Database = {
           unlocked_chapters?: Json | null
           unlocked_events?: Json | null
           unlocked_locations?: Json | null
-          unlocked_world_maps?: Json | null
+          unlocked_world_regions?: Json | null
           updated_at?: string | null
           user_id?: string
         }
@@ -571,7 +571,7 @@ export type Database = {
           },
         ]
       }
-      world_map: {
+      world_regions: {
         Row: {
           created_at: string | null
           description: string | null
@@ -704,12 +704,12 @@ export type Database = {
           verification_status: string
         }[]
       }
-      get_world_map_for_user_progress: {
-        Args: { p_user_progress_uuid: string }
+      get_world_regions: {
+        Args: Record<PropertyKey, never>
         Returns: Json
       }
-      get_world_maps: {
-        Args: Record<PropertyKey, never>
+      get_world_regions_for_user_progress: {
+        Args: { p_user_progress_uuid: string }
         Returns: Json
       }
       initialize_user_progress: {

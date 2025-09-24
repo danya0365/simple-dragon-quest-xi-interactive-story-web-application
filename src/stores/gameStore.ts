@@ -34,7 +34,7 @@ type UserGameStateRpcResponse = {
   current_event_title: string;
   player_level: number;
   player_experience: number;
-  unlocked_world_maps: string[];
+  unlocked_world_regions: string[];
   unlocked_locations: string[];
   unlocked_chapters: string[];
   unlocked_events: string[];
@@ -64,7 +64,7 @@ type InitializeUserProgressResponse = {
   current_event_id: string | null;
   player_level: number;
   player_experience: number;
-  unlocked_world_maps: string[];
+  unlocked_world_regions: string[];
   unlocked_locations: string[];
   unlocked_chapters: string[];
   unlocked_events: string[];
@@ -94,7 +94,7 @@ function mapUserGameStateResponseToUserGameState(
     currentEventId: response.current_event_id,
     completedChapters: response.completed_chapters,
     completedEvents: response.completed_events,
-    unlockedWorldMaps: response.unlocked_world_maps,
+    unlockedWorldRegions: response.unlocked_world_regions,
     unlockedLocations: response.unlocked_locations,
     unlockedChapters: response.unlocked_chapters,
     unlockedEvents: response.unlocked_events,
@@ -141,7 +141,7 @@ function mapUserGameStateResponseToUserGameState(
 
 interface LocationData {
   id: string;
-  world_map_id: string;
+  world_region_id: string;
   name: string;
   description: string;
   image_url: string;
@@ -149,6 +149,19 @@ interface LocationData {
   unlock_requirements: Record<string, unknown>;
   display_order: number;
   is_initial_user_progress: boolean;
+}
+
+interface EventInteraction {
+  id: string;
+  event_id: string;
+  interaction_type: string;
+  title: string;
+  description: string;
+  dialogue: string;
+  choices: Record<string, unknown>[];
+  requirements: Record<string, unknown>;
+  display_order: number;
+  is_available: boolean;
 }
 
 interface WorldRegion {
@@ -163,7 +176,7 @@ interface WorldRegion {
 
 interface Location {
   id: string;
-  world_map_id: string;
+  world_region_id: string;
   name: string;
   description: string;
   location_type: string;
@@ -213,7 +226,7 @@ interface UserGameState {
   completedChapters: string[];
   completedEvents: string[];
 
-  unlockedWorldMaps: string[];
+  unlockedWorldRegions: string[];
   unlockedLocations: string[];
   unlockedChapters: string[];
   unlockedEvents: string[];
@@ -251,7 +264,13 @@ interface GameState {
   // UI state
   loading: boolean;
   error: string | null;
-  currentView: "world_map" | "location" | "event" | "event_interaction" | "inventory" | "party";
+  currentView:
+    | "world_map"
+    | "location"
+    | "event"
+    | "event_interaction"
+    | "inventory"
+    | "party";
   selectedRegionId: string | null;
   selectedLocationId: string | null;
   selectedEventId: string | null;
@@ -315,7 +334,7 @@ export const useGameStore = create<GameStore>()(
         try {
           // Get all world maps and locations (complete catalog)
           const { data: allWorldMapsData, error: allMapsError } =
-            await supabase.rpc("get_world_maps");
+            await supabase.rpc("get_world_regions");
 
           if (allMapsError) throw allMapsError;
 
@@ -323,14 +342,16 @@ export const useGameStore = create<GameStore>()(
             allWorldMapsData as unknown as WorldMapsRpcResponse[];
 
           // Use unlocked data from userGameState
-          const unlockedWorldMapIds = new Set(userGameState.unlockedWorldMaps);
+          const unlockedWorldMapIds = new Set(
+            userGameState.unlockedWorldRegions
+          );
           const unlockedLocationIds = new Set(userGameState.unlockedLocations);
 
           // Extract all locations data
           const allLocationsData = allWorldMaps.flatMap((worldMap) =>
             worldMap.locations.map((location) => ({
               id: location.id,
-              world_map_id: location.world_map_id,
+              world_region_id: location.world_region_id,
               name: location.name,
               description: location.description,
               image_url: location.image_url,
@@ -379,18 +400,18 @@ export const useGameStore = create<GameStore>()(
           set({ error: "ไม่พบข้อมูลผู้เล่น" });
           return;
         }
-        
+
         set({ loading: true, error: null });
 
         try {
           // Filter locations for the selected region from allLocations data
           const unlockedLocationIds = new Set(userGameState.unlockedLocations);
           const availableLocations = allLocations
-            .filter((location) => location.world_map_id === regionId)
+            .filter((location) => location.world_region_id === regionId)
             .filter((location) => unlockedLocationIds.has(location.id))
             .map((location) => ({
               id: location.id,
-              world_map_id: location.world_map_id,
+              world_region_id: location.world_region_id,
               name: location.name,
               description: location.description,
               location_type: location.location_type,
@@ -430,7 +451,8 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const newAvailableEvents = data as unknown as AvailableEventsResponse[];
+          const newAvailableEvents =
+            data as unknown as AvailableEventsResponse[];
 
           set({
             availableEvents: newAvailableEvents,
@@ -449,7 +471,7 @@ export const useGameStore = create<GameStore>()(
         // If no userProgressId provided, try to get it from userGameState
         const { userGameState } = get();
         const progressId = userProgressId || userGameState?.id;
-        
+
         if (!progressId) {
           set({ error: "ไม่พบข้อมูลผู้เล่น" });
           return;
@@ -467,7 +489,8 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const userGameStateResponse = data as unknown as UserGameStateRpcResponse;
+          const userGameStateResponse =
+            data as unknown as UserGameStateRpcResponse;
           const mappedUserGameState = mapUserGameStateResponseToUserGameState(
             userGameStateResponse
           );
@@ -506,7 +529,10 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const eventInteractions = data as unknown as { event: StoryEvent; interactions: any[]; };
+          const eventInteractions = data as unknown as {
+            event: StoryEvent;
+            interactions: EventInteraction[];
+          };
 
           set({ loading: false });
           return eventInteractions;
@@ -539,13 +565,18 @@ export const useGameStore = create<GameStore>()(
             {
               p_user_progress_uuid: userProgressId,
               p_interaction_uuid: interactionId,
-              p_choice_data: choiceData || {} as Record<string, unknown>,
+              p_choice_data: (choiceData as any) || {},
             }
           );
 
           if (error) throw error;
 
-          const result = data as unknown as { success: boolean; message: string; next_event_id?: string; error?: string; };
+          const result = data as unknown as {
+            success: boolean;
+            message: string;
+            next_event_id?: string;
+            error?: string;
+          };
 
           if (result.success && !result.error) {
             // Reload game state after successful interaction
@@ -585,7 +616,15 @@ export const useGameStore = create<GameStore>()(
         set({ selectedEventId: eventId });
       },
 
-      setCurrentView: (view: "world_map" | "location" | "event" | "event_interaction" | "inventory" | "party") => {
+      setCurrentView: (
+        view:
+          | "world_map"
+          | "location"
+          | "event"
+          | "event_interaction"
+          | "inventory"
+          | "party"
+      ) => {
         set({ currentView: view });
       },
 

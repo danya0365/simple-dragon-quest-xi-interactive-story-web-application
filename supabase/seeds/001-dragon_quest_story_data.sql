@@ -4,14 +4,14 @@
 -- Description: Sample story data for Dragon Quest XI Interactive Story (Prison Arc)
 -- Updated: 2025-09-24 - Fixed to match schema structure
 
--- Insert World Map regions
-INSERT INTO public.world_map (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress) VALUES
+-- Insert World Regions
+INSERT INTO public.world_regions (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress) VALUES
 ('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.jpg', '{}', 1, true),
 ('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false),
 ('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false);
 
 -- Insert Locations
-INSERT INTO public.locations (id, world_map_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
+INSERT INTO public.locations (id, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
 -- Cobblestone locations
 ('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1, true),
 ('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, true),

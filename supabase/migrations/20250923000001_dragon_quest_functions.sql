@@ -71,10 +71,10 @@ BEGIN
     LIMIT 1;
     
     -- Get unlocked content from each table separately (SIMPLIFIED: Use is_initial_user_progress flag)
-    -- World Maps with initial user progress flag
+    -- World Regions with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_world_maps
-    FROM public.world_map 
+    FROM public.world_regions 
     WHERE is_initial_user_progress = true;
     
     -- Locations with initial user progress flag
@@ -109,7 +109,7 @@ BEGIN
         player_experience,
         
         -- Game content - UNLOCKED (FIX: Convert UUID arrays to JSONB)
-        unlocked_world_maps,
+        unlocked_world_regions,
         unlocked_locations,
         unlocked_chapters,
         unlocked_events,
@@ -162,7 +162,7 @@ BEGIN
         0,                                 -- 0 experience
         
         -- Game content - UNLOCKED (FIX: Convert UUID arrays to JSONB)
-        to_jsonb(v_unlocked_world_maps),  -- World Maps as JSONB array
+        to_jsonb(v_unlocked_world_maps),  -- World Regions as JSONB array
         to_jsonb(v_unlocked_locations),   -- Locations as JSONB array
         to_jsonb(v_unlocked_chapters),    -- Chapters as JSONB array
         to_jsonb(v_unlocked_events),      -- Events as JSONB array
@@ -291,7 +291,7 @@ AS $$
             COALESCE(se.title, 'Unknown Event') as current_event_title,
             up.player_level,
             up.player_experience,
-            up.unlocked_world_maps,
+            up.unlocked_world_regions,
             up.unlocked_locations,
             up.unlocked_chapters,
             up.unlocked_events,
@@ -323,7 +323,7 @@ $$;
 -- Function to get world map with unlock status for user_progress
 -- Uses hash map approach with CTEs and joins for better performance
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_world_map_for_user_progress(p_user_progress_uuid UUID)
+CREATE OR REPLACE FUNCTION public.get_world_regions_for_user_progress(p_user_progress_uuid UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -332,26 +332,26 @@ DECLARE
     v_unlocked_world_maps UUID[];
     v_unlocked_locations UUID[];
 BEGIN
-    -- Get unlocked world maps and locations from user progress
-    SELECT unlocked_world_maps, unlocked_locations 
+    -- Get unlocked world regions and locations from user progress
+    SELECT unlocked_world_regions, unlocked_locations 
     INTO v_unlocked_world_maps, v_unlocked_locations
     FROM public.user_progress 
     WHERE id = p_user_progress_uuid;
     
     -- Return comprehensive world map structure using hash map approach
     RETURN (
-        WITH unlocked_world_maps_data AS (
+        WITH unlocked_world_regions_data AS (
             SELECT 
-                wm.id,
-                wm.name,
-                wm.description,
-                wm.image_url,
-                wm.unlock_requirements,
-                wm.display_order,
-                wm.is_initial_user_progress
-            FROM public.world_map wm
-            WHERE wm.id = ANY(v_unlocked_world_maps)
-            ORDER BY wm.display_order, wm.name
+                wr.id,
+                wr.name,
+                wr.description,
+                wr.image_url,
+                wr.unlock_requirements,
+                wr.display_order,
+                wr.is_initial_user_progress
+            FROM public.world_regions wr
+            WHERE wr.id = ANY(v_unlocked_world_maps)
+            ORDER BY wr.display_order, wr.name
         ),
         unlocked_locations_data AS (
             SELECT 
@@ -368,13 +368,13 @@ BEGIN
             WHERE loc.id = ANY(v_unlocked_locations)
             ORDER BY loc.display_order, loc.name
         ),
-        locations_by_world_map AS (
+        locations_by_world_region AS (
             SELECT 
-                loc.world_map_id,
+                loc.world_region_id,
                 COALESCE(jsonb_agg(
                     jsonb_build_object(
                         'id', loc.id,
-                        'world_map_id', loc.world_map_id,
+                        'world_region_id', loc.world_region_id,
                         'name', loc.name,
                         'description', loc.description,
                         'image_url', loc.image_url,
@@ -385,52 +385,52 @@ BEGIN
                     )
                 ), '[]'::jsonb) as locations
             FROM unlocked_locations_data loc
-            GROUP BY loc.world_map_id
+            GROUP BY loc.world_region_id
         )
         SELECT COALESCE(jsonb_agg(
             jsonb_build_object(
-                'id', wm.id,
-                'name', wm.name,
-                'description', wm.description,
-                'image_url', wm.image_url,
-                'unlock_requirements', wm.unlock_requirements,
-                'display_order', wm.display_order,
-                'is_initial_user_progress', wm.is_initial_user_progress,
-                'locations', COALESCE(lbm.locations, '[]'::jsonb)
+                'id', wr.id,
+                'name', wr.name,
+                'description', wr.description,
+                'image_url', wr.image_url,
+                'unlock_requirements', wr.unlock_requirements,
+                'display_order', wr.display_order,
+                'is_initial_user_progress', wr.is_initial_user_progress,
+                'locations', COALESCE(lbr.locations, '[]'::jsonb)
             )
         ), '[]'::jsonb)
-        FROM unlocked_world_maps_data wm
-        LEFT JOIN locations_by_world_map lbm ON wm.id = lbm.world_map_id
+        FROM unlocked_world_regions_data wr
+        LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.world_region_id
     );
 END;
 $$;
 
 
 -- =============================================================================
--- Function to get all world maps with all locations (no user progress filtering)
+-- Function to get all world regions with all locations (no user progress filtering)
 -- Uses hash map approach with joins and jsonb_object_agg for better performance
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_world_maps()
+CREATE OR REPLACE FUNCTION public.get_world_regions()
 RETURNS JSONB
 LANGUAGE sql
 SECURITY DEFINER
 AS $$
-    WITH world_maps_data AS (
+    WITH world_regions_data AS (
         SELECT 
-            wm.id,
-            wm.name,
-            wm.description,
-            wm.image_url,
-            wm.unlock_requirements,
-            wm.display_order,
-            wm.is_initial_user_progress
-        FROM public.world_map wm
-        ORDER BY wm.display_order, wm.name
+            wr.id,
+            wr.name,
+            wr.description,
+            wr.image_url,
+            wr.unlock_requirements,
+            wr.display_order,
+            wr.is_initial_user_progress
+        FROM public.world_regions wr
+        ORDER BY wr.display_order, wr.name
     ),
     locations_data AS (
         SELECT 
             loc.id,
-            loc.world_map_id,
+            loc.world_region_id,
             loc.name,
             loc.description,
             loc.image_url,
@@ -441,13 +441,13 @@ AS $$
         FROM public.locations loc
         ORDER BY loc.display_order, loc.name
     ),
-    locations_by_world_map AS (
+    locations_by_world_region AS (
         SELECT 
-            loc.world_map_id,
+            loc.world_region_id,
             COALESCE(jsonb_agg(
                 jsonb_build_object(
                     'id', loc.id,
-                    'world_map_id', loc.world_map_id,
+                    'world_region_id', loc.world_region_id,
                     'name', loc.name,
                     'description', loc.description,
                     'image_url', loc.image_url,
@@ -458,22 +458,22 @@ AS $$
                 )
             ), '[]'::jsonb) as locations
         FROM locations_data loc
-        GROUP BY loc.world_map_id
+        GROUP BY loc.world_region_id
     )
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
-            'id', wm.id,
-            'name', wm.name,
-            'description', wm.description,
-            'image_url', wm.image_url,
-            'unlock_requirements', wm.unlock_requirements,
-            'display_order', wm.display_order,
-            'is_initial_user_progress', wm.is_initial_user_progress,
-            'locations', COALESCE(lbm.locations, '[]'::jsonb)
+            'id', wr.id,
+            'name', wr.name,
+            'description', wr.description,
+            'image_url', wr.image_url,
+            'unlock_requirements', wr.unlock_requirements,
+            'display_order', wr.display_order,
+            'is_initial_user_progress', wr.is_initial_user_progress,
+            'locations', COALESCE(lbr.locations, '[]'::jsonb)
         )
     ), '[]'::jsonb)
-    FROM world_maps_data wm
-    LEFT JOIN locations_by_world_map lbm ON wm.id = lbm.world_map_id;
+    FROM world_regions_data wr
+    LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.world_region_id;
 $$;
 
 -- =============================================================================

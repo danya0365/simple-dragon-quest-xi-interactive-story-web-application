@@ -1,27 +1,20 @@
 "use client";
 
-import { useAuthStore } from "@/src/stores/authStore";
+import { useGameStore } from "@/src/stores/gameStore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export function HomeView() {
   const router = useRouter();
-  const { user, initialize, initialized } = useAuthStore();
-
-  // Initialize auth store
-  useEffect(() => {
-    if (!initialized) {
-      initialize();
-    }
-  }, [initialize, initialized]);
+  const { userGameState } = useGameStore();
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
-    if (user && initialized) {
+    if (userGameState) {
       router.push("/dashboard");
     }
-  }, [user, initialized, router]);
+  }, [userGameState, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">

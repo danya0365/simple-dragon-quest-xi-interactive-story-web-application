@@ -7,9 +7,9 @@
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- World Map Table
--- เก็บข้อมูลแผนที่โลกและภูมิภาคต่าง ๆ (Content only, no user state)
-CREATE TABLE IF NOT EXISTS public.world_map (
+-- World Regions Table
+-- เก็บข้อมูลภูมิภาคต่าง ๆ ในโลก (Content only, no user state)
+CREATE TABLE IF NOT EXISTS public.world_regions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS public.world_map (
 -- เก็บข้อมูลสถานที่ต่าง ๆ ในแต่ละภูมิภาค (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.locations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    world_map_id UUID NOT NULL REFERENCES public.world_map(id) ON DELETE CASCADE,
+    world_region_id UUID NOT NULL REFERENCES public.world_regions(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image_url VARCHAR(500),
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     player_experience INTEGER DEFAULT 0,
     
     -- Game content
-    unlocked_world_maps JSONB DEFAULT '[]',
+    unlocked_world_regions JSONB DEFAULT '[]',
     -- Array of unlocked world map UUIDs
     -- Format: [uuid]
     -- Example: ["11111111-1111-1111-1111-111111111001", "11111111-1111-1111-1111-111111111002"]
@@ -306,7 +306,7 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
 -- REMOVED: User Inventory Table - Data centralized to user_progress.inventory
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_locations_world_map_id ON public.locations(world_map_id);
+CREATE INDEX IF NOT EXISTS idx_locations_world_region_id ON public.locations(world_region_id);
 CREATE INDEX IF NOT EXISTS idx_story_events_chapter_id ON public.story_events(chapter_id);
 CREATE INDEX IF NOT EXISTS idx_story_events_location_id ON public.story_events(location_id);
 CREATE INDEX IF NOT EXISTS idx_event_interactions_event_id ON public.event_interactions(event_id);
@@ -314,7 +314,7 @@ CREATE INDEX IF NOT EXISTS idx_event_outcomes_interaction_id ON public.event_out
 CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON public.user_progress(user_id);
 
 -- Create GIN indexes for JSONB fields in user_progress for better performance
-CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_world_maps ON public.user_progress USING GIN (unlocked_world_maps);
+CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_world_regions ON public.user_progress USING GIN (unlocked_world_regions);
 CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_locations ON public.user_progress USING GIN (unlocked_locations);
 CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_chapters ON public.user_progress USING GIN (unlocked_chapters);
 CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_events ON public.user_progress USING GIN (unlocked_events);
@@ -339,7 +339,7 @@ END;
 $$ language 'plpgsql';
 
 -- Apply updated_at triggers
-CREATE TRIGGER update_world_map_updated_at BEFORE UPDATE ON public.world_map FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_world_regions_updated_at BEFORE UPDATE ON public.world_regions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_locations_updated_at BEFORE UPDATE ON public.locations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_story_chapters_updated_at BEFORE UPDATE ON public.story_chapters FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_story_events_updated_at BEFORE UPDATE ON public.story_events FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
