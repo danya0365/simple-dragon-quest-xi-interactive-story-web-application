@@ -1,7 +1,7 @@
+import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase-client-client";
+import type { Session, User } from "@supabase/supabase-js";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase-client-client";
-import type { User, Session } from "@supabase/supabase-js";
 
 interface AuthState {
   user: User | null;
@@ -126,7 +126,7 @@ export const useAuthStore = create<AuthStore>()(
           set({ loading: false });
           return;
         }
-        
+
         set({ loading: true });
         const supabase = createClientSupabaseClient();
 
@@ -193,7 +193,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           // Call the initialize_user_progress function
           const { error } = await supabase.rpc("initialize_user_progress", {
-            user_uuid: user.id,
+            p_user_uuid: user.id,
           });
 
           if (error) {

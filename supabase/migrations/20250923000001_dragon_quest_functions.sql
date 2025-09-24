@@ -311,3 +311,60 @@ AS $$
         WHERE up.id = p_user_progress_uuid
     ) AS game_state;
 $$;
+
+-- =============================================================================
+-- Function to get world map with unlock status for user_progress
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_world_map_for_user_progress(p_user_progress_uuid UUID)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_unlocked_world_maps UUID[];
+    v_unlocked_locations UUID[];
+BEGIN
+    -- Get unlocked world maps and locations from user progress
+    SELECT unlocked_world_maps, unlocked_locations 
+    INTO v_unlocked_world_maps, v_unlocked_locations
+    FROM public.user_progress 
+    WHERE id = p_user_progress_uuid;
+    
+    -- Return comprehensive world map structure with nested locations
+    RETURN (
+        SELECT COALESCE(jsonb_agg(
+            jsonb_build_object(
+                'id', wm.id,
+                'name', wm.name,
+                'description', wm.description,
+                'image_url', wm.image_url,
+                'unlock_requirements', wm.unlock_requirements,
+                'display_order', wm.display_order,
+                'is_initial_user_progress', wm.is_initial_user_progress,
+                'locations', (
+                    SELECT COALESCE(jsonb_agg(
+                        jsonb_build_object(
+                            'id', loc.id,
+                            'world_map_id', loc.world_map_id,
+                            'name', loc.name,
+                            'description', loc.description,
+                            'image_url', loc.image_url,
+                            'location_type', loc.location_type,
+                            'unlock_requirements', loc.unlock_requirements,
+                            'display_order', loc.display_order,
+                            'is_initial_user_progress', loc.is_initial_user_progress
+                        )
+                    ), '[]'::jsonb)
+                    FROM public.locations loc
+                    WHERE loc.world_map_id = wm.id
+                    AND loc.id = ANY(v_unlocked_locations)
+                    ORDER BY loc.display_order, loc.name
+                )
+            )
+        ), '[]'::jsonb)
+        FROM public.world_map wm
+        WHERE wm.id = ANY(v_unlocked_world_maps)
+        ORDER BY wm.display_order, wm.name
+    );
+END;
+$$;

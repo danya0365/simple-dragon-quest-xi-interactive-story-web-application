@@ -688,6 +688,10 @@ export type Database = {
           verification_status: string
         }[]
       }
+      get_world_map_for_user_progress: {
+        Args: { p_user_progress_uuid: string }
+        Returns: Json
+      }
       initialize_user_progress: {
         Args: { p_user_uuid: string }
         Returns: Json
