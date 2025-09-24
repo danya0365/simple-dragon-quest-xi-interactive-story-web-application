@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS public.event_outcomes (
 );
 
 -- Characters Table
--- เก็บข้อมูลตัวละครในเกม
+-- เก็บข้อมูลตัวละครในเกม (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.characters (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
@@ -156,7 +156,6 @@ CREATE TABLE IF NOT EXISTS public.characters (
     -- Format: {"level": integer, "completed_events": [uuid], "flags": {string: any}}
     -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"erik_trust": 10}}
     is_party_member BOOLEAN DEFAULT false,
-    is_available BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
