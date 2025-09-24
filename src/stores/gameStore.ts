@@ -240,22 +240,27 @@ interface GameState {
   // World and location data
   worldRegions: WorldRegion[];
   currentLocation: Location | null;
+  allLocations: LocationData[];
+  availableLocations: Location[];
   availableEvents: StoryEvent[];
 
   // User progress
   userGameState: UserGameState | null;
+  userProgressId: string | null;
 
   // UI state
   loading: boolean;
   error: string | null;
   currentView: "world_map" | "location" | "event" | "inventory" | "party";
   selectedRegionId: string | null;
+  selectedLocationId: string | null;
   selectedEventId: string | null;
 }
 
 interface GameActions {
   // Data loading
   loadWorldMap: () => Promise<void>;
+  loadLocationsForRegion: (regionId: string) => Promise<void>;
   loadAvailableEvents: () => Promise<void>;
   loadUserGameState: (userProgressId?: string) => Promise<void>;
   loadEventInteractions: (eventId: string) => Promise<unknown>;
@@ -267,7 +272,7 @@ interface GameActions {
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
-  setSelectedEvent: (eventId: string | null) => void;
+  setSelectedEventId: (eventId: string | null) => void;
   setCurrentLocation: (location: Location | null) => void;
 
   // State management
@@ -284,6 +289,8 @@ export const useGameStore = create<GameStore>()(
       // Initial state
       worldRegions: [],
       currentLocation: null,
+      allLocations: [],
+      availableLocations: [],
       availableEvents: [],
       userGameState: null,
       userProgressId: null,
@@ -291,6 +298,7 @@ export const useGameStore = create<GameStore>()(
       error: null,
       currentView: "world_map",
       selectedRegionId: null,
+      selectedLocationId: null,
       selectedEventId: null,
 
       // Actions
@@ -317,6 +325,21 @@ export const useGameStore = create<GameStore>()(
           const unlockedWorldMapIds = new Set(userGameState.unlockedWorldMaps);
           const unlockedLocationIds = new Set(userGameState.unlockedLocations);
 
+          // Extract all locations data
+          const allLocationsData = allWorldMaps.flatMap((worldMap) =>
+            worldMap.locations.map((location) => ({
+              id: location.id,
+              world_map_id: location.world_map_id,
+              name: location.name,
+              description: location.description,
+              image_url: location.image_url,
+              location_type: location.location_type,
+              unlock_requirements: location.unlock_requirements,
+              display_order: location.display_order,
+              is_initial_user_progress: location.is_initial_user_progress,
+            }))
+          );
+
           // Transform the data to match our WorldRegion interface
           const transformedData = allWorldMaps.map((worldMap) => {
             const isWorldMapUnlocked = unlockedWorldMapIds.has(worldMap.id);
@@ -337,12 +360,50 @@ export const useGameStore = create<GameStore>()(
 
           set({
             worldRegions: transformedData,
+            allLocations: allLocationsData,
             loading: false,
           });
         } catch (err) {
           console.error("Error loading world map:", err);
           set({
             error: "ไม่สามารถโหลดแผนที่โลกได้",
+            loading: false,
+          });
+        }
+      },
+
+      loadLocationsForRegion: async (regionId: string) => {
+        const { userGameState, allLocations } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
+        
+        set({ loading: true, error: null });
+
+        try {
+          // Filter locations for the selected region from allLocations data
+          const unlockedLocationIds = new Set(userGameState.unlockedLocations);
+          const availableLocations = allLocations
+            .filter((location) => location.world_map_id === regionId)
+            .filter((location) => unlockedLocationIds.has(location.id))
+            .map((location) => ({
+              id: location.id,
+              world_map_id: location.world_map_id,
+              name: location.name,
+              description: location.description,
+              location_type: location.location_type,
+              is_unlocked: true, // Since we filtered by unlocked locations
+            }));
+
+          set({
+            availableLocations,
+            loading: false,
+          });
+        } catch (err) {
+          console.error("Error loading locations:", err);
+          set({
+            error: "ไม่สามารถโหลดสถานที่ได้",
             loading: false,
           });
         }
@@ -510,22 +571,48 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      setCurrentView: (view) => set({ currentView: view }),
-      setSelectedRegion: (regionId) => set({ selectedRegionId: regionId }),
-      setSelectedEvent: (eventId) => set({ selectedEventId: eventId }),
-      setCurrentLocation: (location) => set({ currentLocation: location }),
-      setLoading: (loading) => set({ loading }),
-      setError: (error) => set({ error }),
+      setSelectedLocationId: (locationId: string | null) => {
+        set({ selectedLocationId: locationId });
+      },
+
+      setSelectedEventId: (eventId: string | null) => {
+        set({ selectedEventId: eventId });
+      },
+
+      setCurrentView: (view: "world_map" | "location" | "event" | "inventory" | "party") => {
+        set({ currentView: view });
+      },
+
+      setSelectedRegion: (regionId: string | null) => {
+        set({ selectedRegionId: regionId });
+      },
+
+      setCurrentLocation: (location: Location | null) => {
+        set({ currentLocation: location });
+      },
+
+      setLoading: (loading: boolean) => {
+        set({ loading });
+      },
+
+      setError: (error: string | null) => {
+        set({ error });
+      },
+
       reset: () => {
         set({
           worldRegions: [],
           currentLocation: null,
+          allLocations: [],
+          availableLocations: [],
           availableEvents: [],
           userGameState: null,
+          userProgressId: null,
           loading: false,
           error: null,
           currentView: "world_map",
           selectedRegionId: null,
+          selectedLocationId: null,
           selectedEventId: null,
         });
       },

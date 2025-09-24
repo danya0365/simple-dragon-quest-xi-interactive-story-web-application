@@ -11,12 +11,14 @@ export function WorldMapView() {
     selectedRegionId,
     userGameState,
     loadWorldMap,
+    loadLocationsForRegion,
     setSelectedRegion,
     setCurrentView,
   } = useGameStore();
 
-  const handleRegionClick = (regionId: string) => {
+  const handleRegionClick = async (regionId: string) => {
     setSelectedRegion(regionId);
+    await loadLocationsForRegion(regionId);
     setCurrentView("location");
   };
 

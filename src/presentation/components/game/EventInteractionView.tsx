@@ -39,7 +39,7 @@ export function EventInteractionView() {
     completeInteraction,
     loadEventInteractions,
     setCurrentView,
-    setSelectedEvent,
+    setSelectedEventId,
   } = useGameStore();
 
   const [eventData, setEventData] = useState<EventData | null>(null);
@@ -108,7 +108,7 @@ export function EventInteractionView() {
   };
 
   const handleBackToLocation = () => {
-    setSelectedEvent(null);
+    setSelectedEventId(null);
     setCurrentView("location");
   };
 
