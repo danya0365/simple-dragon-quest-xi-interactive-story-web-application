@@ -692,6 +692,10 @@ export type Database = {
         Args: { p_user_progress_uuid: string }
         Returns: Json
       }
+      get_world_maps: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       initialize_user_progress: {
         Args: { p_user_uuid: string }
         Returns: Json

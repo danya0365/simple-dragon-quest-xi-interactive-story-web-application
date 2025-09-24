@@ -12,7 +12,7 @@ interface LocationData {
   description: string;
   image_url: string;
   location_type: string;
-  unlock_requirements: Record<string, any>;
+  unlock_requirements: Record<string, unknown>;
   display_order: number;
   is_initial_user_progress: boolean;
 }
@@ -22,13 +22,16 @@ interface WorldMapData {
   name: string;
   description: string;
   image_url: string;
-  unlock_requirements: Record<string, any>;
+  unlock_requirements: Record<string, unknown>;
   display_order: number;
   is_initial_user_progress: boolean;
   locations: LocationData[];
 }
 
 type WorldMapUnlockStatus = WorldMapData[];
+
+// Return type for get_world_maps RPC (same structure but includes all maps/locations)
+type WorldMapsResponse = WorldMapData[];
 
 interface WorldRegion {
   id: string;
@@ -116,7 +119,7 @@ interface GameActions {
   loadWorldMap: (userId: string) => Promise<void>;
   loadAvailableEvents: (userId: string) => Promise<void>;
   loadUserGameState: (userId: string) => Promise<void>;
-  loadEventInteractions: (userId: string, eventId: string) => Promise<any>;
+  loadEventInteractions: (userId: string, eventId: string) => Promise<unknown>;
 
   // Game interactions
   completeInteraction: (
@@ -159,27 +162,47 @@ export const useGameStore = create<GameStore>()(
         const supabase = createClientSupabaseClient();
 
         try {
-          const { data, error } = await supabase.rpc(
+          // Get all world maps and locations (complete catalog)
+          const { data: allWorldMapsData, error: allMapsError } = await supabase.rpc("get_world_maps");
+          
+          if (allMapsError) throw allMapsError;
+          
+          // Get user's unlocked world maps and locations
+          const { data: unlockedWorldMapsData, error: unlockedMapsError } = await supabase.rpc(
             "get_world_map_for_user_progress",
             {
               p_user_progress_uuid: userProgressId,
             }
           );
-
-          if (error) throw error;
-
-          const worldMapStatus = data as unknown as WorldMapUnlockStatus;
-
+          
+          if (unlockedMapsError) throw unlockedMapsError;
+          
+          const allWorldMaps = allWorldMapsData as unknown as WorldMapsResponse;
+          const unlockedWorldMaps = unlockedWorldMapsData as unknown as WorldMapUnlockStatus;
+          
+          // Create hash maps for quick lookup of unlocked status
+          const unlockedWorldMapIds = new Set(unlockedWorldMaps.map(map => map.id));
+          const unlockedLocationIds = new Set(
+            unlockedWorldMaps.flatMap(map => map.locations.map(loc => loc.id))
+          );
+          
           // Transform the data to match our WorldRegion interface
-          const transformedData = worldMapStatus.map((worldMap) => ({
-            id: worldMap.id,
-            name: worldMap.name,
-            description: worldMap.description,
-            image_url: worldMap.image_url,
-            is_unlocked: true, // All returned maps are unlocked by definition
-            locations_count: worldMap.locations.length,
-            unlocked_locations_count: worldMap.locations.length, // All returned locations are unlocked
-          }));
+          const transformedData = allWorldMaps.map((worldMap) => {
+            const isWorldMapUnlocked = unlockedWorldMapIds.has(worldMap.id);
+            const unlockedLocationsInMap = worldMap.locations.filter(loc => 
+              unlockedLocationIds.has(loc.id)
+            );
+            
+            return {
+              id: worldMap.id,
+              name: worldMap.name,
+              description: worldMap.description,
+              image_url: worldMap.image_url,
+              is_unlocked: isWorldMapUnlocked,
+              locations_count: worldMap.locations.length,
+              unlocked_locations_count: unlockedLocationsInMap.length,
+            };
+          });
 
           set({
             worldRegions: transformedData,
@@ -255,8 +278,8 @@ export const useGameStore = create<GameStore>()(
           if (error) throw error;
 
           set({ loading: false });
-          return data;
-        } catch (err) {
+          return data as unknown;
+        } catch (err: unknown) {
           console.error("Error loading event interactions:", err);
           set({
             error: "ไม่สามารถโหลดการโต้ตอบได้",
