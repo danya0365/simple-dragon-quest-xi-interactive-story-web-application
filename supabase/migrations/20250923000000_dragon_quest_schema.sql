@@ -226,15 +226,37 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     -- Format: [uuid]
     -- Example: ["66666666-6666-6666-6666-666666666001", "66666666-6666-6666-6666-666666666002"]
     
-    -- Player inventory and equipment
+    -- Player inventory and equipment (CENTRALIZED)
     inventory JSONB DEFAULT '[]',
-    -- Array of items with quantities in player inventory
-    -- Format: [{"id": uuid, "quantity": integer, "obtained_at": timestamp}]
-    -- Example: [{"id": "55555555-5555-5555-5555-555555555001", "quantity": 1, "obtained_at": "2025-01-01T00:00:00Z"}]
-    equipment JSONB DEFAULT '{}',
-    -- Currently equipped items by slot
-    -- Format: {"weapon": uuid, "armor": uuid, "accessory": uuid}
-    -- Example: {"weapon": "55555555-5555-5555-5555-555555555001", "armor": "55555555-5555-5555-5555-555555555002"}
+    -- Array of items with detailed inventory data
+    -- Format: [{"item_id": uuid, "quantity": integer, "obtained_at": timestamp, "equipped": boolean, "slot": string}]
+    -- Example: [{"item_id": "55555555-5555-5555-5555-555555555001", "quantity": 1, "obtained_at": "2025-01-01T00:00:00Z", "equipped": true, "slot": "weapon"}]
+    
+    -- Party members (CENTRALIZED)
+    party_members JSONB DEFAULT '[]',
+    -- Array of party member data with full details
+    -- Format: [{"character_id": uuid, "joined_at": timestamp, "current_stats": {}, "equipment": {}, "is_active": boolean, "party_position": integer}]
+    -- Example: [{"character_id": "44444444-4444-4444-4444-444444444001", "joined_at": "2025-01-01T00:00:00Z", "current_stats": {"hp": 120, "mp": 60}, "equipment": {"weapon": "uuid"}, "is_active": true, "party_position": 1}]
+    
+    -- Character relationships
+    character_relationships JSONB DEFAULT '{}',
+    -- Character relationship levels and flags
+    -- Format: {"erik": 15, "grandpa": 50, "king": -10}
+    
+    -- Player position
+    player_position JSONB DEFAULT '{}',
+    -- Current player position in the game world
+    -- Format: {"x": 100, "y": 200, "map_id": "uuid"}
+    
+    -- Achievements
+    achievements JSONB DEFAULT '[]',
+    -- Unlocked achievements and completion data
+    -- Format: [{"id": uuid, "unlocked_at": timestamp}]
+    
+    -- Play history
+    play_history JSONB DEFAULT '[]',
+    -- Historical record of completed events and choices
+    -- Format: [{"event_id": uuid, "completed_at": timestamp, "choices": [string]}]
     
     -- Active content
     active_quests JSONB DEFAULT '[]',
@@ -268,40 +290,8 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     UNIQUE(user_id)
 );
 
--- User Party Members Table
--- เก็บข้อมูลสมาชิกในปาร์ตี้ของผู้เล่นแต่ละคน
-CREATE TABLE IF NOT EXISTS public.user_party_members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    character_id UUID NOT NULL REFERENCES public.characters(id) ON DELETE CASCADE,
-    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    current_stats JSONB DEFAULT '{}',
-    -- Current character stats (may differ from base stats due to leveling, equipment, etc.)
-    -- Format: {"hp": integer, "mp": integer, "level": integer, "attack": integer, "defense": integer, "experience": integer}
-    -- Example: {"hp": 120, "mp": 60, "level": 2, "attack": 18, "defense": 12, "experience": 150}
-    equipment JSONB DEFAULT '{}',
-    -- Equipment currently worn by this party member
-    -- Format: {"weapon": uuid, "armor": uuid, "accessory": uuid}
-    -- Example: {"weapon": "55555555-5555-5555-5555-555555555001", "armor": "55555555-5555-5555-5555-555555555002"}
-    is_active BOOLEAN DEFAULT true,
-    party_position INTEGER DEFAULT 1, -- Position in party (1-4)
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, character_id)
-);
-
--- User Inventory Table
--- เก็บข้อมูลไอเทมในกระเป๋าของผู้เล่นแต่ละคน
-CREATE TABLE IF NOT EXISTS public.user_inventory (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    item_id UUID NOT NULL REFERENCES public.items(id) ON DELETE CASCADE,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    obtained_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, item_id)
-);
+-- REMOVED: User Party Members Table - Data centralized to user_progress.party_members
+-- REMOVED: User Inventory Table - Data centralized to user_progress.inventory
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_locations_world_map_id ON public.locations(world_map_id);
@@ -310,10 +300,22 @@ CREATE INDEX IF NOT EXISTS idx_story_events_location_id ON public.story_events(l
 CREATE INDEX IF NOT EXISTS idx_event_interactions_event_id ON public.event_interactions(event_id);
 CREATE INDEX IF NOT EXISTS idx_event_outcomes_interaction_id ON public.event_outcomes(interaction_id);
 CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON public.user_progress(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_party_members_user_id ON public.user_party_members(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_party_members_character_id ON public.user_party_members(character_id);
-CREATE INDEX IF NOT EXISTS idx_user_inventory_user_id ON public.user_inventory(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_inventory_item_id ON public.user_inventory(item_id);
+
+-- Create GIN indexes for JSONB fields in user_progress for better performance
+CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_world_maps ON public.user_progress USING GIN (unlocked_world_maps);
+CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_locations ON public.user_progress USING GIN (unlocked_locations);
+CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_chapters ON public.user_progress USING GIN (unlocked_chapters);
+CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_events ON public.user_progress USING GIN (unlocked_events);
+CREATE INDEX IF NOT EXISTS idx_user_progress_completed_chapters ON public.user_progress USING GIN (completed_chapters);
+CREATE INDEX IF NOT EXISTS idx_user_progress_completed_events ON public.user_progress USING GIN (completed_events);
+CREATE INDEX IF NOT EXISTS idx_user_progress_inventory ON public.user_progress USING GIN (inventory);
+CREATE INDEX IF NOT EXISTS idx_user_progress_party_members ON public.user_progress USING GIN (party_members);
+CREATE INDEX IF NOT EXISTS idx_user_progress_character_relationships ON public.user_progress USING GIN (character_relationships);
+CREATE INDEX IF NOT EXISTS idx_user_progress_player_position ON public.user_progress USING GIN (player_position);
+CREATE INDEX IF NOT EXISTS idx_user_progress_achievements ON public.user_progress USING GIN (achievements);
+CREATE INDEX IF NOT EXISTS idx_user_progress_play_history ON public.user_progress USING GIN (play_history);
+CREATE INDEX IF NOT EXISTS idx_user_progress_game_flags ON public.user_progress USING GIN (game_flags);
+CREATE INDEX IF NOT EXISTS idx_user_progress_game_stats ON public.user_progress USING GIN (game_stats);
 
 -- Create updated_at triggers for all tables
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
@@ -334,5 +336,3 @@ CREATE TRIGGER update_event_outcomes_updated_at BEFORE UPDATE ON public.event_ou
 CREATE TRIGGER update_characters_updated_at BEFORE UPDATE ON public.characters FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_items_updated_at BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_user_progress_updated_at BEFORE UPDATE ON public.user_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_user_party_members_updated_at BEFORE UPDATE ON public.user_party_members FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_user_inventory_updated_at BEFORE UPDATE ON public.user_inventory FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

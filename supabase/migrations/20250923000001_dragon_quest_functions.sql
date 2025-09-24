@@ -190,29 +190,62 @@ BEGIN
     
     -- Process outcome effects
     IF outcome_record.effects IS NOT NULL THEN
-        -- Handle party member joining
+        -- Handle party member joining (CENTRALIZED)
         IF outcome_record.effects ? 'party_join' THEN
-            INSERT INTO public.user_party_members (user_id, character_id, party_position)
-            SELECT 
-                user_uuid,
-                (outcome_record.effects->>'party_join')::UUID,
-                COALESCE(
-                    (SELECT MAX(party_position) + 1 FROM public.user_party_members WHERE user_id = user_uuid),
-                    1
+            UPDATE public.user_progress
+            SET party_members = party_members || jsonb_build_array(
+                jsonb_build_object(
+                    'character_id', (outcome_record.effects->>'party_join')::UUID,
+                    'joined_at', NOW(),
+                    'current_stats', (SELECT stats FROM public.characters WHERE id = (outcome_record.effects->>'party_join')::UUID),
+                    'equipment', '{}',
+                    'is_active', true,
+                    'party_position', COALESCE(
+                        (SELECT MAX((member->>'party_position')::INTEGER) + 1 
+                         FROM jsonb_array_elements(party_members) AS member),
+                        1
+                    )
                 )
-            ON CONFLICT (user_id, character_id) DO NOTHING;
+            )
+            WHERE user_id = user_uuid;
         END IF;
         
-        -- Handle item rewards
+        -- Handle item rewards (CENTRALIZED)
         IF outcome_record.effects ? 'items' THEN
-            INSERT INTO public.user_inventory (user_id, item_id, quantity)
-            SELECT 
-                user_uuid,
-                (item->>'id')::UUID,
-                COALESCE((item->>'quantity')::INTEGER, 1)
-            FROM jsonb_array_elements(outcome_record.effects->'items') as item
-            ON CONFLICT (user_id, item_id) 
-            DO UPDATE SET quantity = public.user_inventory.quantity + EXCLUDED.quantity;
+            UPDATE public.user_progress
+            SET inventory = (
+                SELECT jsonb_agg(
+                    CASE 
+                        WHEN (existing_item->>'item_id')::UUID = (new_item->>'id')::UUID THEN
+                            jsonb_build_object(
+                                'item_id', existing_item->>'item_id',
+                                'quantity', (existing_item->>'quantity')::INTEGER + COALESCE((new_item->>'quantity')::INTEGER, 1),
+                                'obtained_at', existing_item->>'obtained_at',
+                                'equipped', COALESCE(existing_item->>'equipped', 'false')::BOOLEAN,
+                                'slot', existing_item->>'slot'
+                            )
+                        ELSE
+                            existing_item
+                    END
+                )
+                FROM (
+                    SELECT * FROM jsonb_array_elements(inventory) AS existing_item
+                    UNION ALL
+                    SELECT jsonb_build_object(
+                        'item_id', (item->>'id')::UUID,
+                        'quantity', COALESCE((item->>'quantity')::INTEGER, 1),
+                        'obtained_at', NOW(),
+                        'equipped', false,
+                        'slot', NULL
+                    ) AS existing_item
+                    FROM jsonb_array_elements(outcome_record.effects->'items') AS item
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM jsonb_array_elements(inventory) AS existing_item
+                        WHERE (existing_item->>'item_id')::UUID = (item->>'id')::UUID
+                    )
+                ) AS combined_items
+            )
+            WHERE user_id = user_uuid;
         END IF;
         
         -- Handle location unlocks
@@ -284,7 +317,7 @@ EXCEPTION
 END;
 $$;
 
--- Function to get user's current game state
+-- Function to get user's current game state (CENTRALIZED)
 CREATE OR REPLACE FUNCTION public.get_user_game_state(user_uuid UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -292,8 +325,6 @@ SECURITY DEFINER
 AS $$
 DECLARE
     progress_record RECORD;
-    party_members JSONB;
-    inventory JSONB;
     result JSONB;
 BEGIN
     -- Get user progress
@@ -317,59 +348,30 @@ BEGIN
             'completed_chapters', '[]'::JSONB,
             'completed_events', '[]'::JSONB,
             'inventory', '[]'::JSONB,
-            'equipment', '{}'::JSONB,
+            'party_members', '[]'::JSONB,
+            'character_relationships', '{}'::JSONB,
+            'player_position', '{}'::JSONB,
+            'achievements', '[]'::JSONB,
+            'play_history', '[]'::JSONB,
             'active_quests', '[]'::JSONB,
             'game_flags', '{}'::JSONB,
             'game_stats', '{}'::JSONB,
             'game_settings', '{}'::JSONB,
             'save_data', '{}'::JSONB,
-            'party_members', '[]'::JSONB,
-            'last_played_at', NOW()
+            'last_played_at', NOW(),
+            'created_at', NOW(),
+            'updated_at', NOW()
         );
     END IF;
     
-    -- Get party members with character details
-    SELECT jsonb_agg(
-        jsonb_build_object(
-            'character_id', upm.character_id,
-            'name', c.name,
-            'description', c.description,
-            'avatar_url', c.avatar_url,
-            'current_stats', upm.current_stats,
-            'equipment', upm.equipment,
-            'party_position', upm.party_position,
-            'joined_at', upm.joined_at
-        ) ORDER BY upm.party_position
-    ) INTO party_members
-    FROM public.user_party_members upm
-    JOIN public.characters c ON upm.character_id = c.id
-    WHERE upm.user_id = user_uuid AND upm.is_active = true;
-    
-    -- Get inventory with item details
-    SELECT jsonb_agg(
-        jsonb_build_object(
-            'item_id', ui.item_id,
-            'name', i.name,
-            'description', i.description,
-            'item_type', i.item_type,
-            'rarity', i.rarity,
-            'image_url', i.image_url,
-            'quantity', ui.quantity,
-            'obtained_at', ui.obtained_at
-        )
-    ) INTO inventory
-    FROM public.user_inventory ui
-    JOIN public.items i ON ui.item_id = i.id
-    WHERE ui.user_id = user_uuid;
-    
-    -- Build result
+    -- Build result with all centralized data
     result := jsonb_build_object(
-        'user_id', user_uuid,
+        'user_id', progress_record.user_id,
         'current_chapter_id', progress_record.current_chapter_id,
         'current_location_id', progress_record.current_location_id,
         'current_event_id', progress_record.current_event_id,
-        'player_level', COALESCE(progress_record.player_level, 1),
-        'player_experience', COALESCE(progress_record.player_experience, 0),
+        'player_level', progress_record.player_level,
+        'player_experience', progress_record.player_experience,
         'unlocked_world_maps', COALESCE(progress_record.unlocked_world_maps, '[]'::JSONB),
         'unlocked_locations', COALESCE(progress_record.unlocked_locations, '[]'::JSONB),
         'unlocked_chapters', COALESCE(progress_record.unlocked_chapters, '[]'::JSONB),
@@ -377,14 +379,19 @@ BEGIN
         'completed_chapters', COALESCE(progress_record.completed_chapters, '[]'::JSONB),
         'completed_events', COALESCE(progress_record.completed_events, '[]'::JSONB),
         'inventory', COALESCE(progress_record.inventory, '[]'::JSONB),
-        'equipment', COALESCE(progress_record.equipment, '{}'::JSONB),
+        'party_members', COALESCE(progress_record.party_members, '[]'::JSONB),
+        'character_relationships', COALESCE(progress_record.character_relationships, '{}'::JSONB),
+        'player_position', COALESCE(progress_record.player_position, '{}'::JSONB),
+        'achievements', COALESCE(progress_record.achievements, '[]'::JSONB),
+        'play_history', COALESCE(progress_record.play_history, '[]'::JSONB),
         'active_quests', COALESCE(progress_record.active_quests, '[]'::JSONB),
         'game_flags', COALESCE(progress_record.game_flags, '{}'::JSONB),
         'game_stats', COALESCE(progress_record.game_stats, '{}'::JSONB),
         'game_settings', COALESCE(progress_record.game_settings, '{}'::JSONB),
         'save_data', COALESCE(progress_record.save_data, '{}'::JSONB),
-        'party_members', COALESCE(party_members, '[]'::JSONB),
-        'last_played_at', COALESCE(progress_record.last_played_at, NOW())
+        'last_played_at', progress_record.last_played_at,
+        'created_at', progress_record.created_at,
+        'updated_at', progress_record.updated_at
     );
     
     RETURN result;
