@@ -1,0 +1,60 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Medicinal Herb -->
+  
+  <!-- Pot/container -->
+  <ellipse cx="50" cy="85" rx="20" ry="8" fill="#8B4513"/>
+  <rect x="30" y="65" width="40" height="20" fill="#A0522D"/>
+  <ellipse cx="50" cy="65" rx="20" ry="8" fill="#CD853F"/>
+  
+  <!-- Pot details -->
+  <rect x="45" y="60" width="10" height="8" fill="#8B4513"/>
+  <circle cx="50" cy="64" r="3" fill="#654321"/>
+  
+  <!-- Herb leaves -->
+  <g id="herb-leaves">
+    <!-- Main stem -->
+    <rect x="49" y="40" width="2" height="25" fill="#228B22"/>
+    
+    <!-- Leaf 1 -->
+    <ellipse cx="40" cy="45" rx="8" ry="4" fill="#32CD32" transform="rotate(-30 40 45)"/>
+    <line x1="45" y1="45" x2="35" y2="45" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Leaf 2 -->
+    <ellipse cx="60" cy="42" rx="8" ry="4" fill="#3CB371" transform="rotate(25 60 42)"/>
+    <line x1="55" y1="42" x2="65" y2="42" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Leaf 3 -->
+    <ellipse cx="38" cy="55" rx="7" ry="3.5" fill="#32CD32" transform="rotate(-45 38 55)"/>
+    <line x1="43" y1="55" x2="33" y2="55" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Leaf 4 -->
+    <ellipse cx="62" cy="52" rx="7" ry="3.5" fill="#3CB371" transform="rotate(40 62 52)"/>
+    <line x1="57" y1="52" x2="67" y2="52" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Leaf 5 (top) -->
+    <ellipse cx="50" cy="35" rx="6" ry="3" fill="#00FF00"/>
+    <line x1="50" y1="38" x2="50" y2="32" stroke="#228B22" stroke-width="1"/>
+  </g>
+  
+  <!-- Healing glow effect -->
+  <circle cx="50" cy="50" r="25" fill="none" stroke="#90EE90" stroke-width="2" opacity="0.4"/>
+  <circle cx="50" cy="50" r="20" fill="none" stroke="#98FB98" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Sparkles for magical effect -->
+  <g fill="#FFD700" opacity="0.8">
+    <circle cx="35" cy="30" r="1"/>
+    <circle cx="65" cy="35" r="1"/>
+    <circle cx="30" cy="50" r="1"/>
+    <circle cx="70" cy="55" r="1"/>
+    <circle cx="45" cy="25" r="0.8"/>
+    <circle cx="55" cy="60" r="0.8"/>
+  </g>
+  
+  <!-- Herb particles floating -->
+  <g fill="#32CD32" opacity="0.6">
+    <circle cx="25" cy="40" r="0.5"/>
+    <circle cx="75" cy="45" r="0.5"/>
+    <circle cx="20" cy="60" r="0.5"/>
+    <circle cx="80" cy="65" r="0.5"/>
+  </g>
+</svg>

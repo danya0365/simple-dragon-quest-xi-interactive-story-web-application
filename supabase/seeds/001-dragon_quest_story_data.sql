@@ -6,9 +6,9 @@
 
 -- Insert World Regions (Same as original)
 INSERT INTO public.world_regions (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress) VALUES
-('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.jpg', '{}', 1, true),
-('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false),
-('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.jpg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false);
+('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.svg', '{}', 1, true),
+('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false),
+('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false);
 
 -- Insert Locations (Same as original)
 INSERT INTO public.locations (id, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
@@ -33,39 +33,39 @@ INSERT INTO public.story_chapters (id, chapter_number, title, description, unloc
 
 -- Insert Characters (Same as original)
 INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress) VALUES
-('44444444-4444-4444-4444-444444444001', 'Hero', 'ตัวเอกของเรื่อง ผู้ถูกเรียกว่า Darkspawn', 'party_member', '/images/characters/hero.jpg', 
+('44444444-4444-4444-4444-444444444001', 'Hero', 'ตัวเอกของเรื่อง ผู้ถูกเรียกว่า Darkspawn', 'party_member', '/images/characters/hero.svg', 
  '{"hp": 100, "mp": 50, "level": 1, "attack": 15, "defense": 10}', 
  '["Sword Strike", "Heal"]', true, true),
  
-('44444444-4444-4444-4444-444444444002', 'Erik', 'โจรหนุ่มที่ถูกขังในคุก Heliodor เชี่ยวชาญด้านการขโมยและมีดโยน', 'party_member', '/images/characters/erik.jpg',
+('44444444-4444-4444-4444-444444444002', 'Erik', 'โจรหนุ่มที่ถูกขังในคุก Heliodor เชี่ยวชาญด้านการขโมยและมีดโยน', 'party_member', '/images/characters/erik.svg',
  '{"hp": 80, "mp": 30, "level": 1, "attack": 18, "defense": 8}',
  '["Dagger Throw", "Steal", "Critical Hit"]', true, false),
 
-('44444444-4444-4444-4444-444444444003', 'Grandpa', 'ปู่ของ Hero ผู้เลี้ยงดู Hero มาตั้งแต่เด็ก', 'npc', '/images/characters/grandpa.jpg',
+('44444444-4444-4444-4444-444444444003', 'Grandpa', 'ปู่ของ Hero ผู้เลี้ยงดู Hero มาตั้งแต่เด็ก', 'npc', '/images/characters/grandpa.svg',
  '{"hp": 50, "mp": 20, "level": 1}', '[]', false, false),
  
-('44444444-4444-4444-4444-444444444004', 'King Carnelian', 'กษัตริย์แห่ง Heliodor ผู้เชื่อว่า Hero คือ Darkspawn', 'npc', '/images/characters/king.jpg',
+('44444444-4444-4444-4444-444444444004', 'King Carnelian', 'กษัตริย์แห่ง Heliodor ผู้เชื่อว่า Hero คือ Darkspawn', 'npc', '/images/characters/king.svg',
  '{"hp": 200, "mp": 100, "level": 10}', '[]', false, false),
 
-('44444444-4444-4444-4444-444444444005', 'Prison Guard', 'ยามคุก Heliodor', 'npc', '/images/characters/guard.jpg',
+('44444444-4444-4444-4444-444444444005', 'Prison Guard', 'ยามคุก Heliodor', 'npc', '/images/characters/guard.svg',
  '{"hp": 60, "mp": 10, "level": 3}', '[]', false, false);
 
 -- Insert Items (Same as original)
 INSERT INTO public.items (id, name, description, item_type, rarity, stats, effects, image_url, is_initial_user_progress) VALUES
 ('55555555-5555-5555-5555-555555555001', 'Rusty Sword', 'ดาบเก่า ๆ ที่เป็นสนิม', 'weapon', 'common', 
- '{"attack": 5}', '{}', '/images/items/rusty_sword.jpg', true),
+ '{"attack": 5}', '{}', '/images/items/rusty_sword.svg', true),
  
 ('55555555-5555-5555-5555-555555555002', 'Prison Clothes', 'เสื้อผ้านักโทษ', 'armor', 'common',
- '{"defense": 2}', '{}', '/images/items/prison_clothes.jpg', false),
+ '{"defense": 2}', '{}', '/images/items/prison_clothes.svg', false),
  
 ('55555555-5555-5555-5555-555555555003', 'Medicinal Herb', 'สมุนไพรรักษา ฟื้นฟู HP', 'consumable', 'common',
- '{}', '{"heal": 30}', '/images/items/herb.jpg', false),
+ '{}', '{"heal": 30}', '/images/items/herb.svg', false),
  
 ('55555555-5555-5555-5555-555555555004', 'Prison Key', 'กุญแจคุก สำหรับปลดล็อคประตูคุก', 'key_item', 'rare',
- '{}', '{"unlock": "prison_door"}', '/images/items/key.jpg', false),
+ '{}', '{"unlock": "prison_door"}', '/images/items/key.svg', false),
  
 ('55555555-5555-5555-5555-555555555005', 'Erik''s Dagger', 'มีดโยนของ Erik อาวุธที่คมกริบ', 'weapon', 'uncommon',
- '{"attack": 12, "critical": 15}', '{}', '/images/items/dagger.jpg', false);
+ '{"attack": 12, "critical": 15}', '{}', '/images/items/dagger.svg', false);
 
 -- Insert Story Events (Same as original)
 INSERT INTO public.story_events (id, chapter_id, location_id, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress) VALUES

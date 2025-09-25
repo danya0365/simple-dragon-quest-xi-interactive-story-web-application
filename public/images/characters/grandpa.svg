@@ -1,0 +1,54 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Grandpa - Elderly wise character -->
+  
+  <!-- Body -->
+  <ellipse cx="100" cy="140" rx="28" ry="38" fill="#8B4513"/>
+  
+  <!-- Arms -->
+  <ellipse cx="72" cy="130" rx="8" ry="22" fill="#FDBCB4" transform="rotate(-25 72 130)"/>
+  <ellipse cx="128" cy="130" rx="8" ry="22" fill="#FDBCB4" transform="rotate(25 128 130)"/>
+  
+  <!-- Legs -->
+  <ellipse cx="90" cy="175" rx="8" ry="25" fill="#654321"/>
+  <ellipse cx="110" cy="175" rx="8" ry="25" fill="#654321"/>
+  
+  <!-- Head -->
+  <circle cx="100" cy="80" r="28" fill="#FDBCB4"/>
+  
+  <!-- Wrinkles on face -->
+  <g stroke="#D2691E" stroke-width="1" fill="none">
+    <path d="M 85 75 Q 90 78 95 75"/>
+    <path d="M 105 75 Q 110 78 115 75"/>
+    <path d="M 88 85 Q 95 88 102 85"/>
+    <path d="M 98 85 Q 105 88 112 85"/>
+  </g>
+  
+  <!-- White hair and beard -->
+  <circle cx="100" cy="65" r="20" fill="#F5F5F5"/>
+  <path d="M 80 65 Q 100 55 120 65" fill="#FFFFFF"/>
+  
+  <!-- Beard -->
+  <path d="M 85 95 Q 100 105 115 95 Q 110 110 100 115 Q 90 110 85 95" fill="#F5F5F5"/>
+  
+  <!-- Eyes - Wise, kind eyes -->
+  <circle cx="88" cy="80" r="3" fill="#4B0082"/>
+  <circle cx="112" cy="80" r="3" fill="#4B0082"/>
+  <circle cx="89" cy="79" r="1" fill="#FFFFFF"/>
+  <circle cx="113" cy="79" r="1" fill="#FFFFFF"/>
+  
+  <!-- Mouth - Gentle smile -->
+  <path d="M 92 92 Q 100 96 108 92" stroke="#000000" stroke-width="1.5" fill="none"/>
+  
+  <!-- Walking stick -->
+  <g transform="rotate(-15 65 150)">
+    <rect x="63" y="120" width="4" height="60" fill="#8B4513"/>
+    <ellipse cx="65" cy="115" rx="6" ry="4" fill="#A0522D"/>
+  </g>
+  
+  <!-- Robe details -->
+  <rect x="85" y="120" width="30" height="40" fill="#A0522D" opacity="0.5"/>
+  <circle cx="100" cy="130" r="3" fill="#FFD700"/>
+  
+  <!-- Wise aura -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#DEB887" stroke-width="2" opacity="0.3"/>
+</svg>

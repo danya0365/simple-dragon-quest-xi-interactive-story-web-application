@@ -1,0 +1,49 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Prison Clothes -->
+  
+  <!-- Shirt -->
+  <rect x="35" y="25" width="30" height="35" fill="#808080" rx="2"/>
+  <rect x="37" y="27" width="26" height="31" fill="#A9A9A9" rx="1"/>
+  
+  <!-- Prison stripes -->
+  <g>
+    <rect x="35" y="30" width="30" height="3" fill="#000000"/>
+    <rect x="35" y="38" width="30" height="3" fill="#000000"/>
+    <rect x="35" y="46" width="30" height="3" fill="#000000"/>
+    <rect x="35" y="54" width="30" height="3" fill="#000000"/>
+  </g>
+  
+  <!-- Sleeves -->
+  <rect x="25" y="30" width="12" height="20" fill="#808080" rx="2"/>
+  <rect x="27" y="32" width="8" height="16" fill="#A9A9A9" rx="1"/>
+  <rect x="26" y="35" width="10" height="2" fill="#000000"/>
+  <rect x="26" y="42" width="10" height="2" fill="#000000"/>
+  
+  <rect x="63" y="30" width="12" height="20" fill="#808080" rx="2"/>
+  <rect x="65" y="32" width="8" height="16" fill="#A9A9A9" rx="1"/>
+  <rect x="64" y="35" width="10" height="2" fill="#000000"/>
+  <rect x="64" y="42" width="10" height="2" fill="#000000"/>
+  
+  <!-- Collar -->
+  <path d="M 35 25 L 40 20 L 60 20 L 65 25" fill="#808080"/>
+  <path d="M 37 25 L 41 22 L 59 22 L 63 25" fill="#A9A9A9"/>
+  
+  <!-- Prison number patch -->
+  <rect x="42" y="40" width="16" height="12" fill="#FFFFFF" rx="1"/>
+  <text x="50" y="49" text-anchor="middle" font-size="8" font-weight="bold" fill="#000000">007</text>
+  
+  <!-- Pants -->
+  <rect x="38" y="58" width="24" height="30" fill="#696969" rx="1"/>
+  <rect x="40" y="60" width="20" height="26" fill="#808080" rx="1"/>
+  
+  <!-- Pant legs -->
+  <rect x="38" y="78" width="10" height="15" fill="#696969" rx="1"/>
+  <rect x="40" y="80" width="6" height="11" fill="#808080" rx="1"/>
+  
+  <rect x="52" y="78" width="10" height="15" fill="#696969" rx="1"/>
+  <rect x="54" y="80" width="6" height="11" fill="#808080" rx="1"/>
+  
+  <!-- Prison ID tag -->
+  <rect x="45" y="15" width="10" height="6" fill="#FFD700" rx="1"/>
+  <text x="50" y="19" text-anchor="middle" font-size="4" fill="#000000">ID</text>
+</svg>
