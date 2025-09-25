@@ -353,6 +353,10 @@ interface GameActions {
   initializeUserProgress: (userId: string) => Promise<void>;
   loadUserInventory: () => Promise<void>;
   loadCharacters: () => Promise<void>;
+  
+  // Helper functions
+  isLocationUnlocked: (locationId: string) => boolean;
+  
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
@@ -495,6 +499,13 @@ export const useGameStore = create<GameStore>()(
             loading: false,
           });
         }
+      },
+
+      // Helper function to check if a location is unlocked
+      isLocationUnlocked: (locationId: string) => {
+        const { userGameState } = get();
+        if (!userGameState) return false;
+        return userGameState.unlockedLocations.includes(locationId);
       },
 
       loadAvailableEvents: async (locationId: string) => {

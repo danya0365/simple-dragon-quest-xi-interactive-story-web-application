@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export function LocationView() {
   const {
-    availableLocations,
+    allLocations,
     selectedRegionId,
     loading,
     error,
@@ -13,19 +13,45 @@ export function LocationView() {
     setSelectedLocationId,
     setCurrentView,
     setSelectedRegion,
+    isLocationUnlocked,
   } = useGameStore();
-
-  // LocationView is for selecting locations, not loading events
-
-  const handleLocationClick = (locationId: string) => {
-    setSelectedLocationId(locationId); // Set selected location
-    setSelectedEventId(null); // Reset selected event
-    setCurrentView('event');
-  };
 
   const handleBackToWorldMap = () => {
     setSelectedRegion(null);
+    setSelectedLocationId(null);
+    setSelectedEventId(null);
     setCurrentView('world_map');
+  };
+
+  // Filter locations for the selected region
+  const locationsForRegion = selectedRegionId 
+    ? allLocations.filter((location) => location.world_region_id === selectedRegionId)
+    : [];
+
+  // Handle case where no region is selected or no locations found
+  if (!selectedRegionId || locationsForRegion.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-blue-400 text-6xl mb-4">🗺️</div>
+          <p className="text-blue-200 font-medium mb-2">ไม่พบสถานที่</p>
+          <p className="text-blue-300 mb-4">กรุณาเลือกภูมิภาคจากแผนที่โลกก่อน</p>
+          <button
+            onClick={handleBackToWorldMap}
+            className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            กลับไปแผนที่โลก
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const handleLocationClick = (locationId: string, isUnlocked: boolean) => {
+    if (!isUnlocked) return; // Don't allow click on locked locations
+    setSelectedLocationId(locationId); // Set selected location
+    setSelectedEventId(null); // Reset selected event
+    setCurrentView('event');
   };
 
   if (loading) {
@@ -81,12 +107,30 @@ export function LocationView() {
 
       {/* Available Locations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {availableLocations.map((location) => (
-          <div
-            key={location.id}
-            className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:bg-white/20 hover:border-yellow-400/50"
-            onClick={() => handleLocationClick(location.id)}
-          >
+        {locationsForRegion.map((location) => {
+          const isUnlocked = isLocationUnlocked(location.id); // Use proper unlock status check
+          return (
+            <div
+              key={location.id}
+              className={`
+                relative bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 
+                cursor-pointer transition-all duration-300 transform hover:scale-105
+                ${
+                  isUnlocked
+                    ? "hover:bg-white/20 hover:border-yellow-400/50"
+                    : "opacity-50 cursor-not-allowed"
+                }
+              `}
+              onClick={() => handleLocationClick(location.id, isUnlocked)}
+            >
+              {/* Lock indicator for locked locations */}
+              {!isUnlocked && (
+                <div className="absolute top-2 right-2 z-50">
+                  <div className="bg-red-500/20 border border-red-500/50 rounded-full p-2">
+                    <span className="text-red-400 text-sm">🔒</span>
+                  </div>
+                </div>
+              )}
             {/* Location Image */}
             <div className="w-full h-40 bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-lg mb-4 overflow-hidden relative">
               {location.image_url ? (
@@ -111,7 +155,7 @@ export function LocationView() {
               </span>
               
               <span className="text-blue-300 text-sm">
-                {location.description ? 'มีเหตุการณ์' : 'สถานที่'}
+                {isUnlocked ? "พร้อมเล่น" : "ยังไม่ปลดล็อค"}
               </span>
             </div>
 
@@ -136,26 +180,33 @@ export function LocationView() {
             {/* Play Button */}
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="flex items-center justify-between">
-                <span className="text-blue-300 text-sm">คลิกเพื่อเริ่มเล่น</span>
-                <span className="text-yellow-400 text-lg">▶️</span>
+                <span className="text-blue-300 text-sm">
+                  {isUnlocked ? "คลิกเพื่อเริ่มเล่น" : "ทำภารกิจเพื่อปลดล็อค"}
+                </span>
+                <span className={isUnlocked ? "text-yellow-400 text-lg" : "text-gray-400 text-lg"}>
+                  {isUnlocked ? "▶️" : "🔒"}
+                </span>
               </div>
             </div>
 
             {/* Hover Effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-yellow-400/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            {isUnlocked && (
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-yellow-400/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Empty State */}
-      {availableLocations.length === 0 && (
+      {locationsForRegion.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-blue-400 text-6xl mb-4">🎭</div>
+          <div className="text-blue-400 text-6xl mb-4">🏛️</div>
           <p className="text-blue-200 font-medium mb-2">
-            ไม่มีเหตุการณ์ที่พร้อมเล่น
+            ไม่มีสถานที่ในภูมิภาคนี้
           </p>
           <p className="text-blue-300 mb-4">
-            ลองสำรวจพื้นที่อื่นหรือทำภารกิจให้เสร็จเพื่อปลดล็อคเหตุการณ์ใหม่
+            ภูมิภาคนี้ยังไม่มีสถานที่ให้สำรวจ
           </p>
           <button
             onClick={handleBackToWorldMap}
@@ -174,13 +225,13 @@ export function LocationView() {
             <h4 className="text-yellow-400 font-bold text-lg mb-3">สิ่งที่ควรทำต่อไป:</h4>
             
             <div className="space-y-3">
-              {availableLocations.length > 0 ? (
+              {locationsForRegion.length > 0 ? (
                 <>
                   <div className="flex items-start space-x-2">
                     <span className="text-yellow-400 mt-1">1️⃣</span>
                     <div>
-                      <p className="text-blue-200 font-medium">เลือกเหตุการณ์ที่ต้องการเล่น</p>
-                      <p className="text-blue-300 text-sm">คลิกที่การ์ดเหตุการณ์ด้านบนเพื่อเริ่มการผจญภัย</p>
+                      <p className="text-blue-200 font-medium">เลือกสถานที่ที่ปลดล็อคแล้ว</p>
+                      <p className="text-blue-300 text-sm">คลิกที่การ์ดสถานที่ที่ไม่มีกุญแจเพื่อเริ่มการผจญภัย</p>
                     </div>
                   </div>
                   
@@ -196,7 +247,7 @@ export function LocationView() {
                     <span className="text-yellow-400 mt-1">3️⃣</span>
                     <div>
                       <p className="text-blue-200 font-medium">ปลดล็อคเนื้อหาใหม่</p>
-                      <p className="text-blue-300 text-sm">การตัดสินใจของคุณจะส่งผลต่อเรื่องราวและปลดล็อคเหตุการณ์ใหม่</p>
+                      <p className="text-blue-300 text-sm">การตัดสินใจของคุณจะส่งผลต่อเรื่องราวและปลดล็อคสถานที่ใหม่</p>
                     </div>
                   </div>
                 </>
@@ -205,7 +256,7 @@ export function LocationView() {
                   <span className="text-yellow-400 mt-1">🔄</span>
                   <div>
                     <p className="text-blue-200 font-medium">กลับไปแผนที่โลก</p>
-                    <p className="text-blue-300 text-sm">ไปที่พื้นที่อื่นๆ เพื่อค้นหาเหตุการณ์ใหม่ๆ ที่จะเปิดให้เล่น</p>
+                    <p className="text-blue-300 text-sm">ไปที่พื้นที่อื่นๆ เพื่อค้นหาสถานที่ใหม่ๆ</p>
                   </div>
                 </div>
               )}
@@ -218,9 +269,9 @@ export function LocationView() {
                 <span>ภูมิภาค: {selectedRegionId || 'ไม่ระบุ'}</span>
               </div>
               <span className="text-yellow-400 font-medium">
-                {availableLocations.length > 0 
-                  ? `มี ${availableLocations.length} เหตุการณ์ที่พร้อมเล่น` 
-                  : 'สำรวจเพื่อค้นหาเหตุการณ์ใหม่'}
+                {locationsForRegion.length > 0 
+                  ? `มี ${locationsForRegion.filter(loc => isLocationUnlocked(loc.id)).length}/${locationsForRegion.length} สถานที่ที่ปลดล็อคแล้ว` 
+                  : 'สำรวจเพื่อค้นหาสถานที่ใหม่'}
               </span>
             </div>
           </div>
@@ -231,9 +282,9 @@ export function LocationView() {
       <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-4">
         <h4 className="text-yellow-400 font-medium mb-2">เคล็ดลับ:</h4>
         <ul className="text-blue-200 text-sm space-y-1">
-          <li>• เหตุการณ์แต่ละประเภทจะมีการโต้ตอบที่แตกต่างกัน</li>
-          <li>• การเลือกในเหตุการณ์จะส่งผลต่อเรื่องราวและตัวละคร</li>
-          <li>• ทำเหตุการณ์ให้เสร็จเพื่อปลดล็อคเนื้อหาใหม่</li>
+          <li>• สถานที่ที่มี 🔒 ยังไม่สามารถเข้าถึงได้</li>
+          <li>• ทำภารกิจให้เสร็จเพื่อปลดล็อคสถานที่ใหม่</li>
+          <li>• การเลือกในสถานที่จะส่งผลต่อเรื่องราวและตัวละคร</li>
         </ul>
       </div>
     </div>
