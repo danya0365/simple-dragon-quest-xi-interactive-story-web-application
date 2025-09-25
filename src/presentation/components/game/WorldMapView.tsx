@@ -92,7 +92,7 @@ export function WorldMapView() {
           >
             {/* Lock indicator for locked regions */}
             {!region.is_unlocked && (
-              <div className="absolute top-2 right-2">
+              <div className="absolute top-2 right-2 z-50">
                 <div className="bg-red-500/20 border border-red-500/50 rounded-full p-2">
                   <span className="text-red-400 text-sm">🔒</span>
                 </div>

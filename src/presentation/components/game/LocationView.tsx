@@ -1,6 +1,7 @@
 "use client";
 
 import { useGameStore } from "@/src/stores/gameStore";
+import Image from "next/image";
 
 export function LocationView() {
   const {
@@ -86,6 +87,23 @@ export function LocationView() {
             className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:bg-white/20 hover:border-yellow-400/50"
             onClick={() => handleLocationClick(location.id)}
           >
+            {/* Location Image */}
+            <div className="w-full h-40 bg-gradient-to-br from-purple-600/30 to-blue-600/30 rounded-lg mb-4 overflow-hidden relative">
+              {location.image_url ? (
+                <Image
+                  src={location.image_url}
+                  alt={location.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-4xl">🏛️</span>
+                </div>
+              )}
+            </div>
+
             {/* Location Type Badge */}
             <div className="flex items-center justify-between mb-4">
               <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/50">

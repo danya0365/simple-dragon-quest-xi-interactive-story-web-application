@@ -224,6 +224,7 @@ interface Location {
   name: string;
   description: string;
   location_type: string;
+  image_url: string;
   is_unlocked: boolean;
 }
 
@@ -479,6 +480,7 @@ export const useGameStore = create<GameStore>()(
               name: location.name,
               description: location.description,
               location_type: location.location_type,
+              image_url: location.image_url || '',
               is_unlocked: true, // Since we filtered by unlocked locations
             }));
 
