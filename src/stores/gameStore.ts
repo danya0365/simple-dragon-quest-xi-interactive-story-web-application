@@ -259,6 +259,23 @@ interface InventoryItem {
   obtained_at: string;
 }
 
+interface CharacterMasterData {
+  id: string;
+  name: string;
+  description: string;
+  character_type: string;
+  avatar_url: string;
+  stats: Record<string, number | string>;
+  abilities: Array<{
+    id: string;
+    name: string;
+    description: string;
+    mp_cost: number;
+  }>;
+  join_requirements: Record<string, unknown>;
+  is_joinable: boolean;
+}
+
 interface UserGameState {
   id: string;
   userId: string;
@@ -334,6 +351,7 @@ interface GameActions {
   ) => Promise<void>;
   initializeUserProgress: (userId: string) => Promise<void>;
   loadUserInventory: () => Promise<void>;
+  loadCharacters: () => Promise<void>;
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
@@ -801,6 +819,66 @@ export const useGameStore = create<GameStore>()(
           console.error('Error loading inventory:', err);
           set({
             error: 'ไม่สามารถโหลดข้อมูลไอเทมได้',
+            loading: false
+          });
+        }
+      },
+
+      loadCharacters: async () => {
+        const supabase = createClientSupabaseClient();
+        set({ loading: true, error: null });
+
+        try {
+          const { data, error } = await supabase.rpc('get_all_characters');
+          
+          if (error) throw error;
+          
+          const characters = data as unknown as CharacterMasterData[];
+          
+          // Update user game state with character master data
+          const { userGameState } = get();
+          if (userGameState) {
+            // Get existing party members from user game state
+            const existingPartyMembers = userGameState.partyMembers as Array<{
+              character_id: string;
+              joined_at: string;
+              current_stats: Record<string, number | string>;
+              equipment: Record<string, string | null>;
+              is_active: boolean;
+              party_position: number;
+              name?: string;
+              description?: string;
+              avatar_url?: string;
+            }> || [];
+            
+            // Enrich party members with character master data
+            const enrichedPartyMembers = existingPartyMembers.map(partyMember => {
+              const masterCharacter = characters.find(c => c.id === partyMember.character_id);
+              return {
+                character_id: partyMember.character_id,
+                name: masterCharacter?.name || partyMember.name || 'Unknown Character',
+                description: masterCharacter?.description || partyMember.description || 'No description available',
+                avatar_url: masterCharacter?.avatar_url || partyMember.avatar_url || '/placeholder-avatar.png',
+                current_stats: partyMember.current_stats,
+                equipment: partyMember.equipment,
+                party_position: partyMember.party_position,
+                joined_at: partyMember.joined_at
+              };
+            });
+            
+            set({
+              userGameState: {
+                ...userGameState,
+                partyMembers: enrichedPartyMembers
+              }
+            });
+          }
+          
+          set({ loading: false });
+        } catch (err) {
+          console.error('Error loading characters:', err);
+          set({
+            error: 'ไม่สามารถโหลดข้อมูลตัวละครได้',
             loading: false
           });
         }

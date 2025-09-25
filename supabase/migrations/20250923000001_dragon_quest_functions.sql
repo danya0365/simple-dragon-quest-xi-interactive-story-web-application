@@ -971,3 +971,31 @@ AS $$
         '[]'::JSONB
     ) AS items;
 $$;
+
+-- =============================================================================
+-- Function to get all characters from characters table
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_all_characters()
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    SELECT COALESCE(
+        (SELECT JSONB_AGG(
+            JSONB_BUILD_OBJECT(
+                'id', id,
+                'name', name,
+                'description', description,
+                'character_type', character_type,
+                'avatar_url', avatar_url,
+                'stats', stats,
+                'abilities', abilities,
+                'join_requirements', join_requirements,
+                'is_joinable', is_joinable
+            )
+        )
+        FROM public.characters
+        ),
+        '[]'::JSONB
+    ) AS characters;
+$$;

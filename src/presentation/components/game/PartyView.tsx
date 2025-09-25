@@ -1,6 +1,7 @@
 "use client";
 
 import { useGameStore } from "@/src/stores/gameStore";
+import { useEffect, useState } from "react";
 
 interface PartyMember {
   character_id: string;
@@ -14,9 +15,20 @@ interface PartyMember {
 }
 
 export function PartyView() {
-  const { userGameState, loading, error } = useGameStore();
+  const { userGameState, loading, error, loadCharacters } = useGameStore();
 
   const partyMembers = userGameState?.partyMembers || [];
+  const [charactersLoaded, setCharactersLoaded] = useState(false);
+
+  // Load character data when component mounts
+  useEffect(() => {
+    const loadCharacterData = async () => {
+      await loadCharacters();
+      setCharactersLoaded(true);
+    };
+
+    loadCharacterData();
+  }, [loadCharacters]);
 
   const getStatIcon = (statName: string) => {
     switch (statName.toLowerCase()) {
@@ -71,12 +83,28 @@ export function PartyView() {
     }
   };
 
-  if (loading) {
+  if (loading || !charactersLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
           <p className="text-blue-200">กำลังโหลดข้อมูลปาร์ตี้...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (partyMembers.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-blue-400 text-4xl lg:text-6xl mb-4">👤</div>
+          <p className="text-blue-200 font-medium mb-2">
+            ยังไม่มีสมาชิกในปาร์ตี้
+          </p>
+          <p className="text-blue-300 text-sm lg:text-base">
+            ผจญภัยต่อไปเพื่อพบเพื่อนร่วมทาง!
+          </p>
         </div>
       </div>
     );
