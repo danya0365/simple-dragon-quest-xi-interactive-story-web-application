@@ -685,8 +685,8 @@ BEGIN
     END IF;
     
     -- Determine choice key (either from choice_data or default)
-    IF p_choice_data IS NOT NULL AND p_choice_data->>'choice_id' IS NOT NULL THEN
-        v_choice_key := p_choice_data->>'choice_id';
+    IF p_choice_data IS NOT NULL AND p_choice_data->>'choice_key' IS NOT NULL THEN
+        v_choice_key := p_choice_data->>'choice_key';
     ELSE
         v_choice_key := 'default';
     END IF;
