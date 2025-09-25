@@ -628,10 +628,9 @@ AS $$
     ), '[]'::jsonb)
     FROM event_interactions_data eid;
 $$;
-
 -- =============================================================================
--- Function to complete interaction for user progress (FIXED VERSION)
--- Handles choice processing, effects application, and state updates
+-- Function to complete interaction for user progress (FIXED VERSION WITH AUTO UNLOCK)
+-- Handles choice processing, effects application, state updates, and auto location/region unlock
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.complete_interaction_for_user_progress(
     p_user_progress_uuid UUID,
@@ -656,6 +655,12 @@ DECLARE
     v_total_interactions INTEGER;
     v_completed_interactions INTEGER;
     v_current_unlocked_events JSONB;
+    v_current_unlocked_locations JSONB;
+    v_current_unlocked_regions JSONB;
+    v_new_events_to_unlock JSONB;
+    v_auto_unlock_locations JSONB DEFAULT '[]'::jsonb;
+    v_auto_unlock_regions JSONB DEFAULT '[]'::jsonb;
+    v_event_record RECORD;
 BEGIN
     -- Get user progress data
     SELECT * INTO v_user_progress 
@@ -736,10 +741,46 @@ BEGIN
     -- DEBUG: Log completion result
     RAISE NOTICE 'DEBUG: All interactions completed: %', v_all_interactions_completed;
     
-    -- Store current unlocked_events before update
+    -- Store current unlocked content before update
     v_current_unlocked_events := COALESCE(v_user_progress.unlocked_events, '[]'::jsonb);
+    v_current_unlocked_locations := COALESCE(v_user_progress.unlocked_locations, '[]'::jsonb);
+    v_current_unlocked_regions := COALESCE(v_user_progress.unlocked_world_regions, '[]'::jsonb);
     
-    -- Update user progress with effects
+    -- Get new events to unlock from effects
+    v_new_events_to_unlock := COALESCE(v_effects->'unlock_events', '[]'::jsonb);
+    
+    -- AUTO-UNLOCK LOGIC: For each new event, find its location and world region
+    IF jsonb_typeof(v_new_events_to_unlock) = 'array' AND jsonb_array_length(v_new_events_to_unlock) > 0 THEN
+        FOR v_event_record IN 
+            SELECT 
+                se.id as event_id,
+                se.location_id,
+                l.world_region_id
+            FROM jsonb_array_elements_text(v_new_events_to_unlock) AS event_uuid_text
+            JOIN public.story_events se ON se.id = event_uuid_text::uuid
+            LEFT JOIN public.locations l ON l.id = se.location_id
+        LOOP
+            -- Auto-unlock location if event has a location
+            IF v_event_record.location_id IS NOT NULL THEN
+                -- Check if location is not already unlocked
+                IF NOT (v_current_unlocked_locations @> to_jsonb(v_event_record.location_id::text)) THEN
+                    v_auto_unlock_locations := v_auto_unlock_locations || to_jsonb(v_event_record.location_id::text);
+                    RAISE NOTICE 'DEBUG: Auto-unlocking location: %', v_event_record.location_id;
+                END IF;
+            END IF;
+            
+            -- Auto-unlock world region if location has a world region
+            IF v_event_record.world_region_id IS NOT NULL THEN
+                -- Check if world region is not already unlocked
+                IF NOT (v_current_unlocked_regions @> to_jsonb(v_event_record.world_region_id::text)) THEN
+                    v_auto_unlock_regions := v_auto_unlock_regions || to_jsonb(v_event_record.world_region_id::text);
+                    RAISE NOTICE 'DEBUG: Auto-unlocking world region: %', v_event_record.world_region_id;
+                END IF;
+            END IF;
+        END LOOP;
+    END IF;
+    
+    -- Update user progress with effects and auto-unlocks
     UPDATE public.user_progress
     SET 
         -- Track completed interactions
@@ -754,26 +795,34 @@ BEGIN
         
         -- Update unlocked content with proper null handling and array deduplication
         unlocked_world_regions = CASE 
-            WHEN v_effects->'unlock_regions' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_regions') = 'array' AND jsonb_array_length(v_effects->'unlock_regions') > 0
+            -- Merge manual unlocks from effects AND auto-unlocks
+            WHEN (v_effects->'unlock_regions' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_regions') = 'array' AND jsonb_array_length(v_effects->'unlock_regions') > 0)
+                 OR jsonb_array_length(v_auto_unlock_regions) > 0
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
                 FROM (
                     SELECT value FROM jsonb_array_elements(COALESCE(unlocked_world_regions, '[]'::jsonb))
                     UNION
-                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_regions')
+                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_regions', '[]'::jsonb))
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_auto_unlock_regions)
                 ) t
             )
             ELSE unlocked_world_regions 
         END,
         
         unlocked_locations = CASE 
-            WHEN v_effects->'unlock_locations' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_locations') = 'array' AND jsonb_array_length(v_effects->'unlock_locations') > 0
+            -- Merge manual unlocks from effects AND auto-unlocks
+            WHEN (v_effects->'unlock_locations' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_locations') = 'array' AND jsonb_array_length(v_effects->'unlock_locations') > 0)
+                 OR jsonb_array_length(v_auto_unlock_locations) > 0
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
                 FROM (
                     SELECT value FROM jsonb_array_elements(COALESCE(unlocked_locations, '[]'::jsonb))
                     UNION
-                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_locations')
+                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_locations', '[]'::jsonb))
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_auto_unlock_locations)
                 ) t
             )
             ELSE unlocked_locations 
@@ -880,12 +929,14 @@ BEGIN
         last_played_at = NOW()
     WHERE id = p_user_progress_uuid;
     
-    -- Return success response
+    -- Return success response with auto-unlock information
     RETURN jsonb_build_object(
         'success', v_success,
         'next_event_id', v_next_event_id,
         'effects', v_effects,
-        'choice_key', v_choice_key
+        'choice_key', v_choice_key,
+        'auto_unlocked_locations', v_auto_unlock_locations,
+        'auto_unlocked_regions', v_auto_unlock_regions
     );
     
 EXCEPTION
