@@ -2,7 +2,8 @@
 
 import { useAuthStore } from "@/src/stores/authStore";
 import { useGameStore, EventInteraction } from "@/src/stores/gameStore";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface EventData {
   id: string;
@@ -41,15 +42,9 @@ export function EventInteractionView() {
     (event) => event.event_id === selectedEventId
   );
 
-  const currentInteraction = interactions[currentInteractionIndex] || null;
-
   // Initialize component - load available events if not already loaded
   useEffect(() => {
     if (!isInitialized && user?.id && selectedLocationId) {
-      console.log(
-        "EventInteractionView: Initializing, loading available events for location:",
-        selectedLocationId
-      );
       loadAvailableEvents(selectedLocationId);
       setIsInitialized(true);
     }
@@ -58,58 +53,29 @@ export function EventInteractionView() {
   // Load event interactions when event is selected
   useEffect(() => {
     if (selectedEventId && user?.id) {
-      console.log(
-        "EventInteractionView: Loading interactions for event:",
-        selectedEventId
-      );
-
       const loadInteractions = async () => {
         try {
           const data = await loadEventInteractions(selectedEventId);
-          console.log("EventInteractionView: Loaded interactions data:", data);
 
-          if (data && !(data as any).error) {
+          if (data && !(data as unknown as { error: unknown }).error) {
             // API คืนค่ามาเป็น array ของ interactions ตรงๆ
             const interactions = Array.isArray(data) ? data : [];
 
             // แปลง StoryEvent เป็น EventData structure
-            const eventData = currentEvent ? {
-              id: currentEvent.event_id,
-              title: currentEvent.event_title,
-              description: currentEvent.event_description || '',
-              event_type: currentEvent.event_type,
-              chapter_title: currentEvent.chapter_title || '',
-              location_name: currentEvent.location_name || ''
-            } : null;
+            const eventData = currentEvent
+              ? {
+                  id: currentEvent.event_id,
+                  title: currentEvent.event_title,
+                  description: currentEvent.event_description || "",
+                  event_type: currentEvent.event_type,
+                  chapter_title: currentEvent.chapter_title || "",
+                  location_name: currentEvent.location_name || "",
+                }
+              : null;
 
-            console.log("EventInteractionView: Setting event data:", eventData);
-            console.log("EventInteractionView: Setting interactions:", interactions);
-
-            // Get completed interactions from user game state
-            const completedInteractions = userGameState?.completedInteractions as Array<{event_id: string; interaction_id: string}> || [];
-            const completedInteractionIds = completedInteractions
-              .filter(ci => ci.event_id === selectedEventId)
-              .map(ci => ci.interaction_id);
-            
-            console.log("EventInteractionView: Completed interaction IDs:", completedInteractionIds);
-            
-            // Filter out completed interactions
-            const availableInteractions = interactions.filter(
-              interaction => !completedInteractionIds.includes(interaction.id)
-            );
-            
-            console.log("EventInteractionView: Available interactions after filtering:", availableInteractions);
-            
-            // If all interactions are completed, go back to location view
-            if (availableInteractions.length === 0) {
-              console.log("EventInteractionView: All interactions completed, going back to location view");
-              setCurrentView("location");
-              setSelectedEventId(null);
-              return;
-            }
-            
+            // Set all interactions first (we'll handle filtering in render)
             setEventData(eventData);
-            setInteractions(availableInteractions);
+            setInteractions(interactions);
             setCurrentInteractionIndex(0);
             setInteractionHistory([]);
             setSelectedChoice(null);
@@ -129,32 +95,7 @@ export function EventInteractionView() {
 
       loadInteractions();
     }
-  }, [selectedEventId, user?.id, loadEventInteractions, currentEvent, setCurrentView, setSelectedEventId, userGameState?.completedInteractions]);
-
-  // Debug logging
-  useEffect(() => {
-    console.log("EventInteractionView Debug:", {
-      selectedEventId,
-      selectedLocationId,
-      availableEvents: availableEvents?.length || 0,
-      currentEvent: currentEvent?.event_title,
-      interactions: interactions?.length || 0,
-      currentInteractionIndex,
-      loading,
-      error,
-      userGameState: userGameState ? "loaded" : "not loaded",
-    });
-  }, [
-    selectedEventId,
-    selectedLocationId,
-    availableEvents,
-    currentEvent,
-    interactions,
-    currentInteractionIndex,
-    loading,
-    error,
-    userGameState,
-  ]);
+  }, [selectedEventId, user?.id, loadEventInteractions, currentEvent]);
 
   const handleChoiceSelect = (choiceKey: string) => {
     console.log("EventInteractionView: Choice selected:", choiceKey);
@@ -162,34 +103,29 @@ export function EventInteractionView() {
   };
 
   const handleConfirmChoice = async () => {
-    if (!user?.id || !currentInteraction) {
+    if (!user?.id || !currentAvailableInteraction) {
       console.error("EventInteractionView: Missing user or interaction", {
         user: !!user,
-        interaction: !!currentInteraction,
+        interaction: !!currentAvailableInteraction,
       });
       return;
     }
-
-    console.log(
-      "EventInteractionView: Confirming choice for interaction:",
-      currentInteraction.id
-    );
 
     // Prepare choice data
     const choiceData = selectedChoice
       ? {
           choice_key: selectedChoice,
-          interaction_id: currentInteraction.id,
+          interaction_id: currentAvailableInteraction.id,
         }
       : {
           choice_key: "default",
-          interaction_id: currentInteraction.id,
+          interaction_id: currentAvailableInteraction.id,
         };
 
     try {
       // Complete the interaction
       const result = await completeInteraction(
-        currentInteraction.id,
+        currentAvailableInteraction.id,
         choiceData
       );
       console.log(
@@ -199,7 +135,7 @@ export function EventInteractionView() {
 
       // Add to history
       if (selectedChoice) {
-        const choice = currentInteraction.choices.find(
+        const choice = currentAvailableInteraction.choices.find(
           (c: { id: string }) => c.id === selectedChoice
         );
         if (choice) {
@@ -209,13 +145,33 @@ export function EventInteractionView() {
         setInteractionHistory((prev) => [...prev, "ดำเนินการต่อ"]);
       }
 
-      // Move to next interaction or reset
-      if (currentInteractionIndex < interactions.length - 1) {
-        setCurrentInteractionIndex((prev) => prev + 1);
-        console.log(
-          "EventInteractionView: Moving to next interaction:",
-          currentInteractionIndex + 1
+      // Check if there are more interactions in the current event
+      const remainingInteractions = interactions.filter(
+        (interaction, index) =>
+          index > currentInteractionIndex &&
+          !isInteractionCompleted(interaction.id)
+      );
+
+      console.log(
+        "EventInteractionView: Remaining interactions:",
+        remainingInteractions.length
+      );
+
+      if (remainingInteractions.length > 0) {
+        // Move to next available interaction
+        const nextInteractionIndex = interactions.findIndex(
+          (interaction, index) =>
+            index > currentInteractionIndex &&
+            !isInteractionCompleted(interaction.id)
         );
+
+        if (nextInteractionIndex !== -1) {
+          setCurrentInteractionIndex(nextInteractionIndex);
+          console.log(
+            "EventInteractionView: Moving to next interaction:",
+            nextInteractionIndex
+          );
+        }
       } else {
         console.log(
           "EventInteractionView: No more interactions, returning to event list"
@@ -235,6 +191,49 @@ export function EventInteractionView() {
       );
     }
   };
+
+  // Helper function to check if interaction is completed
+  const isInteractionCompleted = (interactionId: string) => {
+    const completedInteractions =
+      (userGameState?.completedInteractions as Array<{
+        event_id: string;
+        interaction_id: string;
+      }>) || [];
+    return completedInteractions.some(
+      (ci) =>
+        ci.event_id === selectedEventId && ci.interaction_id === interactionId
+    );
+  };
+
+  // Filter out completed interactions and get current interaction
+  const availableInteractions = interactions.filter(
+    (interaction) => !isInteractionCompleted(interaction.id)
+  );
+
+  const currentAvailableInteraction =
+    availableInteractions[currentInteractionIndex] || null;
+
+  // Check if all interactions are completed
+  const allInteractionsCompleted =
+    availableInteractions.length === 0 && interactions.length > 0;
+
+  // If all interactions are completed, go back to event list
+  useEffect(() => {
+    if (allInteractionsCompleted && interactions.length > 0) {
+      console.log(
+        "EventInteractionView: All interactions completed, going back to event list"
+      );
+      setTimeout(() => {
+        setSelectedEventId(null);
+        setCurrentView("event");
+      }, 1000);
+    }
+  }, [
+    allInteractionsCompleted,
+    interactions.length,
+    setSelectedEventId,
+    setCurrentView,
+  ]);
 
   const handleBackToEventList = () => {
     console.log("EventInteractionView: Going back to event list");
@@ -296,16 +295,19 @@ export function EventInteractionView() {
     );
   }
 
-  if (!currentInteraction) {
+  if (!currentAvailableInteraction) {
     return (
       <div className="text-center py-12">
         <div className="text-blue-400 text-6xl mb-4">📝</div>
         <p className="text-blue-200 font-medium mb-2">ไม่พบการโต้ตอบ</p>
         <p className="text-blue-300 text-sm mb-4">
-          Event: {currentEvent.event_title}
+          Event: {currentEvent?.event_title}
         </p>
         <p className="text-blue-300 text-sm mb-4">
           Loaded Interactions: {interactions.length}
+        </p>
+        <p className="text-blue-300 text-sm mb-4">
+          Available Interactions: {availableInteractions.length}
         </p>
         <button
           onClick={handleBackToEventList}
@@ -339,51 +341,55 @@ export function EventInteractionView() {
         </div>
 
         <div className="text-blue-300 text-sm">
-          {currentInteractionIndex + 1} / {interactions.length}
+          {currentInteractionIndex + 1} / {availableInteractions.length}
         </div>
       </div>
 
       {/* Event Scene */}
       <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-8">
         {/* Character Speaker */}
-        {currentInteraction.characterSpeaker && (
+        {currentAvailableInteraction.characterSpeaker && (
           <div className="flex items-center mb-6">
-            {currentInteraction.characterAvatar && (
-              <img
-                src={currentInteraction.characterAvatar}
-                alt={currentInteraction.characterSpeaker}
+            {currentAvailableInteraction.characterAvatar && (
+              <Image
+                src={currentAvailableInteraction.characterAvatar}
+                alt={currentAvailableInteraction.characterSpeaker}
+                width={64}
+                height={64}
                 className="w-16 h-16 rounded-full border-2 border-yellow-400"
               />
             )}
             <div className="flex-1">
               <h3 className="text-lg font-bold text-yellow-400">
-                {currentInteraction.characterSpeaker}
+                {currentAvailableInteraction.characterSpeaker}
               </h3>
               <p className="text-sm text-blue-200">
-                {currentInteraction.interactionType === "dialogue" ? "บทสนทนา" : "เหตุการณ์"}
+                {currentAvailableInteraction.interactionType === "dialogue"
+                  ? "บทสนทนา"
+                  : "เหตุการณ์"}
               </p>
             </div>
           </div>
         )}
 
         {/* Dialogue */}
-        {currentInteraction.dialogueText && (
+        {currentAvailableInteraction.dialogueText && (
           <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
             <p className="text-white text-lg leading-relaxed">
-              {currentInteraction.dialogueText}
+              {currentAvailableInteraction.dialogueText}
             </p>
           </div>
         )}
 
         {/* Description/Context */}
-        {currentInteraction.description && (
+        {currentAvailableInteraction.description && (
           <div className="bg-yellow-900/30 rounded-lg border border-yellow-500/30 p-6 mb-6">
             <div className="flex items-center mb-3">
               <div className="text-yellow-400 text-2xl mr-3">💡</div>
               <h4 className="text-yellow-400 font-medium">คำแนะนำ:</h4>
             </div>
             <p className="text-yellow-100 text-lg leading-relaxed">
-              {currentInteraction.description}
+              {currentAvailableInteraction.description}
             </p>
           </div>
         )}
@@ -408,119 +414,59 @@ export function EventInteractionView() {
         )}
 
         {/* Interaction Instruction */}
-        {!currentInteraction.dialogueText && !currentInteraction.description && (
-          <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
-            <div className="flex items-center mb-3">
-              <div className="text-blue-400 text-2xl mr-3">🎯</div>
-              <h4 className="text-blue-400 font-medium">เลือกการกระทำ:</h4>
+        {!currentAvailableInteraction.dialogueText &&
+          !currentAvailableInteraction.description && (
+            <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
+              <div className="flex items-center mb-3">
+                <div className="text-blue-400 text-2xl mr-3">🎯</div>
+                <h4 className="text-blue-400 font-medium">เลือกการกระทำ:</h4>
+              </div>
+              <p className="text-blue-200 text-lg leading-relaxed">
+                เลือกสิ่งที่คุณต้องการทำจากตัวเลือกด้านล่าง
+              </p>
             </div>
-            <p className="text-blue-200 text-lg leading-relaxed">
-              เลือกสิ่งที่คุณต้องการทำจากตัวเลือกด้านล่าง
-            </p>
-          </div>
-        )}
+          )}
 
         {/* Choices */}
-        {currentInteraction.choices &&
-        Array.isArray(currentInteraction.choices) &&
-        currentInteraction.choices.length > 0 ? (
-          <div className="space-y-4">
-            <h4 className="text-yellow-400 font-medium">เลือกการตอบสนอง:</h4>
-            <div className="grid gap-3">
-              {currentInteraction.choices.map((choice: { id: string; text: string; type: string }) => (
+        {currentAvailableInteraction.choices &&
+        currentAvailableInteraction.choices.length > 0 ? (
+          <div className="space-y-3">
+            <h4 className="text-yellow-400 font-medium mb-3">เลือกตัวเลือก:</h4>
+            {currentAvailableInteraction.choices.map(
+              (choice: { id: string; text: string }) => (
                 <button
                   key={choice.id}
                   onClick={() => handleChoiceSelect(choice.id)}
-                  className={`
-                    text-left p-4 rounded-lg border transition-all duration-200
-                    ${
-                      selectedChoice === choice.id
-                        ? "bg-yellow-500/20 border-yellow-400 text-yellow-100"
-                        : "bg-white/5 border-white/20 text-blue-200 hover:bg-white/10 hover:border-white/40"
-                    }
-                  `}
+                  className={`w-full text-left p-4 rounded-lg border transition-colors ${
+                    selectedChoice === choice.id
+                      ? "bg-yellow-500 border-yellow-400 text-blue-900"
+                      : "bg-blue-900/50 border-blue-500/50 text-blue-100 hover:bg-blue-900/70"
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span>{choice.text}</span>
-                    <span
-                      className={`
-                      text-xs px-2 py-1 rounded-full
-                      ${
-                        choice.type === "friendly"
-                          ? "bg-green-500/20 text-green-300"
-                          : ""
-                      }
-                      ${
-                        choice.type === "suspicious"
-                          ? "bg-red-500/20 text-red-300"
-                          : ""
-                      }
-                      ${
-                        choice.type === "neutral"
-                          ? "bg-blue-500/20 text-blue-300"
-                          : ""
-                      }
-                      ${
-                        choice.type === "stealth"
-                          ? "bg-purple-500/20 text-purple-300"
-                          : ""
-                      }
-                      ${
-                        choice.type === "bold"
-                          ? "bg-orange-500/20 text-orange-300"
-                          : ""
-                      }
-                      ${
-                        choice.type === "risky"
-                          ? "bg-red-500/20 text-red-300"
-                          : ""
-                      }
-                    `}
-                    >
-                      {choice.type === "friendly" && "😊 เป็นมิตร"}
-                      {choice.type === "suspicious" && "🤨 สงสัย"}
-                      {choice.type === "neutral" && "😐 เฉยๆ"}
-                      {choice.type === "stealth" && "🥷 ลอบเคลื่อนไหว"}
-                      {choice.type === "bold" && "⚔️ กล้าหาญ"}
-                      {choice.type === "risky" && "🎲 เสี่ยงภัย"}
-                    </span>
-                  </div>
+                  {choice.text}
                 </button>
-              ))}
-            </div>
-
-            {/* Confirm Button */}
-            {selectedChoice && (
-              <div className="pt-4 border-t border-white/10">
-                <button
-                  onClick={handleConfirmChoice}
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-blue-900 font-bold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900 mr-2"></div>
-                      กำลังดำเนินการ...
-                    </div>
-                  ) : (
-                    "ยืนยันการเลือก"
-                  )}
-                </button>
-              </div>
+              )
             )}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <div className="text-blue-400 text-4xl mb-4">📖</div>
-            <p className="text-blue-200 mb-4">
-              การโต้ตอบนี้ไม่มีตัวเลือก กดปุ่มด้านล่างเพื่อดำเนินการต่อ
-            </p>
+          <div className="text-center">
+            <button
+              onClick={() => handleChoiceSelect("default")}
+              className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-8 py-3 rounded-lg font-medium transition-colors"
+            >
+              ดำเนินการต่อ
+            </button>
+          </div>
+        )}
+
+        {/* Confirm Button */}
+        {selectedChoice && (
+          <div className="flex justify-center mt-6">
             <button
               onClick={handleConfirmChoice}
-              disabled={loading}
-              className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
             >
-              {loading ? "กำลังดำเนินการ..." : "ดำเนินการต่อ"}
+              ยืนยัน
             </button>
           </div>
         )}
@@ -532,20 +478,18 @@ export function EventInteractionView() {
           <div>
             <span className="text-yellow-400 font-medium">ประเภท:</span>
             <span className="text-blue-200 ml-2">
-              {currentEvent.event_type}
+              {currentEvent?.event_type}
             </span>
           </div>
           <div>
             <span className="text-yellow-400 font-medium">สถานที่:</span>
             <span className="text-blue-200 ml-2">
-              {currentEvent.location_name || "ไม่ระบุ"}
+              {currentEvent?.location_name || "ไม่ระบุ"}
             </span>
           </div>
           <div>
             <span className="text-yellow-400 font-medium">การโต้ตอบ:</span>
-            <span className="text-blue-200 ml-2">
-              {currentEvent.interactions_count}
-            </span>
+            <span className="text-blue-200 ml-2">{interactions.length}</span>
           </div>
         </div>
       </div>
