@@ -1,6 +1,7 @@
 "use client";
 
 import { useGameStore } from "@/src/stores/gameStore";
+import Image from "next/image";
 import { useEffect } from "react";
 
 export function WorldMapView() {
@@ -98,9 +99,21 @@ export function WorldMapView() {
               </div>
             )}
 
-            {/* Region Image Placeholder */}
-            <div className="w-full h-32 bg-gradient-to-br from-blue-600/30 to-purple-600/30 rounded-lg mb-4 flex items-center justify-center">
-              <span className="text-4xl">🏰</span>
+            {/* Region Image */}
+            <div className="w-full h-32 bg-gradient-to-br from-blue-600/30 to-purple-600/30 rounded-lg mb-4 overflow-hidden relative">
+              {region.image_url ? (
+                <Image
+                  src={region.image_url}
+                  alt={region.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-4xl">🏰</span>
+                </div>
+              )}
             </div>
 
             {/* Region Info */}
