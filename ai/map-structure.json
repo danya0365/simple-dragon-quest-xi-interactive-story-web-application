@@ -1,0 +1,58 @@
+{
+  "world": {
+    "name": "World Map",
+    "type": "world",
+    "size": { "width": 500, "height": 500 },
+    "maps": [
+      {
+        "name": "Cobblestone Village",
+        "type": "town",
+        "size": { "width": 50, "height": 50 },
+        "locations": [
+          {
+            "name": "Hero House",
+            "type": "house",
+            "position": { "x": 10, "y": 15 },
+            "linked_map": {
+              "name": "Hero House",
+              "type": "building",
+              "size": { "width": 10, "height": 10 },
+              "locations": [
+                {
+                  "name": "Bedroom",
+                  "type": "room",
+                  "position": { "x": 2, "y": 2 },
+                  "linked_map": {
+                    "name": "Hero Bedroom",
+                    "type": "room",
+                    "size": { "width": 5, "height": 5 },
+                    "map_objects": [
+                      {
+                        "type": "npc",
+                        "name": "Cat",
+                        "position": { "x": 1, "y": 1 },
+                        "properties": { "dialogue": "Meow!" }
+                      },
+                      {
+                        "type": "object",
+                        "name": "Bed",
+                        "position": { "x": 2, "y": 2 },
+                        "properties": { "can_sleep": true }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Inn",
+            "type": "shop",
+            "position": { "x": 20, "y": 25 },
+            "linked_map": null
+          }
+        ]
+      }
+    ]
+  }
+}
