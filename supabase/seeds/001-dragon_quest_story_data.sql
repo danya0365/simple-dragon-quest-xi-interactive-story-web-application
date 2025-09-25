@@ -5,25 +5,25 @@
 -- Fixed: Event progression logic and proper sequential unlocking
 
 -- Insert World Regions (Same as original)
-INSERT INTO public.world_regions (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress) VALUES
-('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.svg', '{}', 1, true),
-('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false),
-('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false);
+INSERT INTO public.world_regions (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock) VALUES
+('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.svg', '{}', 1, true, false),
+('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false, true),
+('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false, true);
 
 -- Insert Locations (Same as original)
-INSERT INTO public.locations (id, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
+INSERT INTO public.locations (id, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock) VALUES
 -- Cobblestone locations
-('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1, true),
-('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, true),
-('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'landmark', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3, false),
+('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1, true, false),
+('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, true, false),
+('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'landmark', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3, false, true),
 
 -- Heliodor locations  
-('22222222-2222-2222-2222-222222222004', '11111111-1111-1111-1111-111111111002', 'Heliodor Castle', 'ปราสาทของกษัตริย์ Carnelian', 'castle', '{"level": 3, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false),
-('22222222-2222-2222-2222-222222222005', '11111111-1111-1111-1111-111111111002', 'Heliodor Town', 'เมืองใหญ่ที่คึกคัก', 'town', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2, false),
+('22222222-2222-2222-2222-222222222004', '11111111-1111-1111-1111-111111111002', 'Heliodor Castle', 'ปราสาทของกษัตริย์ Carnelian', 'castle', '{"level": 3, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false, true),
+('22222222-2222-2222-2222-222222222005', '11111111-1111-1111-1111-111111111002', 'Heliodor Town', 'เมืองใหญ่ที่คึกคัก', 'town', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2, false, true),
 
 -- Dungeon locations
-('22222222-2222-2222-2222-222222222006', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block A', 'ห้องขังส่วน A ของคุก Heliodor', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false),
-('22222222-2222-2222-2222-222222222007', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block B', 'ห้องขังส่วน B ที่มี Erik อยู่', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666004"]}', 2, false);
+('22222222-2222-2222-2222-222222222006', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block A', 'ห้องขังส่วน A ของคุก Heliodor', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false, true),
+('22222222-2222-2222-2222-222222222007', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block B', 'ห้องขังส่วน B ที่มี Erik อยู่', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666004"]}', 2, false, true);
 
 -- Insert Story Chapters (Same as original)
 INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress) VALUES

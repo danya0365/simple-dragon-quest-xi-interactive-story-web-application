@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS public.world_regions (
     display_order INTEGER NOT NULL DEFAULT 0,
     is_initial_user_progress BOOLEAN DEFAULT false,
     -- Indicates if this world map region is part of initial user progress setup
+    is_alway_hide_until_unlock BOOLEAN DEFAULT false,
+    -- Indicates if this world map region should be hidden until unlocked
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -41,6 +43,8 @@ CREATE TABLE IF NOT EXISTS public.locations (
     display_order INTEGER NOT NULL DEFAULT 0,
     is_initial_user_progress BOOLEAN DEFAULT false,
     -- Indicates if this location is part of initial user progress setup
+    is_alway_hide_until_unlock BOOLEAN DEFAULT false,
+    -- Indicates if this location should be hidden until unlocked
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
