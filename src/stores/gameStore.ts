@@ -566,10 +566,34 @@ export const useGameStore = create<GameStore>()(
           });
         } catch (err) {
           console.error("Error loading user game state:", err);
-          set({
-            error: "ไม่สามารถโหลดสถานะเกมได้",
-            loading: false,
-          });
+          
+          // Check if we should initialize user progress (only once)
+          const state = get();
+          if (!state.userGameState && !state.error?.includes('กำลังสร้างข้อมูลผู้เล่นใหม่')) {
+            console.log("Attempting to initialize user progress...");
+            try {
+              // Get current user ID from auth
+              const { data: { user }, error: authError } = await supabase.auth.getUser();
+              if (authError || !user) {
+                throw new Error('ไม่พบข้อมูลผู้ใช้');
+              }
+              
+              // Initialize user progress
+              await get().initializeUserProgress(user.id);
+              return; // Exit after initialization
+            } catch (initError) {
+              console.error("Error initializing user progress:", initError);
+              set({
+                error: "ไม่สามารถโหลดสถานะเกมได้ กำลังสร้างข้อมูลผู้เล่นใหม่",
+                loading: false,
+              });
+            }
+          } else {
+            set({
+              error: "ไม่สามารถโหลดสถานะเกมได้",
+              loading: false,
+            });
+          }
         }
       },
 
