@@ -64,6 +64,7 @@ type WorldMapsRpcResponse = {
   unlock_requirements: Record<string, unknown>;
   display_order: number;
   is_initial_user_progress: boolean;
+  is_alway_hide_until_unlock: boolean;
   locations: LocationData[];
 };
 
@@ -206,6 +207,7 @@ interface LocationData {
   unlock_requirements: Record<string, unknown>;
   display_order: number;
   is_initial_user_progress: boolean;
+  is_alway_hide_until_unlock: boolean;
 }
 
 interface WorldRegion {
@@ -428,6 +430,7 @@ export const useGameStore = create<GameStore>()(
               unlock_requirements: location.unlock_requirements,
               display_order: location.display_order,
               is_initial_user_progress: location.is_initial_user_progress,
+              is_alway_hide_until_unlock: location.is_alway_hide_until_unlock,
             }))
           );
 

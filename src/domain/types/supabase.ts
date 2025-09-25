@@ -219,6 +219,7 @@ export type Database = {
           display_order: number
           id: string
           image_url: string | null
+          is_alway_hide_until_unlock: boolean | null
           is_initial_user_progress: boolean | null
           location_type: string | null
           name: string
@@ -232,6 +233,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string | null
+          is_alway_hide_until_unlock?: boolean | null
           is_initial_user_progress?: boolean | null
           location_type?: string | null
           name: string
@@ -245,6 +247,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string | null
+          is_alway_hide_until_unlock?: boolean | null
           is_initial_user_progress?: boolean | null
           location_type?: string | null
           name?: string
@@ -581,6 +584,7 @@ export type Database = {
           display_order: number
           id: string
           image_url: string | null
+          is_alway_hide_until_unlock: boolean | null
           is_initial_user_progress: boolean | null
           name: string
           unlock_requirements: Json | null
@@ -592,6 +596,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string | null
+          is_alway_hide_until_unlock?: boolean | null
           is_initial_user_progress?: boolean | null
           name: string
           unlock_requirements?: Json | null
@@ -603,6 +608,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string | null
+          is_alway_hide_until_unlock?: boolean | null
           is_initial_user_progress?: boolean | null
           name?: string
           unlock_requirements?: Json | null

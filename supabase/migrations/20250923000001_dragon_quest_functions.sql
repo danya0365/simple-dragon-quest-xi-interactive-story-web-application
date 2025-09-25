@@ -426,7 +426,8 @@ AS $$
             wr.image_url,
             wr.unlock_requirements,
             wr.display_order,
-            wr.is_initial_user_progress
+            wr.is_initial_user_progress,
+            wr.is_alway_hide_until_unlock
         FROM public.world_regions wr
         ORDER BY wr.display_order, wr.name
     ),
@@ -440,7 +441,8 @@ AS $$
             loc.location_type,
             loc.unlock_requirements,
             loc.display_order,
-            loc.is_initial_user_progress
+            loc.is_initial_user_progress,
+            loc.is_alway_hide_until_unlock
         FROM public.locations loc
         ORDER BY loc.display_order, loc.name
     ),
@@ -457,7 +459,8 @@ AS $$
                     'location_type', loc.location_type,
                     'unlock_requirements', loc.unlock_requirements,
                     'display_order', loc.display_order,
-                    'is_initial_user_progress', loc.is_initial_user_progress
+                    'is_initial_user_progress', loc.is_initial_user_progress,
+                    'is_alway_hide_until_unlock', loc.is_alway_hide_until_unlock
                 )
             ), '[]'::jsonb) as locations
         FROM locations_data loc
@@ -472,6 +475,7 @@ AS $$
             'unlock_requirements', wr.unlock_requirements,
             'display_order', wr.display_order,
             'is_initial_user_progress', wr.is_initial_user_progress,
+            'is_alway_hide_until_unlock', wr.is_alway_hide_until_unlock,
             'locations', COALESCE(lbr.locations, '[]'::jsonb)
         )
     ), '[]'::jsonb)
