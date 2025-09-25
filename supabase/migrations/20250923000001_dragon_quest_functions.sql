@@ -1,7 +1,8 @@
--- Dragon Quest XI API Functions
+-- Dragon Quest XI API Functions (UPDATED FOR UNIFIED MAPS)
 -- Created: 2025-09-23
 -- Author: Marosdee Uma
 -- Description: API functions for Dragon Quest XI Interactive Story Web Application
+-- Updated: Replaced world_regions and locations with unified maps structure
 
 
 -- =============================================================================
@@ -63,25 +64,25 @@ BEGIN
     ORDER BY display_order
     LIMIT 1;
     
-    -- Hero's house location (initial location)
+    -- Hero's house map (initial map)
     SELECT id INTO v_heros_house_location_id
-    FROM public.locations 
-    WHERE is_initial_user_progress = true
+    FROM public.maps 
+    WHERE is_initial_user_progress = true AND map_type = 'location'
     ORDER BY display_order
     LIMIT 1;
     
-    -- Get unlocked content from each table separately (SIMPLIFIED: Use is_initial_user_progress flag)
-    -- World Regions with initial user progress flag
+    -- Get unlocked content from each table separately (UPDATED: Use unified maps structure)
+    -- Maps with initial user progress flag (world regions and locations)
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_world_maps
-    FROM public.world_regions 
-    WHERE is_initial_user_progress = true;
+    FROM public.maps 
+    WHERE is_initial_user_progress = true AND map_type IN ('world', 'location');
     
-    -- Locations with initial user progress flag
+    -- Locations with initial user progress flag (subset of maps)
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_locations
-    FROM public.locations 
-    WHERE is_initial_user_progress = true;
+    FROM public.maps 
+    WHERE is_initial_user_progress = true AND map_type = 'location';
     
     -- Chapters with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
@@ -101,16 +102,16 @@ BEGIN
         
         -- Current state
         current_chapter_id,
-        current_location_id,
+        current_map_id,
         current_event_id,
         
         -- Player progression
         player_level,
         player_experience,
         
-        -- Game content - UNLOCKED (FIX: Convert UUID arrays to JSONB)
-        unlocked_world_regions,
-        unlocked_locations,
+        -- Game content - UNLOCKED (UPDATED: Use unified maps structure)
+        unlocked_maps,                      -- Unified maps as JSONB array
+        unlocked_locations,                 -- Location maps as JSONB array
         unlocked_chapters,
         unlocked_events,
         
@@ -162,9 +163,9 @@ BEGIN
         1,                                 -- Level 1
         0,                                 -- 0 experience
         
-        -- Game content - UNLOCKED (FIX: Convert UUID arrays to JSONB)
-        to_jsonb(v_unlocked_world_maps),  -- World Regions as JSONB array
-        to_jsonb(v_unlocked_locations),   -- Locations as JSONB array
+        -- Game content - UNLOCKED (UPDATED: Use unified maps structure)
+        to_jsonb(v_unlocked_world_maps),   -- Maps as JSONB array
+        to_jsonb(v_unlocked_locations),    -- Location maps as JSONB array
         to_jsonb(v_unlocked_chapters),    -- Chapters as JSONB array
         to_jsonb(v_unlocked_events),      -- Events as JSONB array
         
@@ -287,14 +288,13 @@ AS $$
             up.user_id,
             up.current_chapter_id,
             COALESCE(sc.title, 'Unknown Chapter') as current_chapter_title,
-            up.current_location_id,
-            COALESCE(sl.name, 'Unknown Location') as current_location_name,
+            up.current_map_id,
+            COALESCE(sm.name, 'Unknown Map') as current_location_name,
             up.current_event_id,
             COALESCE(se.title, 'Unknown Event') as current_event_title,
             up.player_level,
             up.player_experience,
-            up.unlocked_world_regions,
-            up.unlocked_locations,
+            up.unlocked_maps,
             up.unlocked_chapters,
             up.unlocked_events,
             up.completed_chapters,
@@ -316,14 +316,14 @@ AS $$
             up.updated_at
         FROM public.user_progress up
         LEFT JOIN public.story_chapters sc ON up.current_chapter_id = sc.id
-        LEFT JOIN public.locations sl ON up.current_location_id = sl.id
+        LEFT JOIN public.maps sm ON up.current_map_id = sm.id
         LEFT JOIN public.story_events se ON up.current_event_id = se.id
         WHERE up.id = p_user_progress_uuid
     ) AS game_state;
 $$;
 
 -- =============================================================================
--- Function to get world map with unlock status for user_progress
+-- Function to get world map with unlock status for user_progress (UPDATED FOR UNIFIED MAPS)
 -- Uses hash map approach with CTEs and joins for better performance
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.get_world_regions_for_user_progress(p_user_progress_uuid UUID)
@@ -332,63 +332,67 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-    v_unlocked_world_maps UUID[];
+    v_unlocked_maps UUID[];
     v_unlocked_locations UUID[];
 BEGIN
-    -- Get unlocked world regions and locations from user progress
-    SELECT unlocked_world_regions, unlocked_locations 
-    INTO v_unlocked_world_maps, v_unlocked_locations
+    -- Get unlocked maps and locations from user progress
+    SELECT unlocked_maps, unlocked_locations 
+    INTO v_unlocked_maps, v_unlocked_locations
     FROM public.user_progress 
     WHERE id = p_user_progress_uuid;
     
-    -- Return comprehensive world map structure using hash map approach
+    -- Return comprehensive world map structure using hash map approach (UPDATED: Use unified maps)
     RETURN (
-        WITH unlocked_world_regions_data AS (
+        WITH unlocked_world_maps_data AS (
             SELECT 
-                wr.id,
-                wr.name,
-                wr.description,
-                wr.image_url,
-                wr.unlock_requirements,
-                wr.display_order,
-                wr.is_initial_user_progress
-            FROM public.world_regions wr
-            WHERE wr.id = ANY(v_unlocked_world_maps)
-            ORDER BY wr.display_order, wr.name
+                m.id,
+                m.name,
+                m.description,
+                m.image_url,
+                m.map_type,
+                m.map_subtype,
+                m.unlock_requirements,
+                m.display_order,
+                m.is_initial_user_progress
+            FROM public.maps m
+            WHERE m.id = ANY(v_unlocked_maps) AND m.map_type = 'world'
+            ORDER BY m.display_order, m.name
         ),
-        unlocked_locations_data AS (
+        unlocked_location_maps_data AS (
             SELECT 
-                loc.id,
-                loc.world_map_id,
-                loc.name,
-                loc.description,
-                loc.image_url,
-                loc.location_type,
-                loc.unlock_requirements,
-                loc.display_order,
-                loc.is_initial_user_progress
-            FROM public.locations loc
-            WHERE loc.id = ANY(v_unlocked_locations)
-            ORDER BY loc.display_order, loc.name
+                m.id,
+                m.parent_id,
+                m.name,
+                m.description,
+                m.image_url,
+                m.map_type,
+                m.map_subtype,
+                m.unlock_requirements,
+                m.display_order,
+                m.is_initial_user_progress
+            FROM public.maps m
+            WHERE m.id = ANY(v_unlocked_locations) AND m.map_type = 'location'
+            ORDER BY m.display_order, m.name
         ),
         locations_by_world_region AS (
             SELECT 
-                loc.world_region_id,
+                loc.parent_id,
                 COALESCE(jsonb_agg(
                     jsonb_build_object(
                         'id', loc.id,
-                        'world_region_id', loc.world_region_id,
+                        'parent_id', loc.parent_id,
                         'name', loc.name,
                         'description', loc.description,
                         'image_url', loc.image_url,
-                        'location_type', loc.location_type,
+                        'map_type', loc.map_type,
+                        'map_subtype', loc.map_subtype,
                         'unlock_requirements', loc.unlock_requirements,
                         'display_order', loc.display_order,
                         'is_initial_user_progress', loc.is_initial_user_progress
                     )
                 ), '[]'::jsonb) as locations
-            FROM unlocked_locations_data loc
-            GROUP BY loc.world_region_id
+            FROM unlocked_location_maps_data loc
+            GROUP BY loc.parent_id
         )
         SELECT COALESCE(jsonb_agg(
             jsonb_build_object(
@@ -396,21 +400,24 @@ BEGIN
                 'name', wr.name,
                 'description', wr.description,
                 'image_url', wr.image_url,
+                'map_type', wr.map_type,
+                'map_subtype', wr.map_subtype,
                 'unlock_requirements', wr.unlock_requirements,
                 'display_order', wr.display_order,
                 'is_initial_user_progress', wr.is_initial_user_progress,
                 'locations', COALESCE(lbr.locations, '[]'::jsonb)
             )
-        ), '[]'::jsonb)
-        FROM unlocked_world_regions_data wr
-        LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.world_region_id
+        ), '[]'::jsonb) as world_regions
+        FROM unlocked_world_maps_data wr
+        LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.parent_id
+        ORDER BY wr.display_order, wr.name
     );
 END;
 $$;
 
 
 -- =============================================================================
--- Function to get all world regions with all locations (no user progress filtering)
+-- Function to get all world regions with all locations (no user progress filtering) (UPDATED FOR UNIFIED MAPS)
 -- Uses hash map approach with joins and jsonb_object_agg for better performance
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.get_world_regions()
@@ -418,53 +425,59 @@ RETURNS JSONB
 LANGUAGE sql
 SECURITY DEFINER
 AS $$
-    WITH world_regions_data AS (
+    WITH world_maps_data AS (
         SELECT 
-            wr.id,
-            wr.name,
-            wr.description,
-            wr.image_url,
-            wr.unlock_requirements,
-            wr.display_order,
-            wr.is_initial_user_progress,
-            wr.is_alway_hide_until_unlock
-        FROM public.world_regions wr
-        ORDER BY wr.display_order, wr.name
+            m.id,
+            m.name,
+            m.description,
+            m.image_url,
+            m.map_type,
+            m.map_subtype,
+            m.unlock_requirements,
+            m.display_order,
+            m.is_initial_user_progress,
+            m.is_alway_hide_until_unlock
+        FROM public.maps m
+        WHERE m.map_type = 'world'
+        ORDER BY m.display_order, m.name
     ),
-    locations_data AS (
+    location_maps_data AS (
         SELECT 
-            loc.id,
-            loc.world_region_id,
-            loc.name,
-            loc.description,
-            loc.image_url,
-            loc.location_type,
-            loc.unlock_requirements,
-            loc.display_order,
-            loc.is_initial_user_progress,
-            loc.is_alway_hide_until_unlock
-        FROM public.locations loc
-        ORDER BY loc.display_order, loc.name
+            m.id,
+            m.parent_id,
+            m.name,
+            m.description,
+            m.image_url,
+            m.map_type,
+            m.map_subtype,
+            m.unlock_requirements,
+            m.display_order,
+            m.is_initial_user_progress,
+            m.is_alway_hide_until_unlock
+        FROM public.maps m
+        WHERE m.map_type = 'location'
+        ORDER BY m.display_order, m.name
     ),
     locations_by_world_region AS (
         SELECT 
-            loc.world_region_id,
+            loc.parent_id,
             COALESCE(jsonb_agg(
                 jsonb_build_object(
                     'id', loc.id,
-                    'world_region_id', loc.world_region_id,
+                    'parent_id', loc.parent_id,
                     'name', loc.name,
                     'description', loc.description,
                     'image_url', loc.image_url,
-                    'location_type', loc.location_type,
+                    'map_type', loc.map_type,
+                    'map_subtype', loc.map_subtype,
                     'unlock_requirements', loc.unlock_requirements,
                     'display_order', loc.display_order,
                     'is_initial_user_progress', loc.is_initial_user_progress,
                     'is_alway_hide_until_unlock', loc.is_alway_hide_until_unlock
                 )
             ), '[]'::jsonb) as locations
-        FROM locations_data loc
-        GROUP BY loc.world_region_id
+        FROM location_maps_data loc
+        GROUP BY loc.parent_id
     )
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
@@ -472,6 +485,8 @@ AS $$
             'name', wr.name,
             'description', wr.description,
             'image_url', wr.image_url,
+            'map_type', wr.map_type,
+            'map_subtype', wr.map_subtype,
             'unlock_requirements', wr.unlock_requirements,
             'display_order', wr.display_order,
             'is_initial_user_progress', wr.is_initial_user_progress,
@@ -479,8 +494,8 @@ AS $$
             'locations', COALESCE(lbr.locations, '[]'::jsonb)
         )
     ), '[]'::jsonb)
-    FROM world_regions_data wr
-    LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.world_region_id;
+    FROM world_maps_data wr
+    LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.parent_id;
 $$;
 
 -- =============================================================================
@@ -496,7 +511,7 @@ AS $$
         SELECT 
             unlocked_events,
             completed_events,
-            current_location_id
+            current_map_id
         FROM public.user_progress 
         WHERE id = p_user_progress_uuid
     ),
@@ -507,16 +522,16 @@ AS $$
             se.description as event_description,
             se.event_type,
             sc.title as chapter_title,
-            sl.name as location_name,
+            sm.name as location_name,
             COUNT(ei.id) as interactions_count
         FROM public.story_events se
         JOIN public.story_chapters sc ON se.chapter_id = sc.id
-        LEFT JOIN public.locations sl ON se.location_id = sl.id
+        LEFT JOIN public.maps sm ON se.map_id = sm.id
         LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
         JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.unlocked_events)::UUID)
         WHERE NOT se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
-        AND (se.location_id IS NULL OR se.location_id = upd.current_location_id)
-        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
+        AND (se.map_id IS NULL OR se.map_id = upd.current_map_id)
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sm.name
         ORDER BY se.display_order, se.title
     )
     SELECT COALESCE(jsonb_agg(
@@ -556,16 +571,16 @@ AS $$
             se.description as event_description,
             se.event_type,
             sc.title as chapter_title,
-            sl.name as location_name,
+            sm.name as location_name,
             COUNT(ei.id) as interactions_count
         FROM public.story_events se
         JOIN public.story_chapters sc ON se.chapter_id = sc.id
-        LEFT JOIN public.locations sl ON se.location_id = sl.id
+        LEFT JOIN public.maps sm ON se.map_id = sm.id
         LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
         JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.unlocked_events)::UUID)
         WHERE NOT se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
-        AND se.location_id = p_location_uuid
-        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
+        AND se.map_id = p_location_uuid
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sm.name
         ORDER BY se.display_order, se.title
     )
     SELECT COALESCE(jsonb_agg(
@@ -748,37 +763,37 @@ BEGIN
     -- Store current unlocked content before update
     v_current_unlocked_events := COALESCE(v_user_progress.unlocked_events, '[]'::jsonb);
     v_current_unlocked_locations := COALESCE(v_user_progress.unlocked_locations, '[]'::jsonb);
-    v_current_unlocked_regions := COALESCE(v_user_progress.unlocked_world_regions, '[]'::jsonb);
+    v_current_unlocked_regions := COALESCE(v_user_progress.unlocked_maps, '[]'::jsonb);
     
     -- Get new events to unlock from effects
     v_new_events_to_unlock := COALESCE(v_effects->'unlock_events', '[]'::jsonb);
     
-    -- AUTO-UNLOCK LOGIC: For each new event, find its location and world region
+    -- AUTO-UNLOCK LOGIC: For each new event, find its map and parent map (UPDATED FOR UNIFIED MAPS)
     IF jsonb_typeof(v_new_events_to_unlock) = 'array' AND jsonb_array_length(v_new_events_to_unlock) > 0 THEN
         FOR v_event_record IN 
             SELECT 
                 se.id as event_id,
-                se.location_id,
-                l.world_region_id
+                se.map_id,
+                m.parent_id as world_map_id
             FROM jsonb_array_elements_text(v_new_events_to_unlock) AS event_uuid_text
             JOIN public.story_events se ON se.id = event_uuid_text::uuid
-            LEFT JOIN public.locations l ON l.id = se.location_id
+            LEFT JOIN public.maps m ON m.id = se.map_id
         LOOP
-            -- Auto-unlock location if event has a location
-            IF v_event_record.location_id IS NOT NULL THEN
-                -- Check if location is not already unlocked
-                IF NOT (v_current_unlocked_locations @> to_jsonb(v_event_record.location_id::text)) THEN
-                    v_auto_unlock_locations := v_auto_unlock_locations || to_jsonb(v_event_record.location_id::text);
-                    RAISE NOTICE 'DEBUG: Auto-unlocking location: %', v_event_record.location_id;
+            -- Auto-unlock map if event has a map
+            IF v_event_record.map_id IS NOT NULL THEN
+                -- Check if map is not already unlocked
+                IF NOT (v_current_unlocked_locations @> to_jsonb(v_event_record.map_id::text)) THEN
+                    v_auto_unlock_locations := v_auto_unlock_locations || to_jsonb(v_event_record.map_id::text);
+                    RAISE NOTICE 'DEBUG: Auto-unlocking map: %', v_event_record.map_id;
                 END IF;
             END IF;
             
-            -- Auto-unlock world region if location has a world region
-            IF v_event_record.world_region_id IS NOT NULL THEN
-                -- Check if world region is not already unlocked
-                IF NOT (v_current_unlocked_regions @> to_jsonb(v_event_record.world_region_id::text)) THEN
-                    v_auto_unlock_regions := v_auto_unlock_regions || to_jsonb(v_event_record.world_region_id::text);
-                    RAISE NOTICE 'DEBUG: Auto-unlocking world region: %', v_event_record.world_region_id;
+            -- Auto-unlock world map if map has a parent world map
+            IF v_event_record.world_map_id IS NOT NULL THEN
+                -- Check if world map is not already unlocked
+                IF NOT (v_current_unlocked_regions @> to_jsonb(v_event_record.world_map_id::text)) THEN
+                    v_auto_unlock_regions := v_auto_unlock_regions || to_jsonb(v_event_record.world_map_id::text);
+                    RAISE NOTICE 'DEBUG: Auto-unlocking world map: %', v_event_record.world_map_id;
                 END IF;
             END IF;
         END LOOP;
@@ -798,33 +813,33 @@ BEGIN
             ),
         
         -- Update unlocked content with proper null handling and array deduplication
-        unlocked_world_regions = CASE 
+        unlocked_maps = CASE 
             -- Merge manual unlocks from effects AND auto-unlocks
-            WHEN (v_effects->'unlock_regions' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_regions') = 'array' AND jsonb_array_length(v_effects->'unlock_regions') > 0)
+            WHEN (v_effects->'unlock_maps' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_maps') = 'array' AND jsonb_array_length(v_effects->'unlock_maps') > 0)
                  OR jsonb_array_length(v_auto_unlock_regions) > 0
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
                 FROM (
-                    SELECT value FROM jsonb_array_elements(COALESCE(unlocked_world_regions, '[]'::jsonb))
+                    SELECT value FROM jsonb_array_elements(COALESCE(unlocked_maps, '[]'::jsonb))
                     UNION
-                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_regions', '[]'::jsonb))
+                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_maps', '[]'::jsonb))
                     UNION
                     SELECT value FROM jsonb_array_elements(v_auto_unlock_regions)
                 ) t
             )
-            ELSE unlocked_world_regions 
+            ELSE unlocked_maps 
         END,
         
         unlocked_locations = CASE 
             -- Merge manual unlocks from effects AND auto-unlocks
-            WHEN (v_effects->'unlock_locations' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_locations') = 'array' AND jsonb_array_length(v_effects->'unlock_locations') > 0)
+            WHEN (v_effects->'unlock_maps' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_maps') = 'array' AND jsonb_array_length(v_effects->'unlock_maps') > 0)
                  OR jsonb_array_length(v_auto_unlock_locations) > 0
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
                 FROM (
                     SELECT value FROM jsonb_array_elements(COALESCE(unlocked_locations, '[]'::jsonb))
                     UNION
-                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_locations', '[]'::jsonb))
+                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_maps', '[]'::jsonb))
                     UNION
                     SELECT value FROM jsonb_array_elements(v_auto_unlock_locations)
                 ) t
@@ -940,7 +955,7 @@ BEGIN
         'effects', v_effects,
         'choice_key', v_choice_key,
         'auto_unlocked_locations', v_auto_unlock_locations,
-        'auto_unlocked_regions', v_auto_unlock_regions
+        'auto_unlocked_maps', v_auto_unlock_regions
     );
     
 EXCEPTION

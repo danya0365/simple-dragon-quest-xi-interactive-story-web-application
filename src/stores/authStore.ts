@@ -2,7 +2,7 @@ import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase
 import type { Session, User } from "@supabase/supabase-js";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { useGameStore } from "./gameStore";
+//import { useGameStore } from "./gameStore";
 
 interface AuthState {
   user: User | null;
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             // Initialize user progress if this is first time
-            await useGameStore.getState().initializeUserProgress(data.user.id);
+            //await useGameStore.getState().initializeUserProgress(data.user.id);
           }
 
           return {};

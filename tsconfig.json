@@ -23,5 +23,16 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "app/dashboard-bak/page.tsx.bak",
+    "src/presentation/components/game/WorldMapView.tsx.bak",
+    "src/presentation/components/game/PartyView.tsx.bak",
+    "src/presentation/components/game/LocationView.tsx.bak",
+    "src/presentation/components/game/InventoryView.tsx.bak",
+    "src/presentation/components/game/EventView.tsx.bak",
+    "src/presentation/components/game/EventInteractionView.tsx.bak",
+    "src/presentation/components/dashboard/DashboardView.tsx.bak",
+    "supabase/migrations/20250923000001_dragon_quest_functions.sql"
+  ]
 }

@@ -7,44 +7,43 @@
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- World Regions Table
--- เก็บข้อมูลภูมิภาคต่าง ๆ ในโลก (Content only, no user state)
-CREATE TABLE IF NOT EXISTS public.world_regions (
+-- Maps Table (Unified hierarchical map system - replaces world_regions and locations)
+-- เก็บข้อมูลแผนที่ทั้งหมดในระบบแบบ hierarchy (Content only, no user state)
+CREATE TABLE IF NOT EXISTS public.maps (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    parent_id UUID REFERENCES public.maps(id) ON DELETE CASCADE,
+    -- Unlimited nesting: World → Region → Town → Building → Room → Sub-room
+    
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image_url VARCHAR(500),
+    
+    -- Map classification
+    map_type VARCHAR(50) NOT NULL, -- world, region, town, building, room, interior
+    map_subtype VARCHAR(50), -- village, castle, dungeon, house, shop, bedroom, etc.
+    
+    -- Position and size
+    position_x INTEGER DEFAULT 0,
+    position_y INTEGER DEFAULT 0,
+    size_width INTEGER DEFAULT 100,
+    size_height INTEGER DEFAULT 100,
+    
+    -- Map linking (for location-to-map connections)
+    linked_map_id UUID REFERENCES public.maps(id) ON DELETE SET NULL,
+    -- Links this location to its interior map (e.g., Hero House → Hero Bedroom)
+    
+    -- Unlock system
     unlock_requirements JSONB DEFAULT '{}',
-    -- Requirements to unlock this world map region
+    -- Requirements to unlock this map
     -- Format: {"level": integer, "completed_chapters": [uuid], "flags": {string: any}}
     -- Example: {"level": 3, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}
+    
     display_order INTEGER NOT NULL DEFAULT 0,
     is_initial_user_progress BOOLEAN DEFAULT false,
-    -- Indicates if this world map region is part of initial user progress setup
+    -- Indicates if this map is part of initial user progress setup
     is_alway_hide_until_unlock BOOLEAN DEFAULT false,
-    -- Indicates if this world map region should be hidden until unlocked
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Locations Table
--- เก็บข้อมูลสถานที่ต่าง ๆ ในแต่ละภูมิภาค (Content only, no user state)
-CREATE TABLE IF NOT EXISTS public.locations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    world_region_id UUID NOT NULL REFERENCES public.world_regions(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    image_url VARCHAR(500),
-    location_type VARCHAR(50) DEFAULT 'town', -- town, dungeon, field, castle, etc.
-    unlock_requirements JSONB DEFAULT '{}',
-    -- Requirements to unlock this location
-    -- Format: {"level": integer, "completed_events": [uuid], "items": [uuid], "flags": {string: any}}
-    -- Example: {"level": 5, "completed_events": ["66666666-6666-6666-6666-666666666001"], "flags": {"talked_to_king": true}}
-    display_order INTEGER NOT NULL DEFAULT 0,
-    is_initial_user_progress BOOLEAN DEFAULT false,
-    -- Indicates if this location is part of initial user progress setup
-    is_alway_hide_until_unlock BOOLEAN DEFAULT false,
-    -- Indicates if this location should be hidden until unlocked
+    -- Indicates if this map should be hidden until unlocked
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -72,7 +71,7 @@ CREATE TABLE IF NOT EXISTS public.story_chapters (
 CREATE TABLE IF NOT EXISTS public.story_events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chapter_id UUID NOT NULL REFERENCES public.story_chapters(id) ON DELETE CASCADE,
-    location_id UUID REFERENCES public.locations(id) ON DELETE SET NULL,
+    map_id UUID REFERENCES public.maps(id) ON DELETE SET NULL, -- Changed from location_id
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     event_type VARCHAR(50) DEFAULT 'story', -- story, battle, dialogue, choice, etc.
@@ -199,30 +198,57 @@ CREATE TABLE IF NOT EXISTS public.items (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Map Objects Table (NPCs, items, interactive elements within maps)
+-- เก็บข้อมูลออบเจกต์ต่าง ๆ ภายในแผนที่ (Content only, no user state)
+CREATE TABLE IF NOT EXISTS public.map_objects (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    map_id UUID NOT NULL REFERENCES public.maps(id) ON DELETE CASCADE,
+    
+    name VARCHAR(255) NOT NULL,
+    object_type VARCHAR(50) NOT NULL, -- npc, item, interactive, decoration, portal
+    object_subtype VARCHAR(50), -- character, weapon, door, chest, etc.
+    
+    -- Position within map
+    position_x INTEGER NOT NULL,
+    position_y INTEGER NOT NULL,
+    
+    -- Object properties
+    properties JSONB DEFAULT '{}',
+    -- Format: {"dialogue": "text", "can_interact": true, "inventory": [], "stats": {}}
+    
+    -- Link to master data (optional)
+    character_id UUID REFERENCES public.characters(id) ON DELETE SET NULL,
+    item_id UUID REFERENCES public.items(id) ON DELETE SET NULL,
+    
+    -- Interaction settings
+    is_interactive BOOLEAN DEFAULT true,
+    interaction_id UUID REFERENCES public.event_interactions(id) ON DELETE SET NULL,
+    
+    display_order INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- User Progress Table
 -- เก็บความคืบหน้าของผู้เล่นแต่ละคน (Single source of truth for user state)
 CREATE TABLE IF NOT EXISTS public.user_progress (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     
-    -- Current state
+    -- Current state (updated for maps)
     current_chapter_id UUID REFERENCES public.story_chapters(id) ON DELETE SET NULL,
-    current_location_id UUID REFERENCES public.locations(id) ON DELETE SET NULL,
+    current_map_id UUID REFERENCES public.maps(id) ON DELETE SET NULL, -- Changed from current_location_id
     current_event_id UUID REFERENCES public.story_events(id) ON DELETE SET NULL,
     
     -- Player progression
     player_level INTEGER DEFAULT 1,
     player_experience INTEGER DEFAULT 0,
     
-    -- Game content
-    unlocked_world_regions JSONB DEFAULT '[]',
-    -- Array of unlocked world map UUIDs
+    -- Game content (updated for unified maps)
+    unlocked_maps JSONB DEFAULT '[]',
+    -- Array of unlocked map UUIDs (replaces separate world_regions and locations)
     -- Format: [uuid]
-    -- Example: ["11111111-1111-1111-1111-111111111001", "11111111-1111-1111-1111-111111111002"]
-    unlocked_locations JSONB DEFAULT '[]',
-    -- Array of unlocked location UUIDs
-    -- Format: [uuid]
-    -- Example: ["22222222-2222-2222-2222-222222222001", "22222222-2222-2222-2222-222222222002"]
+    -- Example: ["map-world-uuid", "map-cobblestone-uuid", "map-hero-house-uuid"]
     unlocked_chapters JSONB DEFAULT '[]',
     -- Array of unlocked chapter UUIDs
     -- Format: [uuid]
@@ -264,10 +290,11 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     -- Character relationship levels and flags
     -- Format: {"erik": 15, "grandpa": 50, "king": -10}
     
-    -- Player position
+    -- Player position (enhanced for nested maps)
     player_position JSONB DEFAULT '{}',
-    -- Current player position in the game world
-    -- Format: {"x": 100, "y": 200, "map_id": "uuid"}
+    -- Current player position in the game world with nested map support
+    -- Format: {"x": 100, "y": 200, "map_id": "uuid", "parent_map_path": [uuid]}
+    -- Example: {"x": 2, "y": 2, "map_id": "hero-bedroom-uuid", "parent_map_path": ["world-uuid", "cobblestone-uuid", "hero-house-uuid"]}
     
     -- Achievements
     achievements JSONB DEFAULT '[]',
@@ -315,16 +342,19 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
 -- REMOVED: User Inventory Table - Data centralized to user_progress.inventory
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_locations_world_region_id ON public.locations(world_region_id);
+CREATE INDEX IF NOT EXISTS idx_maps_parent_id ON public.maps(parent_id);
+CREATE INDEX IF NOT EXISTS idx_maps_linked_map_id ON public.maps(linked_map_id);
+CREATE INDEX IF NOT EXISTS idx_maps_type ON public.maps(map_type);
 CREATE INDEX IF NOT EXISTS idx_story_events_chapter_id ON public.story_events(chapter_id);
-CREATE INDEX IF NOT EXISTS idx_story_events_location_id ON public.story_events(location_id);
+CREATE INDEX IF NOT EXISTS idx_story_events_map_id ON public.story_events(map_id);
 CREATE INDEX IF NOT EXISTS idx_event_interactions_event_id ON public.event_interactions(event_id);
 CREATE INDEX IF NOT EXISTS idx_event_outcomes_interaction_id ON public.event_outcomes(interaction_id);
+CREATE INDEX IF NOT EXISTS idx_map_objects_map_id ON public.map_objects(map_id);
 CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON public.user_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_progress_current_map_id ON public.user_progress(current_map_id);
 
 -- Create GIN indexes for JSONB fields in user_progress for better performance
-CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_world_regions ON public.user_progress USING GIN (unlocked_world_regions);
-CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_locations ON public.user_progress USING GIN (unlocked_locations);
+CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_maps ON public.user_progress USING GIN (unlocked_maps);
 CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_chapters ON public.user_progress USING GIN (unlocked_chapters);
 CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_events ON public.user_progress USING GIN (unlocked_events);
 CREATE INDEX IF NOT EXISTS idx_user_progress_completed_chapters ON public.user_progress USING GIN (completed_chapters);
@@ -349,12 +379,12 @@ END;
 $$ language 'plpgsql';
 
 -- Apply updated_at triggers
-CREATE TRIGGER update_world_regions_updated_at BEFORE UPDATE ON public.world_regions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_locations_updated_at BEFORE UPDATE ON public.locations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_maps_updated_at BEFORE UPDATE ON public.maps FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_story_chapters_updated_at BEFORE UPDATE ON public.story_chapters FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_story_events_updated_at BEFORE UPDATE ON public.story_events FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_event_interactions_updated_at BEFORE UPDATE ON public.event_interactions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_event_outcomes_updated_at BEFORE UPDATE ON public.event_outcomes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_characters_updated_at BEFORE UPDATE ON public.characters FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_items_updated_at BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_map_objects_updated_at BEFORE UPDATE ON public.map_objects FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_user_progress_updated_at BEFORE UPDATE ON public.user_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

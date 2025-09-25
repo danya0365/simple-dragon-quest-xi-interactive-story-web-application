@@ -1,29 +1,37 @@
--- Dragon Quest XI Story Data Seed (FIXED VERSION)
+-- Dragon Quest XI Story Data Seed (UPDATED FOR UNIFIED MAPS)
 -- Created: 2025-09-23
 -- Author: Marosdee Uma
--- Description: Fixed sample story data for Dragon Quest XI Interactive Story (Prison Arc)
--- Fixed: Event progression logic and proper sequential unlocking
+-- Description: Updated sample story data for Dragon Quest XI Interactive Story (Prison Arc)
+-- Updated: Replaced world_regions and locations with unified maps structure
 
--- Insert World Regions (Same as original)
-INSERT INTO public.world_regions (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock) VALUES
-('11111111-1111-1111-1111-111111111001', 'Cobblestone', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', '/images/regions/cobblestone.svg', '{}', 1, true, false),
-('11111111-1111-1111-1111-111111111002', 'Heliodor', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', '/images/regions/heliodor.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false, true),
-('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', '/images/regions/dungeons.svg', '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false, true);
+-- Insert Maps (Unified structure replacing world_regions and locations)
+INSERT INTO public.maps (id, parent_id, name, description, map_type, map_subtype, position_x, position_y, size_width, size_height, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock) VALUES
+-- World-level maps (replacing world_regions)
+('11111111-1111-1111-1111-111111111001', NULL, 'Cobblestone Region', 'หมู่บ้านเล็ก ๆ ที่เงียบสงบ บ้านเกิดของ Hero', 'world', 'region', 0, 0, 300, 300, '{}', 1, true, false),
+('11111111-1111-1111-1111-111111111002', NULL, 'Heliodor Region', 'เมืองหลวงของอาณาจักร Heliodor ที่ยิ่งใหญ่', 'world', 'region', 400, 0, 300, 300, '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"]}', 2, false, true),
+('11111111-1111-1111-1111-111111111003', NULL, 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิด', 'world', 'dungeon', 700, 0, 200, 200, '{"level": 2, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}', 3, false, true),
 
--- Insert Locations (Same as original)
-INSERT INTO public.locations (id, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock) VALUES
--- Cobblestone locations
-('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'house', '{}', 1, true, false),
-('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'town', '{}', 2, true, false),
-('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'landmark', '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3, false, true),
+-- Cobblestone locations (children of Cobblestone Region)
+('22222222-2222-2222-2222-222222222001', '11111111-1111-1111-1111-111111111001', 'Hero''s House', 'บ้านของ Hero และ Grandpa', 'location', 'house', 50, 50, 80, 80, '{}', 1, true, false),
+('22222222-2222-2222-2222-222222222002', '11111111-1111-1111-1111-111111111001', 'Village Square', 'จัตุรัสกลางหมู่บ้าน Cobblestone', 'location', 'town', 150, 150, 100, 100, '{}', 2, true, false),
+('22222222-2222-2222-2222-222222222003', '11111111-1111-1111-1111-111111111001', 'Sacred Tree', 'ต้นไม้ศักดิ์สิทธิ์ของหมู่บ้าน', 'location', 'landmark', 250, 250, 60, 60, '{"completed_events": ["66666666-6666-6666-6666-666666666001"]}', 3, false, true),
 
--- Heliodor locations  
-('22222222-2222-2222-2222-222222222004', '11111111-1111-1111-1111-111111111002', 'Heliodor Castle', 'ปราสาทของกษัตริย์ Carnelian', 'castle', '{"level": 3, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false, true),
-('22222222-2222-2222-2222-222222222005', '11111111-1111-1111-1111-111111111002', 'Heliodor Town', 'เมืองใหญ่ที่คึกคัก', 'town', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2, false, true),
+-- Heliodor locations (children of Heliodor Region)
+('22222222-2222-2222-2222-222222222004', '11111111-1111-1111-1111-111111111002', 'Heliodor Castle', 'ปราสาทของกษัตริย์ Carnelian', 'location', 'castle', 100, 100, 120, 120, '{"level": 3, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false, true),
+('22222222-2222-2222-2222-222222222005', '11111111-1111-1111-1111-111111111002', 'Heliodor Town', 'เมืองใหญ่ที่คึกคัก', 'location', 'town', 200, 200, 150, 150, '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 2, false, true),
 
--- Dungeon locations
-('22222222-2222-2222-2222-222222222006', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block A', 'ห้องขังส่วน A ของคุก Heliodor', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false, true),
-('22222222-2222-2222-2222-222222222007', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block B', 'ห้องขังส่วน B ที่มี Erik อยู่', 'dungeon', '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666004"]}', 2, false, true);
+-- Dungeon locations (children of Heliodor Dungeons)
+('22222222-2222-2222-2222-222222222006', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block A', 'ห้องขังส่วน A ของคุก Heliodor', 'location', 'dungeon', 50, 50, 100, 100, '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666003"]}', 1, false, true),
+('22222222-2222-2222-2222-222222222007', '11111111-1111-1111-1111-111111111003', 'Prison Cell Block B', 'ห้องขังส่วน B ที่มี Erik อยู่', 'location', 'dungeon', 150, 150, 100, 100, '{"level": 2, "completed_events": ["66666666-6666-6666-6666-666666666004"]}', 2, false, true),
+
+-- Interior maps (linked to exterior locations)
+('99999999-9999-9999-9999-999999999001', NULL, 'Hero''s House Interior', 'ภายในบ้านของ Hero', 'interior', 'house', 0, 0, 200, 200, '{}', 1, true, false),
+('99999999-9999-9999-9999-999999999002', '99999999-9999-9999-9999-999999999001', 'Hero''s Bedroom', 'ห้องนอนของ Hero', 'interior', 'room', 20, 20, 60, 60, '{}', 1, true, false),
+('99999999-9999-9999-9999-999999999003', '99999999-9999-9999-9999-999999999001', 'Grandpa''s Room', 'ห้องของปู่', 'interior', 'room', 120, 20, 60, 60, '{}', 2, true, false),
+('99999999-9999-9999-9999-999999999004', '99999999-9999-9999-9999-999999999001', 'Living Room', 'ห้องนั่งเล่น', 'interior', 'room', 20, 120, 160, 60, '{}', 3, true, false);
+
+-- Update exterior locations to link to interior maps
+UPDATE public.maps SET linked_map_id = '99999999-9999-9999-9999-999999999001' WHERE id = '22222222-2222-2222-2222-222222222001';
 
 -- Insert Story Chapters (Same as original)
 INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress) VALUES
@@ -67,8 +75,8 @@ INSERT INTO public.items (id, name, description, item_type, rarity, stats, effec
 ('55555555-5555-5555-5555-555555555005', 'Erik''s Dagger', 'มีดโยนของ Erik อาวุธที่คมกริบ', 'weapon', 'uncommon',
  '{"attack": 12, "critical": 15}', '{}', '/images/items/dagger.svg', false);
 
--- Insert Story Events (Same as original)
-INSERT INTO public.story_events (id, chapter_id, location_id, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
+-- Insert Story Events (Updated for maps)
+INSERT INTO public.story_events (id, chapter_id, map_id, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress) VALUES
 -- Chapter 1 events
 ('66666666-6666-6666-6666-666666666001', '33333333-3333-3333-3333-333333333001', '22222222-2222-2222-2222-222222222001', 
  'Morning at Home', 'เช้าวันหนึ่งที่บ้าน Hero ตื่นขึ้นมาและพูดคุยกับปู่', 'dialogue', '{}', 1, true),
@@ -149,7 +157,7 @@ INSERT INTO public.event_interactions (id, event_id, interaction_type, title, de
 ('77777777-7777-7777-7777-777777777012', '66666666-6666-6666-6666-666666666006', 'examine', 'Check Surroundings',
  'ตรวจสอบสภาพแวดล้อมหลังหลบหนี', '', '', '[]', '{}', 2);
 
--- FIXED: Insert Event Outcomes with proper progression logic
+-- FIXED: Insert Event Outcomes with proper progression logic (Updated for maps)
 INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type, title, description, effects, next_event_id) VALUES
 
 -- === MORNING AT HOME EVENT OUTCOMES ===
@@ -157,7 +165,7 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type,
 -- Talk to Grandpa - This is the MAIN trigger for going to Sacred Tree
 ('88888888-8888-8888-8888-888888888007', '77777777-7777-7777-7777-777777777001', 'default', 'story',
  'Grandpa''s Important Message', 'ปู่บอกให้ Hero ไปที่ต้นไม้ศักดิ์สิทธิ์เพื่อทำพิธีกรรม',
- '{"unlock_events": ["66666666-6666-6666-6666-666666666002"], "unlock_locations": ["22222222-2222-2222-2222-222222222003"]}', NULL),
+ '{"unlock_events": ["66666666-6666-6666-6666-666666666002"], "unlock_maps": ["22222222-2222-2222-2222-222222222003"]}', NULL),
 
 -- Check Equipment - This only gives starting equipment, NO event unlock
 ('88888888-8888-8888-8888-888888888008', '77777777-7777-7777-7777-777777777002', 'default', 'story',
@@ -171,8 +179,7 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type,
  '{
    "unlock_events": ["66666666-6666-6666-6666-666666666003"], 
    "unlock_chapters": ["33333333-3333-3333-3333-333333333002"],
-   "unlock_locations": ["22222222-2222-2222-2222-222222222006"],
-   "unlock_regions": ["11111111-1111-1111-1111-111111111003"]
+   "unlock_maps": ["22222222-2222-2222-2222-222222222006", "11111111-1111-1111-1111-111111111003"]
  }', '66666666-6666-6666-6666-666666666003'),
 
 -- Examine Tree - Minor exploration, no major unlock
@@ -184,7 +191,7 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type,
 -- Prison Awakening - Story progression
 ('88888888-8888-8888-8888-888888888013', '77777777-7777-7777-7777-777777777009', 'default', 'story',
  'Awakening in Darkness', 'Hero ตื่นขึ้นในคุก เริ่มต้นบทใหม่',
- '{"unlock_events": ["66666666-6666-6666-6666-666666666004"], "unlock_locations": ["22222222-2222-2222-2222-222222222007"]}', '66666666-6666-6666-6666-666666666004'),
+ '{"unlock_events": ["66666666-6666-6666-6666-666666666004"], "unlock_maps": ["22222222-2222-2222-2222-222222222007"]}', '66666666-6666-6666-6666-666666666004'),
 
 -- Cell Examination - Minor exploration
 ('88888888-8888-8888-8888-888888888014', '77777777-7777-7777-7777-777777777010', 'default', 'story',
@@ -261,8 +268,7 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type,
 ('88888888-8888-8888-8888-888888888015', '77777777-7777-7777-7777-777777777011', 'default', 'story',
  'Freedom at Last', 'การหลบหนีสำเร็จ! Hero และ Erik ได้อิสรภาพ',
  '{
-   "unlock_locations": ["22222222-2222-2222-2222-222222222004", "22222222-2222-2222-2222-222222222005"], 
-   "unlock_regions": ["11111111-1111-1111-1111-111111111002"],
+   "unlock_maps": ["22222222-2222-2222-2222-222222222004", "22222222-2222-2222-2222-222222222005", "11111111-1111-1111-1111-111111111002"],
    "experience": 100,
    "relationship": {"erik": 5}
  }', NULL),
@@ -271,7 +277,6 @@ INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type,
 ('88888888-8888-8888-8888-888888888016', '77777777-7777-7777-7777-777777777012', 'default', 'story',
  'New Horizons', 'ได้รับอิสรภาพและเห็นโลกกว้าง',
  '{
-   "unlock_locations": ["22222222-2222-2222-2222-222222222004", "22222222-2222-2222-2222-222222222005"], 
-   "unlock_regions": ["11111111-1111-1111-1111-111111111002"],
+   "unlock_maps": ["22222222-2222-2222-2222-222222222004", "22222222-2222-2222-2222-222222222005", "11111111-1111-1111-1111-111111111002"],
    "experience": 50
  }', NULL);
