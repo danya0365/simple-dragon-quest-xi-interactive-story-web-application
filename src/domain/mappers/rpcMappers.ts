@@ -5,6 +5,7 @@ import {
   DeleteUserProgressSchema,
   EventInteractionSchema,
   EventOutcomeSchema,
+  GameEffects,
   InitializeUserProgressSchema,
   LocationSchema,
   UserGameStateSchema,
@@ -17,11 +18,30 @@ import {
   DeleteUserProgressDto,
   EventInteractionDto,
   EventOutcomeDto,
+  GameEffectsDto,
   InitializeUserProgressDto,
   LocationDto,
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
+
+/**
+ * Map GameEffects (snake_case from schema) to GameEffectsDto (camelCase for DTO)
+ * Converts database schema format to DTO-friendly format
+ */
+export const mapGameEffectsToDto = (effects: GameEffects): GameEffectsDto => {
+  return {
+    relationship: effects.relationship,
+    unlockEvents: effects.unlock_events,
+    unlockChapters: effects.unlock_chapters,
+    unlockLocations: effects.unlock_locations,
+    unlockRegions: effects.unlock_regions,
+    partyJoin: effects.party_join,
+    items: effects.items,
+    experience: effects.experience,
+    gold: effects.gold,
+  };
+};
 
 /**
  * Map EventOutcomeSchema to EventOutcomeDto
@@ -37,7 +57,7 @@ export const mapEventOutcomeToDto = (
     title: schema.title,
     description: schema.description,
     outcomeType: schema.outcome_type,
-    effects: schema.effects,
+    effects: mapGameEffectsToDto(schema.effects),
     nextEventId: schema.next_event_id,
   };
 };
@@ -52,7 +72,7 @@ export const mapCompleteInteractionToDto = (
   return {
     success: schema.success,
     nextEventId: schema.next_event_id,
-    effects: schema.effects,
+    effects: schema.effects ? mapGameEffectsToDto(schema.effects) : undefined,
     choiceKey: schema.choice_key,
     autoUnlockedLocations: schema.auto_unlocked_locations,
     autoUnlockedRegions: schema.auto_unlocked_regions,

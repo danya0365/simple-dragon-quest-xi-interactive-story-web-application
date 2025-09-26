@@ -16,6 +16,22 @@ export type GameEffects = {
   gold?: number; // integer
 };
 
+// Game Effects Types - camelCase version for DTO layer
+export type GameEffectsDto = {
+  relationship?: Record<string, number>; // {characterName: integer}
+  unlockEvents?: string[]; // [uuid]
+  unlockChapters?: string[]; // [uuid]
+  unlockLocations?: string[]; // [uuid]
+  unlockRegions?: string[]; // [uuid]
+  partyJoin?: string; // uuid
+  items?: Array<{
+    id: string; // uuid
+    quantity?: number; // integer, defaults to 1
+  }>;
+  experience?: number; // integer
+  gold?: number; // integer
+};
+
 export interface EventOutcomeSchema {
   id: string;
   interaction_id: string;
@@ -173,14 +189,14 @@ export interface EventOutcomeDto {
   title: string;
   description: string | null;
   outcomeType: string;
-  effects: GameEffects;
+  effects: GameEffectsDto;
   nextEventId: string | null;
 }
 
 export interface CompleteInteractionDto {
   success: boolean;
   nextEventId?: string | null;
-  effects?: GameEffects;
+  effects?: GameEffectsDto;
   choiceKey?: string;
   autoUnlockedLocations?: string[];
   autoUnlockedRegions?: string[];

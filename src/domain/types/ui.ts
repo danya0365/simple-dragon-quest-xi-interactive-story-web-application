@@ -1,6 +1,22 @@
 // UI Types for frontend components - all properties in camelCase
 import { ChoiceType, EventType, InteractionType } from "./enums";
 
+// Game Effects UI Types - camelCase version for frontend components
+export interface GameEffectsUI {
+  relationship?: Record<string, number>; // {characterName: integer}
+  unlockEvents?: string[]; // [uuid]
+  unlockChapters?: string[]; // [uuid]
+  unlockLocations?: string[]; // [uuid]
+  unlockRegions?: string[]; // [uuid]
+  partyJoin?: string; // uuid
+  items?: Array<{
+    id: string; // uuid
+    quantity?: number; // integer, defaults to 1
+  }>;
+  experience?: number; // integer
+  gold?: number; // integer
+}
+
 export interface EventInteractionUI {
   id: string;
   interactionType: InteractionType;

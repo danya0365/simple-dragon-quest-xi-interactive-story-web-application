@@ -7,6 +7,7 @@ import {
   AvailableEventDto,
   EventInteractionDto,
   EventOutcomeDto,
+  GameEffects,
   LocationDto,
   UserGameStateDto,
   WorldMapDto,
@@ -14,6 +15,7 @@ import {
 import {
   EventInteractionUI,
   EventOutcomeUI,
+  GameEffectsUI,
   InventoryItemUI,
   LocationUI,
   PartyMemberUI,
@@ -182,6 +184,24 @@ export const mapUserGameStateDtoToUI = (
       string | number
     >[],
     lastPlayedAt: dto.lastPlayedAt,
+  };
+};
+
+/**
+ * Map GameEffects (snake_case from RPC) to GameEffectsUI (camelCase for UI)
+ * Converts database schema format to UI-friendly format
+ */
+export const mapGameEffectsToUI = (effects: GameEffects): GameEffectsUI => {
+  return {
+    relationship: effects.relationship,
+    unlockEvents: effects.unlock_events,
+    unlockChapters: effects.unlock_chapters,
+    unlockLocations: effects.unlock_locations,
+    unlockRegions: effects.unlock_regions,
+    partyJoin: effects.party_join,
+    items: effects.items,
+    experience: effects.experience,
+    gold: effects.gold,
   };
 };
 

@@ -3,6 +3,7 @@
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
 import { EventInteractionUI } from "@/src/domain/types/ui";
 import { EffectsDisplay } from "@/src/presentation/components/game/EffectsDisplay";
+import { mapGameEffectsToUI } from "@/src/domain/mappers/uiMappers";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -465,7 +466,7 @@ export function EventInteractionView() {
                         สิ่งที่ได้รับ:
                       </h5>
                       <EffectsDisplay 
-                        effects={currentEventOutcome.effects}
+                        effects={mapGameEffectsToUI(currentEventOutcome.effects)}
                         className="mt-2"
                       />
                     </div>

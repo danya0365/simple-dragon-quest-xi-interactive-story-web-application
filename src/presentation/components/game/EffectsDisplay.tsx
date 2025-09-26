@@ -1,8 +1,8 @@
-import { GameEffects } from "@/src/domain/types/rpc";
+import { GameEffectsUI } from "@/src/domain/types/ui";
 import React from "react";
 
 interface EffectsDisplayProps {
-  effects: GameEffects;
+  effects: GameEffectsUI;
   className?: string;
 }
 
@@ -125,7 +125,7 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
   }
 
   // Handle party join
-  if (effects.party_join) {
+  if (effects.partyJoin) {
     displayElements.push(
       <div
         key="party_join"
@@ -139,7 +139,7 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
             ตัวละครเข้าร่วมปาร์ตี้!
           </span>
           <div className="text-blue-100 text-sm font-medium">
-            {effects.party_join}
+            {effects.partyJoin}
           </div>
         </div>
         <div className="flex-shrink-0">
@@ -151,14 +151,14 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
 
   // Handle unlocks
   const unlockTypes = [
-    { key: "unlock_events", icon: "📜", label: "เหตุการณ์" },
-    { key: "unlock_chapters", icon: "📖", label: "บท" },
-    { key: "unlock_locations", icon: "🏰", label: "สถานที่" },
-    { key: "unlock_regions", icon: "🗺️", label: "ภูมิภาค" },
+    { key: "unlockEvents", icon: "📜", label: "เหตุการณ์" },
+    { key: "unlockChapters", icon: "📖", label: "บท" },
+    { key: "unlockLocations", icon: "🏰", label: "สถานที่" },
+    { key: "unlockRegions", icon: "🗺️", label: "ภูมิภาค" },
   ];
-
+  
   unlockTypes.forEach(({ key, icon, label }) => {
-    const unlockArray = effects[key as keyof GameEffects] as
+    const unlockArray = effects[key as keyof GameEffectsUI] as
       | string[]
       | undefined;
     if (unlockArray && unlockArray.length > 0) {
@@ -198,11 +198,11 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
         "relationship",
         "experience",
         "gold",
-        "party_join",
-        "unlock_events",
-        "unlock_chapters",
-        "unlock_locations",
-        "unlock_regions",
+        "partyJoin",
+        "unlockEvents",
+        "unlockChapters",
+        "unlockLocations",
+        "unlockRegions",
       ].includes(key)
   );
 
