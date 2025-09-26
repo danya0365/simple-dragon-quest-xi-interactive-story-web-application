@@ -82,16 +82,16 @@ export function WorldMapView() {
               relative bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 
               cursor-pointer transition-all duration-300 transform hover:scale-105
               ${
-                region.is_unlocked
+                region.isUnlocked
                   ? "hover:bg-white/20 hover:border-yellow-400/50"
                   : "opacity-50 cursor-not-allowed"
               }
               ${selectedRegionId === region.id ? "ring-2 ring-yellow-400" : ""}
             `}
-            onClick={() => region.is_unlocked && handleRegionClick(region.id)}
+            onClick={() => region.isUnlocked && handleRegionClick(region.id)}
           >
             {/* Lock indicator for locked regions */}
-            {!region.is_unlocked && (
+            {!region.isUnlocked && (
               <div className="absolute top-2 right-2 z-50">
                 <div className="bg-red-500/20 border border-red-500/50 rounded-full p-2">
                   <span className="text-red-400 text-sm">🔒</span>
@@ -101,9 +101,9 @@ export function WorldMapView() {
 
             {/* Region Image */}
             <div className="w-full h-32 bg-gradient-to-br from-blue-600/30 to-purple-600/30 rounded-lg mb-4 overflow-hidden relative">
-              {region.image_url ? (
+              {region.imageUrl ? (
                 <Image
-                  src={region.image_url}
+                  src={region.imageUrl}
                   alt={region.name}
                   fill
                   className="object-cover"
@@ -126,10 +126,10 @@ export function WorldMapView() {
               {/* Progress Info */}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-blue-300">
-                  สถานที่: {region.unlocked_locations_count}/
-                  {region.locations_count}
+                  สถานที่: {region.unlockedLocationsCount}/
+                  {region.locationsCount}
                 </span>
-                {region.is_unlocked && (
+                {region.isUnlocked && (
                   <span className="text-green-400 font-medium">
                     ✓ ปลดล็อคแล้ว
                   </span>
@@ -142,9 +142,9 @@ export function WorldMapView() {
                   className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full transition-all duration-300"
                   style={{
                     width: `${
-                      region.locations_count > 0
-                        ? (region.unlocked_locations_count /
-                            region.locations_count) *
+                      region.locationsCount > 0
+                        ? (region.unlockedLocationsCount /
+                            region.locationsCount) *
                           100
                         : 0
                     }%`,
@@ -154,7 +154,7 @@ export function WorldMapView() {
             </div>
 
             {/* Hover Effect */}
-            {region.is_unlocked && (
+            {region.isUnlocked && (
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-yellow-400/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
             )}
           </div>

@@ -84,66 +84,60 @@ export function EventView() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {availableEvents.map((event) => (
           <div
-            key={event.event_id}
+            key={event.eventId}
             className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:bg-white/20 hover:border-yellow-400/50"
-            onClick={() => handleEventClick(event.event_id)}
           >
             {/* Event Type Badge */}
             <div className="flex items-center justify-between mb-4">
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  event.event_type === "story"
+                  event.eventType === "story"
                     ? "bg-blue-500/20 text-blue-300 border border-blue-500/50"
-                    : event.event_type === "dialogue"
+                    : event.eventType === "dialogue"
                     ? "bg-green-500/20 text-green-300 border border-green-500/50"
-                    : event.event_type === "choice"
+                    : event.eventType === "choice"
                     ? "bg-purple-500/20 text-purple-300 border border-purple-500/50"
-                    : event.event_type === "battle"
+                    : event.eventType === "combat"
                     ? "bg-red-500/20 text-red-300 border border-red-500/50"
                     : "bg-gray-500/20 text-gray-300 border border-gray-500/50"
                 }`}
               >
-                {event.event_type === "story" && "📖 เรื่องราว"}
-                {event.event_type === "dialogue" && "💬 บทสนทนา"}
-                {event.event_type === "choice" && "🤔 ตัวเลือก"}
-                {event.event_type === "battle" && "⚔️ การต่อสู้"}
-                {event.event_type === "quest" && "📜 ภารกิจ"}
+                {event.eventType === "story" && "📖 เรื่องราว"}
+                {event.eventType === "choice" && "🤔 ตัวเลือก"}
+                {event.eventType === "battle" && "⚔️ การต่อสู้"}
+                {event.eventType === "quest" && "📜 ภารกิจ"}
               </span>
 
               <span className="text-blue-300 text-sm">
-                {event.interactions_count} การโต้ตอบ
+                {event.interactionsCount} การโต้ตอบ
               </span>
             </div>
 
             {/* Event Info */}
             <div className="space-y-3">
               <h3 className="text-xl font-bold text-white mb-2">
-                {event.event_title}
+                {event.eventTitle}
               </h3>
-              <p className="text-blue-200 mb-4">{event.event_description}</p>
-
               {/* Chapter and Location Info */}
               <div className="space-y-2">
                 <div className="flex items-center text-blue-300 text-sm mb-2">
                   <span className="mr-2">📚</span>
-                  <span>บท: {event.chapter_title}</span>
+                  <span>บท: {event.chapterTitle}</span>
                 </div>
 
                 <div className="flex items-center text-blue-300 text-sm">
                   <span className="mr-2">📍</span>
-                  <span>{event.location_name}</span>
+                  <span>สถานที่: {event.locationName || "ไม่ระบุ"}</span>
                 </div>
               </div>
             </div>
 
             {/* Play Button */}
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <div className="flex items-center justify-between">
-                <span className="text-blue-300 text-sm">
-                  คลิกเพื่อเริ่มเล่น
-                </span>
-                <span className="text-yellow-400 text-lg">▶️</span>
-              </div>
+            <div className="flex items-center justify-between">
+              <span className="text-blue-300 text-sm">
+                คลิกเพื่อเริ่มเล่น
+              </span>
+              <span className="text-yellow-400 text-lg">▶️</span>
             </div>
 
             {/* Hover Effect */}

@@ -933,14 +933,23 @@ BEGIN
         last_played_at = NOW()
     WHERE id = p_user_progress_uuid;
     
-    -- Return success response with auto-unlock information
+    -- Return success response with auto-unlock information and event outcome
     RETURN jsonb_build_object(
         'success', v_success,
         'next_event_id', v_next_event_id,
         'effects', v_effects,
         'choice_key', v_choice_key,
         'auto_unlocked_locations', v_auto_unlock_locations,
-        'auto_unlocked_regions', v_auto_unlock_regions
+        'auto_unlocked_regions', v_auto_unlock_regions,
+        'event_outcome', jsonb_build_object(
+            'id', v_outcome.id,
+            'interaction_id', v_outcome.interaction_id,
+            'choice_key', v_outcome.choice_key,
+            'outcome_text', v_outcome.outcome_text,
+            'description', v_outcome.description,
+            'effects', v_outcome.effects,
+            'next_event_id', v_outcome.next_event_id
+        )
     );
     
 EXCEPTION

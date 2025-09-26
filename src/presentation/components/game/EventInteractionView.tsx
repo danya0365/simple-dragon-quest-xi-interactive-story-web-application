@@ -9,10 +9,12 @@ interface EventData {
   id: string;
   title: string;
   description: string;
-  event_type: string;
-  chapter_title: string;
-  location_name: string;
+  eventType: string;
+  chapterTitle: string;
+  locationName: string;
 }
+
+import { EventOutcomeDto } from "@/src/domain/types/rpc";
 
 export function EventInteractionView() {
   const { user } = useAuthStore();
@@ -36,10 +38,11 @@ export function EventInteractionView() {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [currentEventOutcome, setCurrentEventOutcome] = useState<EventOutcomeDto | null>(null);
 
   // Find current event from available events
   const currentEvent = availableEvents.find(
-    (event) => event.event_id === selectedEventId
+    (event) => event.eventId === selectedEventId
   );
 
   // Initialize component - load available events if not already loaded
@@ -64,12 +67,12 @@ export function EventInteractionView() {
             // แปลง StoryEvent เป็น EventData structure
             const eventData = currentEvent
               ? {
-                  id: currentEvent.event_id,
-                  title: currentEvent.event_title,
-                  description: currentEvent.event_description || "",
-                  event_type: currentEvent.event_type,
-                  chapter_title: currentEvent.chapter_title || "",
-                  location_name: currentEvent.location_name || "",
+                  id: currentEvent.eventId,
+                  title: currentEvent.eventTitle,
+                  description: currentEvent.eventDescription || "",
+                  eventType: currentEvent.eventType,
+                  chapterTitle: currentEvent.chapterTitle || "",
+                  locationName: currentEvent.locationName || "",
                 }
               : null;
 
@@ -114,12 +117,12 @@ export function EventInteractionView() {
     // Prepare choice data
     const choiceData = selectedChoice
       ? {
-          choice_key: selectedChoice,
-          interaction_id: currentAvailableInteraction.id,
+          choiceKey: selectedChoice,
+          interactionId: currentAvailableInteraction.id,
         }
       : {
-          choice_key: "default",
-          interaction_id: currentAvailableInteraction.id,
+          choiceKey: "default",
+          interactionId: currentAvailableInteraction.id,
         };
 
     try {
@@ -132,6 +135,11 @@ export function EventInteractionView() {
         "EventInteractionView: Interaction completion result:",
         result
       );
+
+      // Store the event outcome for display
+      if (result && result.eventOutcome) {
+        setCurrentEventOutcome(result.eventOutcome);
+      }
 
       // Add to history
       if (selectedChoice) {
@@ -184,6 +192,11 @@ export function EventInteractionView() {
       }
 
       setSelectedChoice(null);
+      
+      // Clear event outcome after a delay to show it briefly
+      setTimeout(() => {
+        setCurrentEventOutcome(null);
+      }, 3000);
     } catch (error) {
       console.error(
         "EventInteractionView: Error completing interaction:",
@@ -195,13 +208,13 @@ export function EventInteractionView() {
   // Helper function to check if interaction is completed
   const isInteractionCompleted = (interactionId: string) => {
     const completedInteractions =
-      (userGameState?.completedInteractions as Array<{
-        event_id: string;
-        interaction_id: string;
+      (userGameState?.completedInteractions as unknown as Array<{
+        eventId: string;
+        interactionId: string;
       }>) || [];
     return completedInteractions.some(
       (ci) =>
-        ci.event_id === selectedEventId && ci.interaction_id === interactionId
+        ci.eventId === selectedEventId && ci.interactionId === interactionId
     );
   };
 
@@ -301,7 +314,7 @@ export function EventInteractionView() {
         <div className="text-blue-400 text-6xl mb-4">📝</div>
         <p className="text-blue-200 font-medium mb-2">ไม่พบการโต้ตอบ</p>
         <p className="text-blue-300 text-sm mb-4">
-          Event: {currentEvent?.event_title}
+          Event: {currentEvent?.eventTitle}
         </p>
         <p className="text-blue-300 text-sm mb-4">
           Loaded Interactions: {interactions.length}
@@ -320,7 +333,14 @@ export function EventInteractionView() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
@@ -333,10 +353,10 @@ export function EventInteractionView() {
 
         <div className="text-center">
           <h2 className="text-2xl font-bold text-yellow-400 font-serif">
-            {eventData?.title || currentEvent?.event_title || "เหตุการณ์"}
+            {eventData?.title || currentEvent?.eventTitle || "เหตุการณ์"}
           </h2>
           <p className="text-blue-200">
-            {eventData?.chapter_title || currentEvent?.chapter_title}
+            {eventData?.chapterTitle || currentEvent?.chapterTitle}
           </p>
         </div>
 
@@ -394,6 +414,49 @@ export function EventInteractionView() {
           </div>
         )}
 
+        {/* Event Outcome Display */}
+        {currentEventOutcome && (
+          <div 
+            className="mb-6" 
+            style={{
+              animation: 'fadeIn 0.5s ease-in-out'
+            }}
+          >
+            <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-6">
+              <div className="flex items-center mb-4">
+                <div className="text-purple-400 text-2xl mr-3">✨</div>
+                <h4 className="text-purple-400 font-medium text-lg">ผลลัพธ์:</h4>
+              </div>
+              {currentEventOutcome && (
+                <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                  <h3 className="font-bold text-lg mb-2">ผลลัพธ์</h3>
+                  <p>{currentEventOutcome.outcomeText}</p>
+                </div>
+              )}
+              {currentEventOutcome?.description && (
+                <div className="mb-4">
+                  <p className="text-purple-200 text-base leading-relaxed">
+                    {currentEventOutcome?.description}
+                  </p>
+                </div>
+              )}
+              {currentEventOutcome.effects && Object.keys(currentEventOutcome.effects).length > 0 && (
+                <div className="mt-4 pt-4 border-t border-purple-500/30">
+                  <h5 className="text-purple-300 font-medium mb-2">ผลกระทบ:</h5>
+                  <div className="text-sm text-purple-200">
+                    {Object.entries(currentEventOutcome.effects).map(([key, value]) => (
+                      <div key={key} className="flex justify-between py-1">
+                        <span className="capitalize">{key.replace(/_/g, ' ')}:</span>
+                        <span>{String(value)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Interaction History */}
         {interactionHistory.length > 0 && (
           <div className="mb-6">
@@ -427,44 +490,55 @@ export function EventInteractionView() {
             </div>
           )}
 
-        {/* Choices */}
-        {currentAvailableInteraction.choices &&
-        currentAvailableInteraction.choices.length > 0 ? (
-          <div className="space-y-3">
-            <h4 className="text-yellow-400 font-medium mb-3">เลือกตัวเลือก:</h4>
-            {currentAvailableInteraction.choices.map(
-              (choice: { id: string; text: string }) => (
+        {/* Choices - Hide when showing outcome */}
+        {!currentEventOutcome && (
+          <>
+            {currentAvailableInteraction.choices &&
+            currentAvailableInteraction.choices.length > 0 ? (
+              <div className="space-y-3">
+                <h4 className="text-yellow-400 font-medium mb-3">เลือกตัวเลือก:</h4>
+                {currentAvailableInteraction.choices.map(
+                  (choice: { id: string; text: string }) => (
+                    <button
+                      key={choice.id}
+                      onClick={() => handleChoiceSelect(choice.id)}
+                      disabled={!!currentEventOutcome}
+                      className={`w-full text-left p-4 rounded-lg border transition-colors ${
+                        selectedChoice === choice.id
+                          ? "bg-yellow-500 border-yellow-400 text-blue-900"
+                          : "bg-blue-900/50 border-blue-500/50 text-blue-100 hover:bg-blue-900/70"
+                      } ${currentEventOutcome ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {choice.text}
+                    </button>
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="text-center">
                 <button
-                  key={choice.id}
-                  onClick={() => handleChoiceSelect(choice.id)}
-                  className={`w-full text-left p-4 rounded-lg border transition-colors ${
-                    selectedChoice === choice.id
-                      ? "bg-yellow-500 border-yellow-400 text-blue-900"
-                      : "bg-blue-900/50 border-blue-500/50 text-blue-100 hover:bg-blue-900/70"
+                  onClick={() => handleChoiceSelect("default")}
+                  disabled={!!currentEventOutcome}
+                  className={`bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-8 py-3 rounded-lg font-medium transition-colors ${
+                    currentEventOutcome ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
-                  {choice.text}
+                  ดำเนินการต่อ
                 </button>
-              )
+              </div>
             )}
-          </div>
-        ) : (
-          <div className="text-center">
-            <button
-              onClick={() => handleChoiceSelect("default")}
-              className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-8 py-3 rounded-lg font-medium transition-colors"
-            >
-              ดำเนินการต่อ
-            </button>
-          </div>
+          </>
         )}
 
-        {/* Confirm Button */}
-        {selectedChoice && (
+        {/* Confirm Button - Hide when showing outcome */}
+        {selectedChoice && !currentEventOutcome && (
           <div className="flex justify-center mt-6">
             <button
               onClick={handleConfirmChoice}
-              className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
+              disabled={!!currentEventOutcome}
+              className={`bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors ${
+                currentEventOutcome ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               ยืนยัน
             </button>
@@ -478,13 +552,13 @@ export function EventInteractionView() {
           <div>
             <span className="text-yellow-400 font-medium">ประเภท:</span>
             <span className="text-blue-200 ml-2">
-              {currentEvent?.event_type}
+              {currentEvent?.eventType}
             </span>
           </div>
           <div>
             <span className="text-yellow-400 font-medium">สถานที่:</span>
             <span className="text-blue-200 ml-2">
-              {currentEvent?.location_name || "ไม่ระบุ"}
+              {currentEvent?.locationName || "ไม่ระบุ"}
             </span>
           </div>
           <div>
@@ -494,5 +568,6 @@ export function EventInteractionView() {
         </div>
       </div>
     </div>
+    </>
   );
 }

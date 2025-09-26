@@ -1,18 +1,7 @@
 "use client";
 
-import { useGameStore } from "@/src/stores/gameStore";
+import { useGameStore, type PartyMember } from "@/src/stores/gameStore";
 import { useEffect, useState } from "react";
-
-interface PartyMember {
-  character_id: string;
-  name: string;
-  description: string;
-  avatar_url: string;
-  current_stats: Record<string, number | string>;
-  equipment: Record<string, string | null>;
-  party_position: number;
-  joined_at: string;
-}
 
 export function PartyView() {
   const { userGameState, loading, error, loadCharacters } = useGameStore();
@@ -150,33 +139,32 @@ export function PartyView() {
           {partyMembers
             .sort(
               (a: PartyMember, b: PartyMember) =>
-                a.party_position - b.party_position
+                a.partyPosition - b.partyPosition
             )
             .map((member: PartyMember) => (
               <div
-                key={member.character_id}
+                key={member.characterId}
                 className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6 hover:bg-white/15 transition-all duration-200"
               >
                 {/* Member Header */}
                 <div className="flex items-center space-x-4 mb-6">
                   {/* Avatar */}
                   <div className="relative">
-                    {member.avatar_url ? (
+                    {member.avatarUrl ? (
                       <img
-                        src={member.avatar_url}
+                        src={member.avatarUrl}
                         alt={member.name}
                         className="w-16 h-16 rounded-full object-cover border-2 border-yellow-400"
                       />
                     ) : (
                       <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center border-2 border-yellow-400">
                         <span className="text-blue-900 font-bold text-xl">
-                          {member.name.charAt(0)}
                         </span>
                       </div>
                     )}
                     {/* Position Badge */}
                     <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                      {member.party_position}
+                      {member.partyPosition}
                     </div>
                   </div>
 
@@ -189,17 +177,17 @@ export function PartyView() {
                       {member.description}
                     </p>
                     <div className="text-blue-300 text-xs">
-                      เข้าร่วม:{" "}
-                      {new Date(member.joined_at).toLocaleDateString("th-TH")}
+                      เข้าร่วม: {" "}
+                      {new Date(member.joinedAt).toLocaleDateString("th-TH")}
                     </div>
                   </div>
                 </div>
 
                 {/* Stats */}
-                <div className="mb-6">
+                <div>
                   <h4 className="text-yellow-400 font-medium mb-3">สถานะ</h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {Object.entries(member.current_stats).map(
+                    {Object.entries(member.currentStats).map(
                       ([statName, value]) => (
                         <div
                           key={statName}
@@ -215,7 +203,7 @@ export function PartyView() {
                               </span>
                             </div>
                             <span className="text-white font-bold">
-                              {value}
+                              {String(value)}
                             </span>
                           </div>
                         </div>
@@ -273,7 +261,7 @@ export function PartyView() {
                 {Math.round(
                   partyMembers.reduce(
                     (sum: number, member: PartyMember) =>
-                      sum + (Number(member.current_stats.level) || 1),
+                      sum + (Number(member.currentStats.level) || 1),
                     0
                   ) / partyMembers.length
                 )}
@@ -285,7 +273,7 @@ export function PartyView() {
               <div className="text-white font-medium">
                 {partyMembers.reduce(
                   (sum: number, member: PartyMember) =>
-                    sum + (Number(member.current_stats.hp) || 0),
+                    sum + (Number(member.currentStats.hp) || 0),
                   0
                 )}
               </div>
@@ -296,7 +284,7 @@ export function PartyView() {
               <div className="text-white font-medium">
                 {partyMembers.reduce(
                   (sum: number, member: PartyMember) =>
-                    sum + (Number(member.current_stats.attack) || 0),
+                    sum + (Number(member.currentStats.attack) || 0),
                   0
                 )}
               </div>

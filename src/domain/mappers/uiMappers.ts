@@ -1,0 +1,144 @@
+import {
+  EventInteractionDto,
+  WorldMapDto,
+  AvailableEventDto,
+  UserGameStateDto,
+  LocationDto
+} from "@/src/domain/types/rpc";
+import {
+  EventInteractionUI,
+  WorldRegionUI,
+  StoryEventUI,
+  UserGameStateUI,
+  LocationUI,
+  PartyMemberUI,
+  InventoryItemUI
+} from "@/src/domain/types/ui";
+
+/**
+ * Map EventInteractionDto to EventInteractionUI
+ * Converts Dto properties to UI format (camelCase)
+ */
+export const mapEventInteractionDtoToUI = (dto: EventInteractionDto): EventInteractionUI => {
+  return {
+    id: dto.id,
+    interactionType: dto.interactionType,
+    title: dto.title,
+    description: dto.description,
+    dialogueText: dto.dialogueText,
+    characterSpeaker: dto.characterSpeaker,
+    characterAvatar: dto.characterAvatar,
+    choices: dto.choices || [],
+  };
+};
+
+/**
+ * Map array of EventInteractionDto to EventInteractionUI[]
+ */
+export const mapEventInteractionsDtoToUI = (dtos: EventInteractionDto[]): EventInteractionUI[] => {
+  return dtos.map(mapEventInteractionDtoToUI);
+};
+
+/**
+ * Map WorldMapDto to WorldRegionUI
+ * Converts WorldMap Dto to UI format for regions
+ */
+export const mapWorldMapDtoToUI = (dto: WorldMapDto): WorldRegionUI => {
+  return {
+    id: dto.id,
+    name: dto.name,
+    description: dto.description,
+    imageUrl: dto.imageUrl,
+    isUnlocked: false, // This will be set based on user game state
+    locationsCount: dto.locations.length,
+    unlockedLocationsCount: 0, // This will be calculated based on user game state
+  };
+};
+
+/**
+ * Map array of WorldMapDto to WorldRegionUI[]
+ */
+export const mapWorldMapsDtoToUI = (dtos: WorldMapDto[]): WorldRegionUI[] => {
+  return dtos.map(mapWorldMapDtoToUI);
+};
+
+/**
+ * Map AvailableEventDto to StoryEventUI
+ * Converts AvailableEvent Dto to UI format for story events
+ */
+export const mapAvailableEventDtoToUI = (dto: AvailableEventDto): StoryEventUI => {
+  return {
+    eventId: dto.eventId,
+    eventTitle: dto.eventTitle,
+    eventDescription: dto.eventDescription,
+    eventType: dto.eventType,
+    chapterTitle: dto.chapterTitle,
+    locationName: dto.locationName,
+    interactionsCount: dto.interactionsCount,
+  };
+};
+
+/**
+ * Map array of AvailableEventDto to StoryEventUI[]
+ */
+export const mapAvailableEventsDtoToUI = (dtos: AvailableEventDto[]): StoryEventUI[] => {
+  return dtos.map(mapAvailableEventDtoToUI);
+};
+
+/**
+ * Map LocationDto to LocationUI
+ * Converts Location Dto to UI format
+ */
+export const mapLocationDtoToUI = (dto: LocationDto): LocationUI => {
+  return {
+    id: dto.id,
+    worldRegionId: dto.worldRegionId,
+    name: dto.name,
+    description: dto.description,
+    locationType: dto.locationType,
+    imageUrl: dto.imageUrl,
+    isUnlocked: false, // This will be set based on user game state
+  };
+};
+
+/**
+ * Map array of LocationDto to LocationUI[]
+ */
+export const mapLocationsDtoToUI = (dtos: LocationDto[]): LocationUI[] => {
+  return dtos.map(mapLocationDtoToUI);
+};
+
+/**
+ * Map UserGameStateDto to UserGameStateUI
+ * Converts UserGameState Dto to UI format with proper camelCase properties
+ */
+export const mapUserGameStateDtoToUI = (dto: UserGameStateDto): UserGameStateUI => {
+  return {
+    id: dto.id,
+    userId: dto.userId,
+    currentWorldMapId: null, // Not provided by RPC, set to null
+    currentLocationId: dto.currentLocationId,
+    currentChapterId: dto.currentChapterId,
+    currentEventId: dto.currentEventId,
+    completedChapters: dto.completedChapters,
+    completedEvents: dto.completedEvents,
+    completedInteractions: dto.completedInteractions.map(item => String(item.id || item)),
+    unlockedWorldRegions: dto.unlockedWorldRegions,
+    unlockedLocations: dto.unlockedLocations,
+    unlockedChapters: dto.unlockedChapters,
+    unlockedEvents: dto.unlockedEvents,
+    activeQuests: dto.activeQuests as unknown as Record<string, string | number>[],
+    gameFlags: dto.gameFlags as unknown as Record<string, string | number>[],
+    gameSettings: dto.gameSettings as unknown as Record<string, string | number>[],
+    gameStats: dto.gameStats as unknown as Record<string, string | number>,
+    playerLevel: dto.playerLevel,
+    playerExperience: dto.playerExperience,
+    partyMembers: (dto.partyMembers as unknown as PartyMemberUI[]) || [],
+    characterRelationships: dto.characterRelationships as unknown as Record<string, string | number>[],
+    playerPosition: dto.playerPosition as unknown as Record<string, string | number>,
+    inventory: (dto.inventory as unknown as InventoryItemUI[]) || [],
+    achievements: dto.achievements as unknown as Record<string, string | number>[],
+    playHistory: dto.playHistory as unknown as Record<string, string | number>[],
+    lastPlayedAt: dto.lastPlayedAt,
+  };
+};

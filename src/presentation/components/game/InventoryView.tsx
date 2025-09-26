@@ -2,19 +2,7 @@
 
 import { useGameStore } from "@/src/stores/gameStore";
 import { useEffect, useState } from "react";
-
-interface InventoryItem {
-  item_id: string;
-  name: string;
-  description: string;
-  item_type: string;
-  rarity: string;
-  image_url: string;
-  quantity: number;
-  obtained_at: string;
-  equipped?: boolean;
-  slot?: string;
-}
+import type { InventoryItemUI } from "@/src/domain/types/ui";
 
 export function InventoryView() {
   const { userGameState, loading, error, loadUserInventory } = useGameStore();
@@ -31,7 +19,7 @@ export function InventoryView() {
   }, [loadUserInventory]);
 
   // Use enriched inventory data directly from gameStore
-  const inventory = (userGameState?.inventory as InventoryItem[]) || [];
+  const inventory = (userGameState?.inventory as InventoryItemUI[]) || [];
 
   const getRarityColor = (rarity: string) => {
     switch (rarity.toLowerCase()) {
@@ -113,9 +101,9 @@ export function InventoryView() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
-          {inventory.map((item: InventoryItem) => (
+          {inventory.map((item: InventoryItemUI) => (
             <div
-              key={item.item_id}
+              key={item.itemId}
               className={`
                 bg-white/10 backdrop-blur-md rounded-lg border-2 p-4 
                 transition-all duration-200 hover:bg-white/15 hover:scale-105
@@ -126,10 +114,10 @@ export function InventoryView() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">
-                    {getItemTypeIcon(item.item_type)}
+                    {getItemTypeIcon(item.itemType)}
                   </span>
                   <div className="text-xs px-2 py-1 rounded-full bg-black/30">
-                    {item.item_type}
+                    {item.itemType}
                   </div>
                 </div>
                 {item.quantity > 1 && (
@@ -140,10 +128,10 @@ export function InventoryView() {
               </div>
 
               {/* Item Image */}
-              {item.image_url && (
+              {item.imageUrl && (
                 <div className="w-full h-24 bg-black/20 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
                   <img
-                    src={item.image_url}
+                    src={item.imageUrl}
                     alt={item.name}
                     className="max-w-full max-h-full object-contain"
                   />
@@ -169,7 +157,7 @@ export function InventoryView() {
                     {item.rarity}
                   </div>
                   <div className="text-xs text-blue-300">
-                    {new Date(item.obtained_at).toLocaleDateString("th-TH")}
+                    {new Date(item.obtainedAt).toLocaleDateString("th-TH")}
                   </div>
                 </div>
               </div>
@@ -186,14 +174,14 @@ export function InventoryView() {
             <div className="text-center">
               <div className="text-2xl mb-1">⚔️</div>
               <div className="text-white font-medium">
-                {inventory.filter((item) => item.item_type === "weapon").length}
+                {inventory.filter((item) => item.itemType === "weapon").length}
               </div>
               <div className="text-blue-300">อาวุธ</div>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-1">🛡️</div>
               <div className="text-white font-medium">
-                {inventory.filter((item) => item.item_type === "armor").length}
+                {inventory.filter((item) => item.itemType === "armor").length}
               </div>
               <div className="text-blue-300">เกราะ</div>
             </div>
@@ -201,7 +189,7 @@ export function InventoryView() {
               <div className="text-2xl mb-1">🧪</div>
               <div className="text-white font-medium">
                 {
-                  inventory.filter((item) => item.item_type === "consumable")
+                  inventory.filter((item) => item.itemType === "consumable")
                     .length
                 }
               </div>
@@ -211,7 +199,7 @@ export function InventoryView() {
               <div className="text-2xl mb-1">🔧</div>
               <div className="text-white font-medium">
                 {
-                  inventory.filter((item) => item.item_type === "material")
+                  inventory.filter((item) => item.itemType === "material")
                     .length
                 }
               </div>
