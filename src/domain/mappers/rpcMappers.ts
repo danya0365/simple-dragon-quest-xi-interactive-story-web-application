@@ -31,8 +31,9 @@ export const mapEventOutcomeToDto = (schema: EventOutcomeSchema): EventOutcomeDt
     id: schema.id,
     interactionId: schema.interaction_id,
     choiceKey: schema.choice_key,
-    outcomeText: schema.outcome_text,
+    title: schema.title,
     description: schema.description,
+    outcomeType: schema.outcome_type,
     effects: schema.effects,
     nextEventId: schema.next_event_id,
   };

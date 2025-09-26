@@ -3,8 +3,9 @@ export interface EventOutcomeSchema {
   id: string;
   interaction_id: string;
   choice_key: string;
-  outcome_text: string;
+  title: string;
   description: string | null;
+  outcome_type: string;
   effects: Record<string, unknown>;
   next_event_id: string | null;
 }
@@ -146,8 +147,9 @@ export interface EventOutcomeDto {
   id: string;
   interactionId: string;
   choiceKey: string;
-  outcomeText: string;
+  title: string;
   description: string | null;
+  outcomeType: string;
   effects: Record<string, unknown>;
   nextEventId: string | null;
 }

@@ -945,8 +945,9 @@ BEGIN
             'id', v_outcome.id,
             'interaction_id', v_outcome.interaction_id,
             'choice_key', v_outcome.choice_key,
-            'outcome_text', v_outcome.outcome_text,
+            'title', v_outcome.title,
             'description', v_outcome.description,
+            'outcome_type', v_outcome.outcome_type,
             'effects', v_outcome.effects,
             'next_event_id', v_outcome.next_event_id
         )

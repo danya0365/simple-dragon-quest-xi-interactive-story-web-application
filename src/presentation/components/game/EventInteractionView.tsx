@@ -371,7 +371,10 @@ export function EventInteractionView() {
                   <div className="bg-blue-900/80 backdrop-blur-sm rounded-lg p-6 border border-blue-700">
             <h3 className="text-xl font-bold text-yellow-400 mb-4">ผลลัพธ์</h3>
             <div className="text-blue-100 mb-6 whitespace-pre-line">
-              {currentEventOutcome?.outcomeText}
+              {currentEventOutcome?.title}
+              {currentEventOutcome?.description && (
+                <div className="mt-2 text-blue-200">{currentEventOutcome.description}</div>
+              )}
             </div>
             <div className="flex justify-center">
               <button

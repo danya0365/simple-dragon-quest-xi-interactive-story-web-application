@@ -14,6 +14,7 @@ import {
   PartyMemberUI,
   InventoryItemUI
 } from "@/src/domain/types/ui";
+import { EventType, InteractionType, ChoiceType } from "@/src/domain/types/enums";
 
 /**
  * Map EventInteractionDto to EventInteractionUI
@@ -22,13 +23,16 @@ import {
 export const mapEventInteractionDtoToUI = (dto: EventInteractionDto): EventInteractionUI => {
   return {
     id: dto.id,
-    interactionType: dto.interactionType,
+    interactionType: dto.interactionType as InteractionType,
     title: dto.title,
     description: dto.description,
     dialogueText: dto.dialogueText,
     characterSpeaker: dto.characterSpeaker,
     characterAvatar: dto.characterAvatar,
-    choices: dto.choices || [],
+    choices: (dto.choices || []).map(choice => ({
+      ...choice,
+      type: choice.type as ChoiceType
+    })),
   };
 };
 
@@ -71,7 +75,7 @@ export const mapAvailableEventDtoToUI = (dto: AvailableEventDto): StoryEventUI =
     eventId: dto.eventId,
     eventTitle: dto.eventTitle,
     eventDescription: dto.eventDescription,
-    eventType: dto.eventType,
+    eventType: dto.eventType as EventType,
     chapterTitle: dto.chapterTitle,
     locationName: dto.locationName,
     interactionsCount: dto.interactionsCount,
