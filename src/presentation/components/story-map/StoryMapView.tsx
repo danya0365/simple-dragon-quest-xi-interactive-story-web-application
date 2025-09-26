@@ -20,6 +20,7 @@ export function StoryMapView() {
     loading: gameLoading,
     loadUserGameState,
     initializeUserProgress,
+    deleteUserProgress,
     setCurrentView,
     reset: resetGameStore,
   } = useGameStore();
@@ -27,6 +28,7 @@ export function StoryMapView() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [progressInitialized, setProgressInitialized] = useState(false);
   const [progressError, setProgressError] = useState<string | null>(null);
+  const [isDeletingProgress, setIsDeletingProgress] = useState(false);
 
   // Initialize user progress and game data
   useEffect(() => {
@@ -313,13 +315,25 @@ export function StoryMapView() {
                   🗺️ ไปแผนที่โลก
                 </button>
                 <button
-                  onClick={() => {
-                    setProgressError(null);
-                    setProgressInitialized(false);
+                  onClick={async () => {
+                    if (!user?.id) return;
+                    
+                    try {
+                      setIsDeletingProgress(true);
+                      await deleteUserProgress(user.id);
+                      setProgressError(null);
+                      setProgressInitialized(false);
+                    } catch (error) {
+                      console.error("Failed to delete user progress:", error);
+                      setProgressError("ไม่สามารถลบความคืบหน้าเกมได้ กรุณาลองใหม่อีกครั้ง");
+                    } finally {
+                      setIsDeletingProgress(false);
+                    }
                   }}
-                  className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                  disabled={isDeletingProgress}
+                  className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  🔄 ลองเริ่มต้นความคืบหน้าใหม่
+                  {isDeletingProgress ? "⏳ กำลังลบความคืบหน้า..." : "🔄 ลองเริ่มต้นความคืบหน้าใหม่"}
                 </button>
                 <button
                   onClick={() => userGameState?.id && loadUserGameState()}

@@ -7,6 +7,7 @@ import {
   AvailableEventSchema,
   UserGameStateSchema,
   InitializeUserProgressSchema,
+  DeleteUserProgressSchema,
 } from "@/src/domain/types/rpc";
 
 import {
@@ -18,6 +19,7 @@ import {
   AvailableEventDto,
   UserGameStateDto,
   InitializeUserProgressDto,
+  DeleteUserProgressDto,
 } from "@/src/domain/types/rpc";
 
 /**
@@ -194,5 +196,18 @@ export const mapInitializeUserProgressToDto = (schema: InitializeUserProgressSch
     lastPlayedAt: schema.last_played_at,
     createdAt: schema.created_at,
     updatedAt: schema.updated_at,
+  };
+};
+
+/**
+ * Map DeleteUserProgressSchema to DeleteUserProgressDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapDeleteUserProgressToDto = (schema: DeleteUserProgressSchema): DeleteUserProgressDto => {
+  return {
+    success: schema.success,
+    deletedRecords: schema.deleted_records,
+    message: schema.message,
+    error: schema.error,
   };
 };

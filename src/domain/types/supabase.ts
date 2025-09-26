@@ -633,6 +633,10 @@ export type Database = {
         Args: { username: string; full_name?: string; avatar_url?: string }
         Returns: string
       }
+      delete_user_progress: {
+        Args: { p_user_uuid: string }
+        Returns: Json
+      }
       get_active_profile: {
         Args: Record<PropertyKey, never>
         Returns: {

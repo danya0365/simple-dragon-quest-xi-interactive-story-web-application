@@ -1012,3 +1012,44 @@ AS $$
         '[]'::JSONB
     ) AS characters;
 $$;
+
+-- =============================================================================
+-- Delete user progress function
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION public.delete_user_progress(p_user_uuid UUID)
+RETURNS JSONB AS $$
+DECLARE
+    v_deleted_records INTEGER;
+    v_success BOOLEAN := true;
+    v_error_message TEXT;
+BEGIN
+    -- Check if user is authenticated and trying to delete their own progress
+    IF auth.uid() IS NULL THEN
+        RAISE EXCEPTION 'Authentication required';
+    END IF;
+    
+    IF auth.uid() != p_user_uuid THEN
+        RAISE EXCEPTION 'You can only delete your own progress';
+    END IF;
+    
+    -- Delete user progress record
+    DELETE FROM public.user_progress 
+    WHERE user_id = p_user_uuid;
+    
+    GET DIAGNOSTICS v_deleted_records = ROW_COUNT;
+    
+    -- Return success response
+    RETURN jsonb_build_object(
+        'success', v_success,
+        'deleted_records', v_deleted_records,
+        'message', 'User progress deleted successfully'
+    );
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        v_success := false;
+        v_error_message := 'Failed to delete user progress: ' || SQLERRM;
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

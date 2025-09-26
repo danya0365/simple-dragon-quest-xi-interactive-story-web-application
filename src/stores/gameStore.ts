@@ -5,7 +5,8 @@ import {
   UserGameStateSchema,
   InitializeUserProgressSchema,
   CompleteInteractionSchema,
-  EventInteractionSchema
+  EventInteractionSchema,
+  DeleteUserProgressSchema
 } from "@/src/domain/types/rpc";
 import { 
   WorldMapDto,
@@ -13,7 +14,8 @@ import {
   CompleteInteractionDto,
   EventInteractionDto,
   LocationDto,
-  CharacterData
+  CharacterData,
+  DeleteUserProgressDto
 } from "@/src/domain/types/rpc";
 import {
   mapWorldMapToDto,
@@ -21,7 +23,8 @@ import {
   mapUserGameStateToDto,
   mapInitializeUserProgressToDto,
   mapCompleteInteractionToDto,
-  mapEventInteractionToDto
+  mapEventInteractionToDto,
+  mapDeleteUserProgressToDto
 } from "@/src/domain/mappers/rpcMappers";
 import {
   mapAvailableEventDtoToUI,
@@ -111,6 +114,7 @@ interface GameActions {
     choiceData?: Json
   ) => Promise<CompleteInteractionDto>;
   initializeUserProgress: (userId: string) => Promise<void>;
+  deleteUserProgress: (userId: string) => Promise<DeleteUserProgressDto>;
   loadUserInventory: () => Promise<void>;
   loadCharacters: () => Promise<void>;
   
@@ -568,6 +572,42 @@ export const useGameStore = create<GameStore>()(
           }
         } catch (error) {
           console.error("Error calling initialize_user_progress:", error);
+          throw error;
+        }
+      },
+
+      deleteUserProgress: async (userId: string) => {
+        const supabase = createClientSupabaseClient();
+
+        try {
+          // Call the delete_user_progress function
+          const { data, error } = await supabase.rpc(
+            "delete_user_progress",
+            {
+              p_user_uuid: userId,
+            }
+          );
+
+          if (error) {
+            console.error("Error deleting user progress:", error);
+            throw error;
+          }
+
+          if (data) {
+            // Extract the response data
+            const responseSchema = data as unknown as DeleteUserProgressSchema;
+            const responseDto = mapDeleteUserProgressToDto(responseSchema);
+            
+            // Reset the game state in the store
+            get().reset();
+            
+            console.log("User progress deleted successfully:", responseDto.message);
+            return responseDto;
+          }
+          
+          throw new Error("No data returned from delete_user_progress");
+        } catch (error) {
+          console.error("Error calling delete_user_progress:", error);
           throw error;
         }
       },

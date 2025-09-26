@@ -134,6 +134,13 @@ export interface InitializeUserProgressSchema {
   updated_at: string;
 }
 
+export interface DeleteUserProgressSchema {
+  success: boolean;
+  deleted_records: number;
+  message?: string;
+  error?: string;
+}
+
 // DTO Types (mapped from schema for frontend use) - camelCase
 export interface EventOutcomeDto {
   id: string;
@@ -268,6 +275,13 @@ export interface InitializeUserProgressDto {
   lastPlayedAt: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface DeleteUserProgressDto {
+  success: boolean;
+  deletedRecords: number;
+  message?: string;
+  error?: string;
 }
 
 // Legacy RPC type aliases for backward compatibility
