@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS public.maps (
     image_url VARCHAR(500),
     
     -- Map classification
-    map_type VARCHAR(50) NOT NULL, -- world, region, town, building, room, interior
-    map_subtype VARCHAR(50), -- village, castle, dungeon, house, shop, bedroom, etc.
+    map_type VARCHAR(50) NOT NULL, -- world, location, interior
+    map_subtype VARCHAR(50), -- region, dungeon, town, castle, house, landmark, room, etc.
     
     -- Position and size
     position_x INTEGER DEFAULT 0,
@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS public.maps (
     -- Example: {"level": 3, "completed_chapters": ["33333333-3333-3333-3333-333333333001"], "flags": {"reached_heliodor": true}}
     
     display_order INTEGER NOT NULL DEFAULT 0,
+    is_accessible BOOLEAN DEFAULT true,
+    -- Indicates if this map is accessible to the user
     is_initial_user_progress BOOLEAN DEFAULT false,
     -- Indicates if this map is part of initial user progress setup
     is_alway_hide_until_unlock BOOLEAN DEFAULT false,
@@ -229,11 +231,12 @@ CREATE TABLE IF NOT EXISTS public.map_objects (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- User Progress Table
--- เก็บความคืบหน้าของผู้เล่นแต่ละคน (Single source of truth for user state)
-CREATE TABLE IF NOT EXISTS public.user_progress (
+-- User Game States Table
+-- เก็บความคืบหน้าของผู้เล่นแต่ละคน (Multiple save slots with names)
+CREATE TABLE IF NOT EXISTS public.user_game_states (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL DEFAULT 'Default Save',
     
     -- Current state (updated for maps)
     current_chapter_id UUID REFERENCES public.story_chapters(id) ON DELETE SET NULL,
@@ -335,11 +338,11 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
-    UNIQUE(user_id)
+    UNIQUE(user_id, name)
 );
 
--- REMOVED: User Party Members Table - Data centralized to user_progress.party_members
--- REMOVED: User Inventory Table - Data centralized to user_progress.inventory
+-- REMOVED: User Party Members Table - Data centralized to user_game_states.party_members
+-- REMOVED: User Inventory Table - Data centralized to user_game_states.inventory
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_maps_parent_id ON public.maps(parent_id);
@@ -350,24 +353,24 @@ CREATE INDEX IF NOT EXISTS idx_story_events_map_id ON public.story_events(map_id
 CREATE INDEX IF NOT EXISTS idx_event_interactions_event_id ON public.event_interactions(event_id);
 CREATE INDEX IF NOT EXISTS idx_event_outcomes_interaction_id ON public.event_outcomes(interaction_id);
 CREATE INDEX IF NOT EXISTS idx_map_objects_map_id ON public.map_objects(map_id);
-CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON public.user_progress(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_progress_current_map_id ON public.user_progress(current_map_id);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_user_id ON public.user_game_states(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_current_map_id ON public.user_game_states(current_map_id);
 
--- Create GIN indexes for JSONB fields in user_progress for better performance
-CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_maps ON public.user_progress USING GIN (unlocked_maps);
-CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_chapters ON public.user_progress USING GIN (unlocked_chapters);
-CREATE INDEX IF NOT EXISTS idx_user_progress_unlocked_events ON public.user_progress USING GIN (unlocked_events);
-CREATE INDEX IF NOT EXISTS idx_user_progress_completed_chapters ON public.user_progress USING GIN (completed_chapters);
-CREATE INDEX IF NOT EXISTS idx_user_progress_completed_events ON public.user_progress USING GIN (completed_events);
-CREATE INDEX IF NOT EXISTS idx_user_progress_completed_interactions ON public.user_progress USING GIN (completed_interactions);
-CREATE INDEX IF NOT EXISTS idx_user_progress_inventory ON public.user_progress USING GIN (inventory);
-CREATE INDEX IF NOT EXISTS idx_user_progress_party_members ON public.user_progress USING GIN (party_members);
-CREATE INDEX IF NOT EXISTS idx_user_progress_character_relationships ON public.user_progress USING GIN (character_relationships);
-CREATE INDEX IF NOT EXISTS idx_user_progress_player_position ON public.user_progress USING GIN (player_position);
-CREATE INDEX IF NOT EXISTS idx_user_progress_achievements ON public.user_progress USING GIN (achievements);
-CREATE INDEX IF NOT EXISTS idx_user_progress_play_history ON public.user_progress USING GIN (play_history);
-CREATE INDEX IF NOT EXISTS idx_user_progress_game_flags ON public.user_progress USING GIN (game_flags);
-CREATE INDEX IF NOT EXISTS idx_user_progress_game_stats ON public.user_progress USING GIN (game_stats);
+-- Create GIN indexes for JSONB fields in user_game_states for better performance
+CREATE INDEX IF NOT EXISTS idx_user_game_states_unlocked_maps ON public.user_game_states USING GIN (unlocked_maps);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_unlocked_chapters ON public.user_game_states USING GIN (unlocked_chapters);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_unlocked_events ON public.user_game_states USING GIN (unlocked_events);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_completed_chapters ON public.user_game_states USING GIN (completed_chapters);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_completed_events ON public.user_game_states USING GIN (completed_events);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_completed_interactions ON public.user_game_states USING GIN (completed_interactions);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_inventory ON public.user_game_states USING GIN (inventory);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_party_members ON public.user_game_states USING GIN (party_members);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_character_relationships ON public.user_game_states USING GIN (character_relationships);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_player_position ON public.user_game_states USING GIN (player_position);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_achievements ON public.user_game_states USING GIN (achievements);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_play_history ON public.user_game_states USING GIN (play_history);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_game_flags ON public.user_game_states USING GIN (game_flags);
+CREATE INDEX IF NOT EXISTS idx_user_game_states_game_stats ON public.user_game_states USING GIN (game_stats);
 
 -- Create updated_at triggers for all tables
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
@@ -387,4 +390,4 @@ CREATE TRIGGER update_event_outcomes_updated_at BEFORE UPDATE ON public.event_ou
 CREATE TRIGGER update_characters_updated_at BEFORE UPDATE ON public.characters FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_items_updated_at BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_map_objects_updated_at BEFORE UPDATE ON public.map_objects FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-CREATE TRIGGER update_user_progress_updated_at BEFORE UPDATE ON public.user_progress FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_user_game_states_updated_at BEFORE UPDATE ON public.user_game_states FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

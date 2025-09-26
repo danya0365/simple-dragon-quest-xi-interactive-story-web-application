@@ -212,20 +212,110 @@ export type Database = {
         }
         Relationships: []
       }
-      locations: {
+      map_objects: {
+        Row: {
+          character_id: string | null
+          created_at: string | null
+          display_order: number
+          id: string
+          interaction_id: string | null
+          is_interactive: boolean | null
+          item_id: string | null
+          map_id: string
+          name: string
+          object_subtype: string | null
+          object_type: string
+          position_x: number
+          position_y: number
+          properties: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          character_id?: string | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          interaction_id?: string | null
+          is_interactive?: boolean | null
+          item_id?: string | null
+          map_id: string
+          name: string
+          object_subtype?: string | null
+          object_type: string
+          position_x: number
+          position_y: number
+          properties?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          character_id?: string | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          interaction_id?: string | null
+          is_interactive?: boolean | null
+          item_id?: string | null
+          map_id?: string
+          name?: string
+          object_subtype?: string | null
+          object_type?: string
+          position_x?: number
+          position_y?: number
+          properties?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "map_objects_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "map_objects_interaction_id_fkey"
+            columns: ["interaction_id"]
+            isOneToOne: false
+            referencedRelation: "event_interactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "map_objects_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "map_objects_map_id_fkey"
+            columns: ["map_id"]
+            isOneToOne: false
+            referencedRelation: "maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maps: {
         Row: {
           created_at: string | null
           description: string | null
           display_order: number
           id: string
           image_url: string | null
+          is_accessible: boolean | null
           is_alway_hide_until_unlock: boolean | null
           is_initial_user_progress: boolean | null
-          location_type: string | null
+          linked_map_id: string | null
+          map_subtype: string | null
+          map_type: string
           name: string
+          parent_id: string | null
+          position_x: number | null
+          position_y: number | null
+          size_height: number | null
+          size_width: number | null
           unlock_requirements: Json | null
           updated_at: string | null
-          world_region_id: string
         }
         Insert: {
           created_at?: string | null
@@ -233,13 +323,20 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string | null
+          is_accessible?: boolean | null
           is_alway_hide_until_unlock?: boolean | null
           is_initial_user_progress?: boolean | null
-          location_type?: string | null
+          linked_map_id?: string | null
+          map_subtype?: string | null
+          map_type: string
           name: string
+          parent_id?: string | null
+          position_x?: number | null
+          position_y?: number | null
+          size_height?: number | null
+          size_width?: number | null
           unlock_requirements?: Json | null
           updated_at?: string | null
-          world_region_id: string
         }
         Update: {
           created_at?: string | null
@@ -247,20 +344,34 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string | null
+          is_accessible?: boolean | null
           is_alway_hide_until_unlock?: boolean | null
           is_initial_user_progress?: boolean | null
-          location_type?: string | null
+          linked_map_id?: string | null
+          map_subtype?: string | null
+          map_type?: string
           name?: string
+          parent_id?: string | null
+          position_x?: number | null
+          position_y?: number | null
+          size_height?: number | null
+          size_width?: number | null
           unlock_requirements?: Json | null
           updated_at?: string | null
-          world_region_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "locations_world_region_id_fkey"
-            columns: ["world_region_id"]
+            foreignKeyName: "maps_linked_map_id_fkey"
+            columns: ["linked_map_id"]
             isOneToOne: false
-            referencedRelation: "world_regions"
+            referencedRelation: "maps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maps_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "maps"
             referencedColumns: ["id"]
           },
         ]
@@ -409,7 +520,7 @@ export type Database = {
           event_type: string | null
           id: string
           is_initial_user_progress: boolean | null
-          location_id: string | null
+          map_id: string | null
           rewards: Json | null
           title: string
           unlock_requirements: Json | null
@@ -424,7 +535,7 @@ export type Database = {
           event_type?: string | null
           id?: string
           is_initial_user_progress?: boolean | null
-          location_id?: string | null
+          map_id?: string | null
           rewards?: Json | null
           title: string
           unlock_requirements?: Json | null
@@ -439,7 +550,7 @@ export type Database = {
           event_type?: string | null
           id?: string
           is_initial_user_progress?: boolean | null
-          location_id?: string | null
+          map_id?: string | null
           rewards?: Json | null
           title?: string
           unlock_requirements?: Json | null
@@ -454,15 +565,15 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "story_events_location_id_fkey"
-            columns: ["location_id"]
+            foreignKeyName: "story_events_map_id_fkey"
+            columns: ["map_id"]
             isOneToOne: false
-            referencedRelation: "locations"
+            referencedRelation: "maps"
             referencedColumns: ["id"]
           },
         ]
       }
-      user_progress: {
+      user_game_states: {
         Row: {
           achievements: Json | null
           active_quests: Json | null
@@ -473,13 +584,14 @@ export type Database = {
           created_at: string | null
           current_chapter_id: string | null
           current_event_id: string | null
-          current_location_id: string | null
+          current_map_id: string | null
           game_flags: Json | null
           game_settings: Json | null
           game_stats: Json | null
           id: string
           inventory: Json | null
           last_played_at: string | null
+          name: string
           party_members: Json | null
           play_history: Json | null
           player_experience: number | null
@@ -488,8 +600,7 @@ export type Database = {
           save_data: Json | null
           unlocked_chapters: Json | null
           unlocked_events: Json | null
-          unlocked_locations: Json | null
-          unlocked_world_regions: Json | null
+          unlocked_maps: Json | null
           updated_at: string | null
           user_id: string
         }
@@ -503,13 +614,14 @@ export type Database = {
           created_at?: string | null
           current_chapter_id?: string | null
           current_event_id?: string | null
-          current_location_id?: string | null
+          current_map_id?: string | null
           game_flags?: Json | null
           game_settings?: Json | null
           game_stats?: Json | null
           id?: string
           inventory?: Json | null
           last_played_at?: string | null
+          name?: string
           party_members?: Json | null
           play_history?: Json | null
           player_experience?: number | null
@@ -518,8 +630,7 @@ export type Database = {
           save_data?: Json | null
           unlocked_chapters?: Json | null
           unlocked_events?: Json | null
-          unlocked_locations?: Json | null
-          unlocked_world_regions?: Json | null
+          unlocked_maps?: Json | null
           updated_at?: string | null
           user_id: string
         }
@@ -533,13 +644,14 @@ export type Database = {
           created_at?: string | null
           current_chapter_id?: string | null
           current_event_id?: string | null
-          current_location_id?: string | null
+          current_map_id?: string | null
           game_flags?: Json | null
           game_settings?: Json | null
           game_stats?: Json | null
           id?: string
           inventory?: Json | null
           last_played_at?: string | null
+          name?: string
           party_members?: Json | null
           play_history?: Json | null
           player_experience?: number | null
@@ -548,82 +660,42 @@ export type Database = {
           save_data?: Json | null
           unlocked_chapters?: Json | null
           unlocked_events?: Json | null
-          unlocked_locations?: Json | null
-          unlocked_world_regions?: Json | null
+          unlocked_maps?: Json | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_progress_current_chapter_id_fkey"
+            foreignKeyName: "user_game_states_current_chapter_id_fkey"
             columns: ["current_chapter_id"]
             isOneToOne: false
             referencedRelation: "story_chapters"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "user_progress_current_event_id_fkey"
+            foreignKeyName: "user_game_states_current_event_id_fkey"
             columns: ["current_event_id"]
             isOneToOne: false
             referencedRelation: "story_events"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "user_progress_current_location_id_fkey"
-            columns: ["current_location_id"]
+            foreignKeyName: "user_game_states_current_map_id_fkey"
+            columns: ["current_map_id"]
             isOneToOne: false
-            referencedRelation: "locations"
+            referencedRelation: "maps"
             referencedColumns: ["id"]
           },
         ]
-      }
-      world_regions: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          display_order: number
-          id: string
-          image_url: string | null
-          is_alway_hide_until_unlock: boolean | null
-          is_initial_user_progress: boolean | null
-          name: string
-          unlock_requirements: Json | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          display_order?: number
-          id?: string
-          image_url?: string | null
-          is_alway_hide_until_unlock?: boolean | null
-          is_initial_user_progress?: boolean | null
-          name: string
-          unlock_requirements?: Json | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          display_order?: number
-          id?: string
-          image_url?: string | null
-          is_alway_hide_until_unlock?: boolean | null
-          is_initial_user_progress?: boolean | null
-          name?: string
-          unlock_requirements?: Json | null
-          updated_at?: string | null
-        }
-        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      complete_interaction_for_user_progress: {
+      complete_interaction_for_user_game_state: {
         Args: {
-          p_user_progress_uuid: string
+          p_user_game_state_uuid: string
           p_interaction_uuid: string
           p_choice_data?: Json
         }
@@ -677,16 +749,16 @@ export type Database = {
         Args: { p_id: string }
         Returns: Json
       }
-      get_available_events_for_location: {
-        Args: { p_user_progress_uuid: string; p_location_uuid: string }
+      get_available_events_for_user_game_states: {
+        Args: { p_user_game_state_uuid: string }
         Returns: Json
       }
-      get_available_events_for_user_progress: {
-        Args: { p_user_progress_uuid: string }
+      get_available_events_for_user_game_states_at_map: {
+        Args: { p_user_game_state_uuid: string; p_map_uuid: string }
         Returns: Json
       }
-      get_event_interactions_for_user_progress: {
-        Args: { p_user_progress_uuid: string; p_event_uuid: string }
+      get_event_interactions_for_user_game_states: {
+        Args: { p_user_game_state_uuid: string; p_event_uuid: string }
         Returns: Json
       }
       get_paginated_users: {
@@ -697,8 +769,8 @@ export type Database = {
         Args: { profile_id: string }
         Returns: Database["public"]["Enums"]["profile_role"]
       }
-      get_user_game_state_for_user_progress: {
-        Args: { p_user_progress_uuid: string }
+      get_user_game_states_by_id: {
+        Args: { p_user_game_state_uuid: string }
         Returns: Json
       }
       get_user_profiles: {
@@ -725,16 +797,8 @@ export type Database = {
           verification_status: string
         }[]
       }
-      get_world_regions: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_world_regions_for_user_progress: {
-        Args: { p_user_progress_uuid: string }
-        Returns: Json
-      }
-      initialize_user_progress: {
-        Args: { p_user_uuid: string }
+      initialize_user_game_states: {
+        Args: { p_user_id: string; p_name?: string }
         Returns: Json
       }
       is_admin: {

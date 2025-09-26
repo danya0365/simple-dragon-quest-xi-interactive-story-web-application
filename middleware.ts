@@ -39,8 +39,10 @@ export async function middleware(request: NextRequest) {
 
   // Define public routes that don't require authentication
   const publicRoutes = ["/", "/login", "/auth"];
-  const isPublicRoute = publicRoutes.some(route => 
-    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route)
+  const isPublicRoute = publicRoutes.some(
+    (route) =>
+      request.nextUrl.pathname === route ||
+      request.nextUrl.pathname.startsWith(route)
   );
 
   // Redirect unauthenticated users to login page for protected routes
@@ -53,7 +55,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from login page
   if (user && request.nextUrl.pathname === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/game";
     return NextResponse.redirect(url);
   }
 

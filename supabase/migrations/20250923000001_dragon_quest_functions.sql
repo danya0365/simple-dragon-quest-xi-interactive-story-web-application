@@ -6,10 +6,10 @@
 
 
 -- =============================================================================
--- Initialize user progress with comprehensive initialization
+-- Initialize user game states with comprehensive initialization
 -- =============================================================================
 
-CREATE OR REPLACE FUNCTION public.initialize_user_progress(p_user_uuid UUID)
+CREATE OR REPLACE FUNCTION public.initialize_user_game_states(p_user_id UUID, p_name TEXT DEFAULT 'Default Save')
 RETURNS JSONB AS $$
 DECLARE
     v_progress_record RECORD;
@@ -19,19 +19,18 @@ DECLARE
     v_rusty_sword_item_id UUID;
     v_chapter_1_id UUID;
     v_morning_at_home_event_id UUID;
-    v_heros_house_location_id UUID;
+    v_heros_house_map_id UUID;
     
     -- Variables to store unlocked content arrays
     v_unlocked_world_maps UUID[];
-    v_unlocked_locations UUID[];
     v_unlocked_chapters UUID[];
     v_unlocked_events UUID[];
 BEGIN
-    -- Check if user progress already exists
-    SELECT * INTO v_progress_record FROM public.user_progress WHERE user_id = p_user_uuid;
+    -- Check if user game state already exists for this slot name
+    SELECT * INTO v_progress_record FROM public.user_game_states WHERE user_id = p_user_id AND name = p_name;
     
     IF v_progress_record IS NOT NULL THEN
-        -- User progress already exists, return all columns as JSONB object
+        -- User game state already exists, return all columns as JSONB object
         RETURN to_jsonb(v_progress_record);
     END IF;
     
@@ -65,24 +64,50 @@ BEGIN
     LIMIT 1;
     
     -- Hero's house map (initial map)
-    SELECT id INTO v_heros_house_location_id
+    SELECT id INTO v_heros_house_map_id
     FROM public.maps 
-    WHERE is_initial_user_progress = true AND map_type = 'location'
+    WHERE is_initial_user_progress = true AND map_type IN ('town', 'building', 'house')
     ORDER BY display_order
     LIMIT 1;
     
     -- Get unlocked content from each table separately (UPDATED: Use unified maps structure)
-    -- Maps with initial user progress flag (world regions and locations)
+    -- All maps with initial user progress flag (world, region, town, building, house)
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
     INTO v_unlocked_world_maps
     FROM public.maps 
-    WHERE is_initial_user_progress = true AND map_type IN ('world', 'location');
+    WHERE is_initial_user_progress = true;
     
-    -- Locations with initial user progress flag (subset of maps)
-    SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
-    INTO v_unlocked_locations
-    FROM public.maps 
-    WHERE is_initial_user_progress = true AND map_type = 'location';
+    -- BUG FIX: Get all parent maps of the starting map and merge them
+    -- This ensures users have access to all parent maps in the hierarchy
+    IF v_heros_house_map_id IS NOT NULL THEN
+        DECLARE
+            v_parent_maps UUID[];
+        BEGIN
+            -- Recursive query to get all parent maps
+            WITH RECURSIVE map_hierarchy AS (
+                -- Base case: the starting map itself
+                SELECT id, parent_id, 1 as level
+                FROM public.maps 
+                WHERE id = v_heros_house_map_id
+                
+                UNION ALL
+                
+                -- Recursive case: get parent maps
+                SELECT m.id, m.parent_id, mh.level + 1
+                FROM public.maps m
+                INNER JOIN map_hierarchy mh ON m.id = mh.parent_id
+                WHERE mh.parent_id IS NOT NULL
+            )
+            SELECT COALESCE(ARRAY_AGG(id ORDER BY level DESC), ARRAY[]::UUID[])
+            INTO v_parent_maps
+            FROM map_hierarchy
+            WHERE id != v_heros_house_map_id; -- Exclude the starting map itself as it's already included
+            
+            -- Merge parent maps with unlocked maps (remove duplicates)
+            SELECT ARRAY(SELECT DISTINCT unnest(v_unlocked_world_maps || v_parent_maps))
+            INTO v_unlocked_world_maps;
+        END;
+    END IF;
     
     -- Chapters with initial user progress flag
     SELECT COALESCE(ARRAY_AGG(id ORDER BY display_order), ARRAY[]::UUID[])
@@ -97,8 +122,9 @@ BEGIN
     WHERE is_initial_user_progress = true;
     
     -- Insert new user progress with comprehensive initialization (FIX: Proper data types)
-    INSERT INTO public.user_progress (
+    INSERT INTO public.user_game_states (
         user_id,
+        name,
         
         -- Current state
         current_chapter_id,
@@ -111,7 +137,6 @@ BEGIN
         
         -- Game content - UNLOCKED (UPDATED: Use unified maps structure)
         unlocked_maps,                      -- Unified maps as JSONB array
-        unlocked_locations,                 -- Location maps as JSONB array
         unlocked_chapters,
         unlocked_events,
         
@@ -152,11 +177,12 @@ BEGIN
         created_at,
         updated_at
     ) VALUES (
-        p_user_uuid,
+        p_user_id,
+        p_name,
         
         -- Current state
         v_chapter_1_id,                    -- Start with Chapter 1: The Darkspawn
-        v_heros_house_location_id,        -- Start at Hero's House
+        v_heros_house_map_id,        -- Start at Hero's House
         v_morning_at_home_event_id,       -- Start with Morning at Home event
         
         -- Player progression
@@ -165,7 +191,6 @@ BEGIN
         
         -- Game content - UNLOCKED (UPDATED: Use unified maps structure)
         to_jsonb(v_unlocked_world_maps),   -- Maps as JSONB array
-        to_jsonb(v_unlocked_locations),    -- Location maps as JSONB array
         to_jsonb(v_unlocked_chapters),    -- Chapters as JSONB array
         to_jsonb(v_unlocked_events),      -- Events as JSONB array
         
@@ -216,7 +241,7 @@ BEGIN
         jsonb_build_object(
             'x', 100,
             'y', 200,
-            'map_id', v_heros_house_location_id
+            'map_id', v_heros_house_map_id
         ),
         
         -- Achievements (empty for new user)
@@ -261,23 +286,23 @@ BEGIN
         NOW()                             -- updated_at
     );
     
-    -- Get the complete user progress record
-    SELECT * INTO v_progress_record FROM public.user_progress WHERE user_id = p_user_uuid;
+    -- Get the complete user game state record
+    SELECT * INTO v_progress_record FROM public.user_game_states WHERE user_id = p_user_id AND name = p_name;
     
     -- Return all columns as JSONB object
     RETURN to_jsonb(v_progress_record);
 EXCEPTION
     WHEN OTHERS THEN
         -- Log error and re-raise
-        RAISE EXCEPTION 'Failed to initialize user progress for user %: %', p_user_uuid, SQLERRM;
+        RAISE EXCEPTION 'Failed to initialize user game state for user %: %', p_user_id, SQLERRM;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
 -- =============================================================================
--- Function to get user game state with comprehensive data
+-- Function to get user game states with comprehensive data
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_user_game_state_for_user_progress(p_user_progress_uuid UUID)
+CREATE OR REPLACE FUNCTION public.get_user_game_states_by_id(p_user_game_state_uuid UUID)
 RETURNS JSONB
 LANGUAGE sql
 AS $$
@@ -289,7 +314,7 @@ AS $$
             up.current_chapter_id,
             COALESCE(sc.title, 'Unknown Chapter') as current_chapter_title,
             up.current_map_id,
-            COALESCE(sm.name, 'Unknown Map') as current_location_name,
+            COALESCE(sm.name, 'Unknown Map') as current_map_name,
             up.current_event_id,
             COALESCE(se.title, 'Unknown Event') as current_event_title,
             up.player_level,
@@ -314,195 +339,20 @@ AS $$
             up.last_played_at,
             up.created_at,
             up.updated_at
-        FROM public.user_progress up
+        FROM public.user_game_states up
         LEFT JOIN public.story_chapters sc ON up.current_chapter_id = sc.id
         LEFT JOIN public.maps sm ON up.current_map_id = sm.id
         LEFT JOIN public.story_events se ON up.current_event_id = se.id
-        WHERE up.id = p_user_progress_uuid
+        WHERE up.id = p_user_game_state_uuid
     ) AS game_state;
 $$;
 
--- =============================================================================
--- Function to get world map with unlock status for user_progress (UPDATED FOR UNIFIED MAPS)
--- Uses hash map approach with CTEs and joins for better performance
--- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_world_regions_for_user_progress(p_user_progress_uuid UUID)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    v_unlocked_maps UUID[];
-    v_unlocked_locations UUID[];
-BEGIN
-    -- Get unlocked maps and locations from user progress
-    SELECT unlocked_maps, unlocked_locations 
-    INTO v_unlocked_maps, v_unlocked_locations
-    FROM public.user_progress 
-    WHERE id = p_user_progress_uuid;
-    
-    -- Return comprehensive world map structure using hash map approach (UPDATED: Use unified maps)
-    RETURN (
-        WITH unlocked_world_maps_data AS (
-            SELECT 
-                m.id,
-                m.name,
-                m.description,
-                m.image_url,
-                m.map_type,
-                m.map_subtype,
-                m.unlock_requirements,
-                m.display_order,
-                m.is_initial_user_progress
-            FROM public.maps m
-            WHERE m.id = ANY(v_unlocked_maps) AND m.map_type = 'world'
-            ORDER BY m.display_order, m.name
-        ),
-        unlocked_location_maps_data AS (
-            SELECT 
-                m.id,
-                m.parent_id,
-                m.name,
-                m.description,
-                m.image_url,
-                m.map_type,
-                m.map_subtype,
-                m.unlock_requirements,
-                m.display_order,
-                m.is_initial_user_progress
-            FROM public.maps m
-            WHERE m.id = ANY(v_unlocked_locations) AND m.map_type = 'location'
-            ORDER BY m.display_order, m.name
-        ),
-        locations_by_world_region AS (
-            SELECT 
-                loc.parent_id,
-                COALESCE(jsonb_agg(
-                    jsonb_build_object(
-                        'id', loc.id,
-                        'parent_id', loc.parent_id,
-                        'name', loc.name,
-                        'description', loc.description,
-                        'image_url', loc.image_url,
-                        'map_type', loc.map_type,
-                        'map_subtype', loc.map_subtype,
-                        'unlock_requirements', loc.unlock_requirements,
-                        'display_order', loc.display_order,
-                        'is_initial_user_progress', loc.is_initial_user_progress
-                    )
-                ), '[]'::jsonb) as locations
-            FROM unlocked_location_maps_data loc
-            GROUP BY loc.parent_id
-        )
-        SELECT COALESCE(jsonb_agg(
-            jsonb_build_object(
-                'id', wr.id,
-                'name', wr.name,
-                'description', wr.description,
-                'image_url', wr.image_url,
-                'map_type', wr.map_type,
-                'map_subtype', wr.map_subtype,
-                'unlock_requirements', wr.unlock_requirements,
-                'display_order', wr.display_order,
-                'is_initial_user_progress', wr.is_initial_user_progress,
-                'locations', COALESCE(lbr.locations, '[]'::jsonb)
-            )
-        ), '[]'::jsonb) as world_regions
-        FROM unlocked_world_maps_data wr
-        LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.parent_id
-        ORDER BY wr.display_order, wr.name
-    );
-END;
-$$;
-
 
 -- =============================================================================
--- Function to get all world regions with all locations (no user progress filtering) (UPDATED FOR UNIFIED MAPS)
--- Uses hash map approach with joins and jsonb_object_agg for better performance
--- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_world_regions()
-RETURNS JSONB
-LANGUAGE sql
-SECURITY DEFINER
-AS $$
-    WITH world_maps_data AS (
-        SELECT 
-            m.id,
-            m.name,
-            m.description,
-            m.image_url,
-            m.map_type,
-            m.map_subtype,
-            m.unlock_requirements,
-            m.display_order,
-            m.is_initial_user_progress,
-            m.is_alway_hide_until_unlock
-        FROM public.maps m
-        WHERE m.map_type = 'world'
-        ORDER BY m.display_order, m.name
-    ),
-    location_maps_data AS (
-        SELECT 
-            m.id,
-            m.parent_id,
-            m.name,
-            m.description,
-            m.image_url,
-            m.map_type,
-            m.map_subtype,
-            m.unlock_requirements,
-            m.display_order,
-            m.is_initial_user_progress,
-            m.is_alway_hide_until_unlock
-        FROM public.maps m
-        WHERE m.map_type = 'location'
-        ORDER BY m.display_order, m.name
-    ),
-    locations_by_world_region AS (
-        SELECT 
-            loc.parent_id,
-            COALESCE(jsonb_agg(
-                jsonb_build_object(
-                    'id', loc.id,
-                    'parent_id', loc.parent_id,
-                    'name', loc.name,
-                    'description', loc.description,
-                    'image_url', loc.image_url,
-                    'map_type', loc.map_type,
-                    'map_subtype', loc.map_subtype,
-                    'unlock_requirements', loc.unlock_requirements,
-                    'display_order', loc.display_order,
-                    'is_initial_user_progress', loc.is_initial_user_progress,
-                    'is_alway_hide_until_unlock', loc.is_alway_hide_until_unlock
-                )
-            ), '[]'::jsonb) as locations
-        FROM location_maps_data loc
-        GROUP BY loc.parent_id
-    )
-    SELECT COALESCE(jsonb_agg(
-        jsonb_build_object(
-            'id', wr.id,
-            'name', wr.name,
-            'description', wr.description,
-            'image_url', wr.image_url,
-            'map_type', wr.map_type,
-            'map_subtype', wr.map_subtype,
-            'unlock_requirements', wr.unlock_requirements,
-            'display_order', wr.display_order,
-            'is_initial_user_progress', wr.is_initial_user_progress,
-            'is_alway_hide_until_unlock', wr.is_alway_hide_until_unlock,
-            'locations', COALESCE(lbr.locations, '[]'::jsonb)
-        )
-    ), '[]'::jsonb)
-    FROM world_maps_data wr
-    LEFT JOIN locations_by_world_region lbr ON wr.id = lbr.parent_id;
-$$;
-
--- =============================================================================
--- Function to get available events for user progress
+-- Function to get available events for user game states
 -- Returns events that are unlocked but not completed
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_available_events_for_user_progress(p_user_progress_uuid UUID)
+CREATE OR REPLACE FUNCTION public.get_available_events_for_user_game_states(p_user_game_state_uuid UUID)
 RETURNS JSONB
 LANGUAGE sql
 SECURITY DEFINER
@@ -512,8 +362,8 @@ AS $$
             unlocked_events,
             completed_events,
             current_map_id
-        FROM public.user_progress 
-        WHERE id = p_user_progress_uuid
+        FROM public.user_game_states 
+        WHERE id = p_user_game_state_uuid
     ),
     available_events AS (
         SELECT 
@@ -522,7 +372,7 @@ AS $$
             se.description as event_description,
             se.event_type,
             sc.title as chapter_title,
-            sm.name as location_name,
+            sm.name as map_name,
             COUNT(ei.id) as interactions_count
         FROM public.story_events se
         JOIN public.story_chapters sc ON se.chapter_id = sc.id
@@ -541,7 +391,7 @@ AS $$
             'event_description', ae.event_description,
             'event_type', ae.event_type,
             'chapter_title', ae.chapter_title,
-            'location_name', ae.location_name,
+            'map_name', ae.map_name,
             'interactions_count', ae.interactions_count
         )
     ), '[]'::jsonb)
@@ -549,10 +399,10 @@ AS $$
 $$;
 
 -- =============================================================================
--- Function to get available events for a specific location
--- Returns events that are unlocked but not completed for a specific location
+-- Function to get available events for user game states at specific map
+-- Returns events that are unlocked but not completed for a specific map
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_available_events_for_location(p_user_progress_uuid UUID, p_location_uuid UUID)
+CREATE OR REPLACE FUNCTION public.get_available_events_for_user_game_states_at_map(p_user_game_state_uuid UUID, p_map_uuid UUID)
 RETURNS JSONB
 LANGUAGE sql
 SECURITY DEFINER
@@ -561,8 +411,8 @@ AS $$
         SELECT 
             unlocked_events,
             completed_events
-        FROM public.user_progress 
-        WHERE id = p_user_progress_uuid
+        FROM public.user_game_states 
+        WHERE id = p_user_game_state_uuid
     ),
     available_events AS (
         SELECT 
@@ -571,7 +421,7 @@ AS $$
             se.description as event_description,
             se.event_type,
             sc.title as chapter_title,
-            sm.name as location_name,
+            sm.name as map_name,
             COUNT(ei.id) as interactions_count
         FROM public.story_events se
         JOIN public.story_chapters sc ON se.chapter_id = sc.id
@@ -579,7 +429,7 @@ AS $$
         LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
         JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.unlocked_events)::UUID)
         WHERE NOT se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
-        AND se.map_id = p_location_uuid
+        AND se.map_id = p_map_uuid
         GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sm.name
         ORDER BY se.display_order, se.title
     )
@@ -590,7 +440,7 @@ AS $$
             'event_description', ae.event_description,
             'event_type', ae.event_type,
             'chapter_title', ae.chapter_title,
-            'location_name', ae.location_name,
+            'map_name', ae.map_name,
             'interactions_count', ae.interactions_count
         )
     ), '[]'::jsonb)
@@ -598,22 +448,22 @@ AS $$
 $$;
 
 -- =============================================================================
--- Function to get event interactions for user progress
+-- Function to get event interactions for user game states
 -- Returns all interactions for a specific event with availability status
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.get_event_interactions_for_user_progress(p_user_progress_uuid UUID, p_event_uuid UUID)
+CREATE OR REPLACE FUNCTION public.get_event_interactions_for_user_game_states(p_user_game_state_uuid UUID, p_event_uuid UUID)
 RETURNS JSONB
 LANGUAGE sql
 SECURITY DEFINER
 AS $$
     WITH user_progress_data AS (
         SELECT 
-            game_flags,
-            character_relationships,
+            unlocked_events,
+            completed_events,
             inventory,
             player_level
-        FROM public.user_progress 
-        WHERE id = p_user_progress_uuid
+        FROM public.user_game_states 
+        WHERE id = p_user_game_state_uuid
     ),
     event_interactions_data AS (
         SELECT 
@@ -648,11 +498,11 @@ AS $$
     FROM event_interactions_data eid;
 $$;
 -- =============================================================================
--- Function to complete interaction for user progress (FIXED VERSION WITH AUTO UNLOCK)
--- Handles choice processing, effects application, state updates, and auto location/region unlock
+-- Function to complete interaction for user game states (FIXED VERSION WITH AUTO UNLOCK)
+-- Handles choice processing, effects application, state updates, and auto map unlock
 -- =============================================================================
-CREATE OR REPLACE FUNCTION public.complete_interaction_for_user_progress(
-    p_user_progress_uuid UUID,
+CREATE OR REPLACE FUNCTION public.complete_interaction_for_user_game_state(
+    p_user_game_state_uuid UUID,
     p_interaction_uuid UUID,
     p_choice_data JSONB DEFAULT NULL
 )
@@ -661,7 +511,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-    v_user_progress RECORD;
+    v_user_game_state RECORD;
     v_interaction RECORD;
     v_outcome RECORD;
     v_choice_key TEXT;
@@ -674,21 +524,19 @@ DECLARE
     v_total_interactions INTEGER;
     v_completed_interactions INTEGER;
     v_current_unlocked_events JSONB;
-    v_current_unlocked_locations JSONB;
     v_current_unlocked_regions JSONB;
     v_new_events_to_unlock JSONB;
-    v_auto_unlock_locations JSONB DEFAULT '[]'::jsonb;
     v_auto_unlock_regions JSONB DEFAULT '[]'::jsonb;
     v_event_record RECORD;
 BEGIN
-    -- Get user progress data
-    SELECT * INTO v_user_progress 
-    FROM public.user_progress 
-    WHERE id = p_user_progress_uuid;
+    -- Get user game state data
+    SELECT * INTO v_user_game_state 
+    FROM public.user_game_states 
+    WHERE id = p_user_game_state_uuid;
     
-    IF v_user_progress IS NULL THEN
+    IF v_user_game_state IS NULL THEN
         v_success := false;
-        v_error_message := 'User progress not found';
+        v_error_message := 'User game state not found';
         RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
     END IF;
     
@@ -746,7 +594,7 @@ BEGIN
     
     -- Get number of completed interactions for this event
     SELECT COUNT(*) INTO v_completed_interactions
-    FROM jsonb_array_elements(v_user_progress.completed_interactions) AS completed_interaction
+    FROM jsonb_array_elements(v_user_game_state.completed_interactions) AS completed_interaction
     WHERE completed_interaction->>'event_id' = v_interaction.event_id::TEXT;
     
     -- DEBUG: Log interaction counts
@@ -761,9 +609,8 @@ BEGIN
     RAISE NOTICE 'DEBUG: All interactions completed: %', v_all_interactions_completed;
     
     -- Store current unlocked content before update
-    v_current_unlocked_events := COALESCE(v_user_progress.unlocked_events, '[]'::jsonb);
-    v_current_unlocked_locations := COALESCE(v_user_progress.unlocked_locations, '[]'::jsonb);
-    v_current_unlocked_regions := COALESCE(v_user_progress.unlocked_maps, '[]'::jsonb);
+    v_current_unlocked_events := COALESCE(v_user_game_state.unlocked_events, '[]'::jsonb);
+    v_current_unlocked_regions := COALESCE(v_user_game_state.unlocked_maps, '[]'::jsonb);
     
     -- Get new events to unlock from effects
     v_new_events_to_unlock := COALESCE(v_effects->'unlock_events', '[]'::jsonb);
@@ -782,8 +629,8 @@ BEGIN
             -- Auto-unlock map if event has a map
             IF v_event_record.map_id IS NOT NULL THEN
                 -- Check if map is not already unlocked
-                IF NOT (v_current_unlocked_locations @> to_jsonb(v_event_record.map_id::text)) THEN
-                    v_auto_unlock_locations := v_auto_unlock_locations || to_jsonb(v_event_record.map_id::text);
+                IF NOT (v_current_unlocked_regions @> to_jsonb(v_event_record.map_id::text)) THEN
+                    v_auto_unlock_regions := v_auto_unlock_regions || to_jsonb(v_event_record.map_id::text);
                     RAISE NOTICE 'DEBUG: Auto-unlocking map: %', v_event_record.map_id;
                 END IF;
             END IF;
@@ -799,8 +646,8 @@ BEGIN
         END LOOP;
     END IF;
     
-    -- Update user progress with effects and auto-unlocks
-    UPDATE public.user_progress
+    -- Update user game state with effects and auto-unlocks
+    UPDATE public.user_game_states
     SET 
         -- Track completed interactions
         completed_interactions = completed_interactions || 
@@ -828,23 +675,6 @@ BEGIN
                 ) t
             )
             ELSE unlocked_maps 
-        END,
-        
-        unlocked_locations = CASE 
-            -- Merge manual unlocks from effects AND auto-unlocks
-            WHEN (v_effects->'unlock_maps' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_maps') = 'array' AND jsonb_array_length(v_effects->'unlock_maps') > 0)
-                 OR jsonb_array_length(v_auto_unlock_locations) > 0
-            THEN (
-                SELECT jsonb_agg(DISTINCT value) 
-                FROM (
-                    SELECT value FROM jsonb_array_elements(COALESCE(unlocked_locations, '[]'::jsonb))
-                    UNION
-                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_maps', '[]'::jsonb))
-                    UNION
-                    SELECT value FROM jsonb_array_elements(v_auto_unlock_locations)
-                ) t
-            )
-            ELSE unlocked_locations 
         END,
         
         unlocked_chapters = CASE 
@@ -946,7 +776,7 @@ BEGIN
         -- Update timestamps
         updated_at = NOW(),
         last_played_at = NOW()
-    WHERE id = p_user_progress_uuid;
+    WHERE id = p_user_game_state_uuid;
     
     -- Return success response with auto-unlock information
     RETURN jsonb_build_object(
@@ -954,7 +784,6 @@ BEGIN
         'next_event_id', v_next_event_id,
         'effects', v_effects,
         'choice_key', v_choice_key,
-        'auto_unlocked_locations', v_auto_unlock_locations,
         'auto_unlocked_maps', v_auto_unlock_regions
     );
     
