@@ -1,36 +1,34 @@
-import { Json } from "@/src/domain/types/supabase";
-import { 
-  WorldMapSchema,
-  AvailableEventSchema,
-  UserGameStateSchema,
-  InitializeUserProgressSchema,
-  CompleteInteractionSchema,
-  EventInteractionSchema,
-  DeleteUserProgressSchema
-} from "@/src/domain/types/rpc";
-import { 
-  WorldMapDto,
-  UserGameStateDto,
-  CompleteInteractionDto,
-  EventInteractionDto,
-  LocationDto,
-  CharacterData,
-  DeleteUserProgressDto
-} from "@/src/domain/types/rpc";
 import {
-  mapWorldMapToDto,
   mapAvailableEventToDto,
-  mapUserGameStateToDto,
-  mapInitializeUserProgressToDto,
   mapCompleteInteractionToDto,
+  mapDeleteUserProgressToDto,
   mapEventInteractionToDto,
-  mapDeleteUserProgressToDto
+  mapInitializeUserProgressToDto,
+  mapUserGameStateToDto,
+  mapWorldMapToDto,
 } from "@/src/domain/mappers/rpcMappers";
 import {
   mapAvailableEventDtoToUI,
   mapEventInteractionDtoToUI,
-  mapUserGameStateDtoToUI
+  mapUserGameStateDtoToUI,
 } from "@/src/domain/mappers/uiMappers";
+import {
+  AvailableEventSchema,
+  CharacterData,
+  CompleteInteractionDto,
+  CompleteInteractionSchema,
+  DeleteUserProgressDto,
+  DeleteUserProgressSchema,
+  EventInteractionDto,
+  EventInteractionSchema,
+  InitializeUserProgressSchema,
+  LocationDto,
+  UserGameStateDto,
+  UserGameStateSchema,
+  WorldMapDto,
+  WorldMapSchema,
+} from "@/src/domain/types/rpc";
+import { Json } from "@/src/domain/types/supabase";
 import { createClientSupabaseClient } from "@/src/infrastructure/config/supabase-client-client";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -38,12 +36,12 @@ import { persist } from "zustand/middleware";
 // Import UI types for frontend components
 import type {
   EventInteractionUI,
-  WorldRegionUI,
-  LocationUI,
-  StoryEventUI,
-  PartyMemberUI,
   InventoryItemUI,
-  UserGameStateUI
+  LocationUI,
+  PartyMemberUI,
+  StoryEventUI,
+  UserGameStateUI,
+  WorldRegionUI,
 } from "@/src/domain/types/ui";
 
 // Mapping function to convert EventInteractionDto to EventInteractionUI
@@ -53,17 +51,12 @@ const mapEventInteractionsResponseToEventInteractions = (
   return responses.map((response) => mapEventInteractionDtoToUI(response));
 };
 
-
-
-
-
 // Mapping function to convert UserGameStateDto to UserGameStateUI
 function mapUserGameStateResponseToUserGameState(
   response: UserGameStateDto
 ): UserGameStateUI {
   return mapUserGameStateDtoToUI(response);
 }
-
 
 // Export UI types for backward compatibility
 export type EventInteraction = EventInteractionUI;
@@ -73,7 +66,6 @@ export type StoryEvent = StoryEventUI;
 export type PartyMember = PartyMemberUI;
 export type InventoryItem = InventoryItemUI;
 export type UserGameState = UserGameStateUI;
-
 
 interface GameState {
   // World and location data
@@ -108,7 +100,9 @@ interface GameActions {
   loadLocationsForRegion: (regionId: string) => Promise<void>;
   loadAvailableEvents: (locationId: string) => Promise<void>;
   loadUserGameState: (userProgressId?: string) => Promise<void>;
-  loadEventInteractions: (eventId: string) => Promise<EventInteraction[] | null>;
+  loadEventInteractions: (
+    eventId: string
+  ) => Promise<EventInteraction[] | null>;
   completeInteraction: (
     interactionId: string,
     choiceData?: Json
@@ -117,10 +111,10 @@ interface GameActions {
   deleteUserProgress: (userId: string) => Promise<DeleteUserProgressDto>;
   loadUserInventory: () => Promise<void>;
   loadCharacters: () => Promise<void>;
-  
+
   // Helper functions
   isLocationUnlocked: (locationId: string) => boolean;
-  
+
   // Navigation
   setCurrentView: (view: GameState["currentView"]) => void;
   setSelectedRegion: (regionId: string | null) => void;
@@ -182,27 +176,28 @@ export const useGameStore = create<GameStore>()(
           const unlockedLocationIds = new Set(userGameState.unlockedLocations);
 
           // Extract all locations data
-          const allLocationsData = allWorldMaps.flatMap((worldMap: WorldMapDto) =>
-            worldMap.locations.map((location: LocationDto) => ({
-              id: location.id,
-              worldRegionId: location.worldRegionId,
-              name: location.name,
-              description: location.description,
-              imageUrl: location.imageUrl,
-              locationType: location.locationType,
-              unlockRequirements: location.unlockRequirements,
-              displayOrder: location.displayOrder,
-              isInitialUserProgress: location.isInitialUserProgress,
-              isAlwayHideUntilUnlock: location.isAlwayHideUntilUnlock,
-              isUnlocked: unlockedLocationIds.has(location.id),
-            }))
+          const allLocationsData = allWorldMaps.flatMap(
+            (worldMap: WorldMapDto) =>
+              worldMap.locations.map((location: LocationDto) => ({
+                id: location.id,
+                worldRegionId: location.worldRegionId,
+                name: location.name,
+                description: location.description,
+                imageUrl: location.imageUrl,
+                locationType: location.locationType,
+                unlockRequirements: location.unlockRequirements,
+                displayOrder: location.displayOrder,
+                isInitialUserProgress: location.isInitialUserProgress,
+                isAlwayHideUntilUnlock: location.isAlwayHideUntilUnlock,
+                isUnlocked: unlockedLocationIds.has(location.id),
+              }))
           );
 
           // Transform the data to match our WorldRegionUI interface
           const transformedData = allWorldMaps.map((worldMap: WorldMapDto) => {
             const isWorldMapUnlocked = unlockedWorldMapIds.has(worldMap.id);
-            const unlockedLocationsInMap = worldMap.locations.filter((loc: LocationDto) =>
-              unlockedLocationIds.has(loc.id)
+            const unlockedLocationsInMap = worldMap.locations.filter(
+              (loc: LocationDto) => unlockedLocationIds.has(loc.id)
             );
 
             return {
@@ -251,7 +246,7 @@ export const useGameStore = create<GameStore>()(
               name: location.name,
               description: location.description,
               locationType: location.locationType,
-              imageUrl: location.imageUrl || '',
+              imageUrl: location.imageUrl || "",
               isUnlocked: true, // Since we filtered by unlocked locations
             }));
 
@@ -298,7 +293,9 @@ export const useGameStore = create<GameStore>()(
 
           const availableEventsSchemas =
             data as unknown as AvailableEventSchema[];
-          const newAvailableEvents = availableEventsSchemas.map(mapAvailableEventToDto);
+          const newAvailableEvents = availableEventsSchemas.map(
+            mapAvailableEventToDto
+          );
 
           // Map AvailableEventDto to StoryEventUI using UI mapper
           const mappedEvents = newAvailableEvents.map(mapAvailableEventDtoToUI);
@@ -338,12 +335,10 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const userGameStateSchema =
-            data as unknown as UserGameStateSchema;
+          const userGameStateSchema = data as unknown as UserGameStateSchema;
           const userGameStateDto = mapUserGameStateToDto(userGameStateSchema);
-          const mappedUserGameState = mapUserGameStateResponseToUserGameState(
-            userGameStateDto
-          );
+          const mappedUserGameState =
+            mapUserGameStateResponseToUserGameState(userGameStateDto);
 
           set({
             userGameState: mappedUserGameState,
@@ -351,18 +346,24 @@ export const useGameStore = create<GameStore>()(
           });
         } catch (err) {
           console.error("Error loading user game state:", err);
-          
+
           // Check if we should initialize user progress (only once)
           const state = get();
-          if (!state.userGameState && !state.error?.includes('กำลังสร้างข้อมูลผู้เล่นใหม่')) {
+          if (
+            !state.userGameState &&
+            !state.error?.includes("กำลังสร้างข้อมูลผู้เล่นใหม่")
+          ) {
             console.log("Attempting to initialize user progress...");
             try {
               // Get current user ID from auth
-              const { data: { user }, error: authError } = await supabase.auth.getUser();
+              const {
+                data: { user },
+                error: authError,
+              } = await supabase.auth.getUser();
               if (authError || !user) {
-                throw new Error('ไม่พบข้อมูลผู้ใช้');
+                throw new Error("ไม่พบข้อมูลผู้ใช้");
               }
-              
+
               // Initialize user progress
               await get().initializeUserProgress(user.id);
               return; // Exit after initialization
@@ -404,11 +405,15 @@ export const useGameStore = create<GameStore>()(
           if (error) throw error;
 
           // API returns array of interactions directly
-          const rpcResponseSchemas = data as unknown as EventInteractionSchema[];
-          const rpcResponseDtos = rpcResponseSchemas.map(mapEventInteractionToDto);
-          
+          const rpcResponseSchemas =
+            data as unknown as EventInteractionSchema[];
+          const rpcResponseDtos = rpcResponseSchemas.map(
+            mapEventInteractionToDto
+          );
+
           // Map the response to frontend format
-          const mappedInteractions = mapEventInteractionsResponseToEventInteractions(rpcResponseDtos);
+          const mappedInteractions =
+            mapEventInteractionsResponseToEventInteractions(rpcResponseDtos);
 
           set({ loading: false });
           return mappedInteractions;
@@ -428,7 +433,7 @@ export const useGameStore = create<GameStore>()(
           set({ error: "ไม่พบข้อมูลผู้เล่น" });
           return {
             success: false,
-            error: "ไม่พบข้อมูลผู้เล่น"
+            error: "ไม่พบข้อมูลผู้เล่น",
           };
         }
         const userProgressId = userGameState.id;
@@ -453,19 +458,7 @@ export const useGameStore = create<GameStore>()(
           if (result.success && !result.error) {
             // Reload game state after successful interaction
             await get().loadUserGameState();
-            const { selectedLocationId } = get();
-            if (selectedLocationId) {
-              await get().loadAvailableEvents(selectedLocationId);
-            }
 
-            // If there's a next event, navigate to it
-            if (result.nextEventId) {
-              set({ selectedEventId: result.nextEventId });
-            } else {
-              // If no next event, go back to location view
-              set({ selectedEventId: null, currentView: "location" });
-            }
-            
             set({ loading: false });
             return result;
           } else {
@@ -480,7 +473,10 @@ export const useGameStore = create<GameStore>()(
           });
           return {
             success: false,
-            error: err instanceof Error ? err.message : "ไม่สามารถดำเนินการโต้ตอบได้"
+            error:
+              err instanceof Error
+                ? err.message
+                : "ไม่สามารถดำเนินการโต้ตอบได้",
           };
         }
       },
@@ -562,7 +558,8 @@ export const useGameStore = create<GameStore>()(
 
           if (data) {
             // Extract the user progress ID from the response
-            const responseSchema = data as unknown as InitializeUserProgressSchema;
+            const responseSchema =
+              data as unknown as InitializeUserProgressSchema;
             const responseDto = mapInitializeUserProgressToDto(responseSchema);
             if (responseDto.id) {
               console.log("User progress initialized with ID:", responseDto.id);
@@ -581,12 +578,9 @@ export const useGameStore = create<GameStore>()(
 
         try {
           // Call the delete_user_progress function
-          const { data, error } = await supabase.rpc(
-            "delete_user_progress",
-            {
-              p_user_uuid: userId,
-            }
-          );
+          const { data, error } = await supabase.rpc("delete_user_progress", {
+            p_user_uuid: userId,
+          });
 
           if (error) {
             console.error("Error deleting user progress:", error);
@@ -597,14 +591,17 @@ export const useGameStore = create<GameStore>()(
             // Extract the response data
             const responseSchema = data as unknown as DeleteUserProgressSchema;
             const responseDto = mapDeleteUserProgressToDto(responseSchema);
-            
+
             // Reset the game state in the store
             get().reset();
-            
-            console.log("User progress deleted successfully:", responseDto.message);
+
+            console.log(
+              "User progress deleted successfully:",
+              responseDto.message
+            );
             return responseDto;
           }
-          
+
           throw new Error("No data returned from delete_user_progress");
         } catch (error) {
           console.error("Error calling delete_user_progress:", error);
@@ -617,10 +614,10 @@ export const useGameStore = create<GameStore>()(
         set({ loading: true, error: null });
 
         try {
-          const { data, error } = await supabase.rpc('get_all_items');
-          
+          const { data, error } = await supabase.rpc("get_all_items");
+
           if (error) throw error;
-          
+
           const items = data as unknown as Array<{
             id: string;
             name: string;
@@ -629,49 +626,54 @@ export const useGameStore = create<GameStore>()(
             rarity: string;
             image_url: string;
           }>;
-          
+
           // Update user game state with inventory
           const { userGameState } = get();
           if (userGameState) {
             // Map items with userGameState inventory to get actual quantities and data
-            const userInventory = userGameState.inventory as unknown as Array<{
-              item_id: string;
-              quantity: number;
-              obtained_at: string;
-              equipped?: boolean;
-              slot?: string;
-            }> || [];
-            
-            const inventoryItems = items.map(item => {
-              const userItem = userInventory.find(ui => ui.item_id === item.id);
-              return {
-                itemId: item.id,
-                name: item.name,
-                description: item.description,
-                itemType: item.item_type,
-                rarity: item.rarity,
-                imageUrl: item.image_url,
-                quantity: userItem?.quantity || 0,
-                obtainedAt: userItem?.obtained_at || new Date().toISOString(),
-                equipped: userItem?.equipped || false,
-                slot: userItem?.slot || null
-              };
-            }).filter(item => item.quantity > 0); // Only show items user actually has
-            
+            const userInventory =
+              (userGameState.inventory as unknown as Array<{
+                item_id: string;
+                quantity: number;
+                obtained_at: string;
+                equipped?: boolean;
+                slot?: string;
+              }>) || [];
+
+            const inventoryItems = items
+              .map((item) => {
+                const userItem = userInventory.find(
+                  (ui) => ui.item_id === item.id
+                );
+                return {
+                  itemId: item.id,
+                  name: item.name,
+                  description: item.description,
+                  itemType: item.item_type,
+                  rarity: item.rarity,
+                  imageUrl: item.image_url,
+                  quantity: userItem?.quantity || 0,
+                  obtainedAt: userItem?.obtained_at || new Date().toISOString(),
+                  equipped: userItem?.equipped || false,
+                  slot: userItem?.slot || null,
+                };
+              })
+              .filter((item) => item.quantity > 0); // Only show items user actually has
+
             set({
               userGameState: {
                 ...userGameState,
-                inventory: inventoryItems
-              }
+                inventory: inventoryItems,
+              },
             });
           }
-          
+
           set({ loading: false });
         } catch (err) {
-          console.error('Error loading inventory:', err);
+          console.error("Error loading inventory:", err);
           set({
-            error: 'ไม่สามารถโหลดข้อมูลไอเทมได้',
-            loading: false
+            error: "ไม่สามารถโหลดข้อมูลไอเทมได้",
+            loading: false,
           });
         }
       },
@@ -681,57 +683,71 @@ export const useGameStore = create<GameStore>()(
         set({ loading: true, error: null });
 
         try {
-          const { data, error } = await supabase.rpc('get_all_characters');
-          
+          const { data, error } = await supabase.rpc("get_all_characters");
+
           if (error) throw error;
-          
+
           const characters = data as unknown as CharacterData[];
-          
+
           // Update user game state with character master data
           const { userGameState } = get();
           if (userGameState) {
             // Get existing party members from user game state
-            const existingPartyMembers = userGameState.partyMembers as unknown as Array<{
-              character_id: string;
-              joined_at: string;
-              current_stats: Record<string, number | string>;
-              equipment: Record<string, string | null>;
-              is_active: boolean;
-              party_position: number;
-              name?: string;
-              description?: string;
-              avatar_url?: string;
-            }> || [];
-            
+            const existingPartyMembers =
+              (userGameState.partyMembers as unknown as Array<{
+                character_id: string;
+                joined_at: string;
+                current_stats: Record<string, number | string>;
+                equipment: Record<string, string | null>;
+                is_active: boolean;
+                party_position: number;
+                name?: string;
+                description?: string;
+                avatar_url?: string;
+              }>) || [];
+
             // Enrich party members with character master data
-            const enrichedPartyMembers = existingPartyMembers.map(partyMember => {
-              const masterCharacter = characters.find(c => c.id === partyMember.character_id);
-              return {
-                characterId: partyMember.character_id,
-                name: masterCharacter?.name || partyMember.name || 'Unknown Character',
-                description: masterCharacter?.description || partyMember.description || 'No description available',
-                avatarUrl: masterCharacter?.avatar_url || partyMember.avatar_url || '/placeholder-avatar.png',
-                currentStats: partyMember.current_stats,
-                equipment: partyMember.equipment,
-                partyPosition: partyMember.party_position,
-                joinedAt: partyMember.joined_at
-              };
-            });
-            
+            const enrichedPartyMembers = existingPartyMembers.map(
+              (partyMember) => {
+                const masterCharacter = characters.find(
+                  (c) => c.id === partyMember.character_id
+                );
+                return {
+                  characterId: partyMember.character_id,
+                  name:
+                    masterCharacter?.name ||
+                    partyMember.name ||
+                    "Unknown Character",
+                  description:
+                    masterCharacter?.description ||
+                    partyMember.description ||
+                    "No description available",
+                  avatarUrl:
+                    masterCharacter?.avatar_url ||
+                    partyMember.avatar_url ||
+                    "/placeholder-avatar.png",
+                  currentStats: partyMember.current_stats,
+                  equipment: partyMember.equipment,
+                  partyPosition: partyMember.party_position,
+                  joinedAt: partyMember.joined_at,
+                };
+              }
+            );
+
             set({
               userGameState: {
                 ...userGameState,
-                partyMembers: enrichedPartyMembers
-              }
+                partyMembers: enrichedPartyMembers,
+              },
             });
           }
-          
+
           set({ loading: false });
         } catch (err) {
-          console.error('Error loading characters:', err);
+          console.error("Error loading characters:", err);
           set({
-            error: 'ไม่สามารถโหลดข้อมูลตัวละครได้',
-            loading: false
+            error: "ไม่สามารถโหลดข้อมูลตัวละครได้",
+            loading: false,
           });
         }
       },
