@@ -2,7 +2,7 @@
 
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
 import { EventInteractionUI } from "@/src/domain/types/ui";
-import { formatEffectsForDisplay } from "@/src/presentation/components/game/EffectsDisplay";
+import { EffectsDisplay } from "@/src/presentation/components/game/EffectsDisplay";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -464,18 +464,10 @@ export function EventInteractionView() {
                       <h5 className="text-purple-300 font-medium mb-2">
                         สิ่งที่ได้รับ:
                       </h5>
-                      <div className="text-sm text-purple-200 space-y-1">
-                        {formatEffectsForDisplay(currentEventOutcome.effects).map(
-                          (line: string, index: number) => (
-                            <div
-                              key={index}
-                              className="py-1"
-                            >
-                              {line}
-                            </div>
-                          )
-                        )}
-                      </div>
+                      <EffectsDisplay 
+                        effects={currentEventOutcome.effects}
+                        className="mt-2"
+                      />
                     </div>
                   )}
               </div>
