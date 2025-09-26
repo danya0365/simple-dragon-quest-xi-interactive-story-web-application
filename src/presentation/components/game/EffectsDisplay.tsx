@@ -156,7 +156,7 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
     { key: "unlockLocations", icon: "🏰", label: "สถานที่" },
     { key: "unlockRegions", icon: "🗺️", label: "ภูมิภาค" },
   ];
-  
+
   unlockTypes.forEach(({ key, icon, label }) => {
     const unlockArray = effects[key as keyof GameEffectsUI] as
       | string[]
