@@ -1,5 +1,5 @@
 // UI Types for frontend components - all properties in camelCase
-import { EventType, InteractionType, ChoiceType } from "./enums";
+import { ChoiceType, EventType, InteractionType } from "./enums";
 
 export interface EventInteractionUI {
   id: string;
@@ -95,7 +95,7 @@ export interface UserGameStateUI {
   currentEventId: string | null;
   completedChapters: string[];
   completedEvents: string[];
-  completedInteractions: string[];
+  completedInteractions: CompletedInteractionUI[];
   unlockedWorldRegions: string[];
   unlockedLocations: string[];
   unlockedChapters: string[];
@@ -113,4 +113,10 @@ export interface UserGameStateUI {
   achievements: Record<string, string | number>[];
   playHistory: Record<string, string | number>[];
   lastPlayedAt: string;
+}
+
+export interface CompletedInteractionUI {
+  eventId: string;
+  interactionId: string;
+  completedAt: string;
 }

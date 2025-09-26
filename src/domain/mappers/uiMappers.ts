@@ -1,26 +1,32 @@
 import {
-  EventInteractionDto,
-  WorldMapDto,
+  ChoiceType,
+  EventType,
+  InteractionType,
+} from "@/src/domain/types/enums";
+import {
   AvailableEventDto,
+  EventInteractionDto,
+  LocationDto,
   UserGameStateDto,
-  LocationDto
+  WorldMapDto,
 } from "@/src/domain/types/rpc";
 import {
   EventInteractionUI,
-  WorldRegionUI,
-  StoryEventUI,
-  UserGameStateUI,
+  InventoryItemUI,
   LocationUI,
   PartyMemberUI,
-  InventoryItemUI
+  StoryEventUI,
+  UserGameStateUI,
+  WorldRegionUI,
 } from "@/src/domain/types/ui";
-import { EventType, InteractionType, ChoiceType } from "@/src/domain/types/enums";
 
 /**
  * Map EventInteractionDto to EventInteractionUI
  * Converts Dto properties to UI format (camelCase)
  */
-export const mapEventInteractionDtoToUI = (dto: EventInteractionDto): EventInteractionUI => {
+export const mapEventInteractionDtoToUI = (
+  dto: EventInteractionDto
+): EventInteractionUI => {
   return {
     id: dto.id,
     interactionType: dto.interactionType as InteractionType,
@@ -29,9 +35,9 @@ export const mapEventInteractionDtoToUI = (dto: EventInteractionDto): EventInter
     dialogueText: dto.dialogueText,
     characterSpeaker: dto.characterSpeaker,
     characterAvatar: dto.characterAvatar,
-    choices: (dto.choices || []).map(choice => ({
+    choices: (dto.choices || []).map((choice) => ({
       ...choice,
-      type: choice.type as ChoiceType
+      type: choice.type as ChoiceType,
     })),
   };
 };
@@ -39,7 +45,9 @@ export const mapEventInteractionDtoToUI = (dto: EventInteractionDto): EventInter
 /**
  * Map array of EventInteractionDto to EventInteractionUI[]
  */
-export const mapEventInteractionsDtoToUI = (dtos: EventInteractionDto[]): EventInteractionUI[] => {
+export const mapEventInteractionsDtoToUI = (
+  dtos: EventInteractionDto[]
+): EventInteractionUI[] => {
   return dtos.map(mapEventInteractionDtoToUI);
 };
 
@@ -70,7 +78,9 @@ export const mapWorldMapsDtoToUI = (dtos: WorldMapDto[]): WorldRegionUI[] => {
  * Map AvailableEventDto to StoryEventUI
  * Converts AvailableEvent Dto to UI format for story events
  */
-export const mapAvailableEventDtoToUI = (dto: AvailableEventDto): StoryEventUI => {
+export const mapAvailableEventDtoToUI = (
+  dto: AvailableEventDto
+): StoryEventUI => {
   return {
     eventId: dto.eventId,
     eventTitle: dto.eventTitle,
@@ -85,7 +95,9 @@ export const mapAvailableEventDtoToUI = (dto: AvailableEventDto): StoryEventUI =
 /**
  * Map array of AvailableEventDto to StoryEventUI[]
  */
-export const mapAvailableEventsDtoToUI = (dtos: AvailableEventDto[]): StoryEventUI[] => {
+export const mapAvailableEventsDtoToUI = (
+  dtos: AvailableEventDto[]
+): StoryEventUI[] => {
   return dtos.map(mapAvailableEventDtoToUI);
 };
 
@@ -116,7 +128,9 @@ export const mapLocationsDtoToUI = (dtos: LocationDto[]): LocationUI[] => {
  * Map UserGameStateDto to UserGameStateUI
  * Converts UserGameState Dto to UI format with proper camelCase properties
  */
-export const mapUserGameStateDtoToUI = (dto: UserGameStateDto): UserGameStateUI => {
+export const mapUserGameStateDtoToUI = (
+  dto: UserGameStateDto
+): UserGameStateUI => {
   return {
     id: dto.id,
     userId: dto.userId,
@@ -126,23 +140,45 @@ export const mapUserGameStateDtoToUI = (dto: UserGameStateDto): UserGameStateUI 
     currentEventId: dto.currentEventId,
     completedChapters: dto.completedChapters,
     completedEvents: dto.completedEvents,
-    completedInteractions: dto.completedInteractions.map(item => String(item.id || item)),
+    completedInteractions: dto.completedInteractions.map((item) => ({
+      eventId: item.eventId,
+      interactionId: item.interactionId,
+      completedAt: item.completedAt,
+    })),
     unlockedWorldRegions: dto.unlockedWorldRegions,
     unlockedLocations: dto.unlockedLocations,
     unlockedChapters: dto.unlockedChapters,
     unlockedEvents: dto.unlockedEvents,
-    activeQuests: dto.activeQuests as unknown as Record<string, string | number>[],
+    activeQuests: dto.activeQuests as unknown as Record<
+      string,
+      string | number
+    >[],
     gameFlags: dto.gameFlags as unknown as Record<string, string | number>[],
-    gameSettings: dto.gameSettings as unknown as Record<string, string | number>[],
+    gameSettings: dto.gameSettings as unknown as Record<
+      string,
+      string | number
+    >[],
     gameStats: dto.gameStats as unknown as Record<string, string | number>,
     playerLevel: dto.playerLevel,
     playerExperience: dto.playerExperience,
     partyMembers: (dto.partyMembers as unknown as PartyMemberUI[]) || [],
-    characterRelationships: dto.characterRelationships as unknown as Record<string, string | number>[],
-    playerPosition: dto.playerPosition as unknown as Record<string, string | number>,
+    characterRelationships: dto.characterRelationships as unknown as Record<
+      string,
+      string | number
+    >[],
+    playerPosition: dto.playerPosition as unknown as Record<
+      string,
+      string | number
+    >,
     inventory: (dto.inventory as unknown as InventoryItemUI[]) || [],
-    achievements: dto.achievements as unknown as Record<string, string | number>[],
-    playHistory: dto.playHistory as unknown as Record<string, string | number>[],
+    achievements: dto.achievements as unknown as Record<
+      string,
+      string | number
+    >[],
+    playHistory: dto.playHistory as unknown as Record<
+      string,
+      string | number
+    >[],
     lastPlayedAt: dto.lastPlayedAt,
   };
 };

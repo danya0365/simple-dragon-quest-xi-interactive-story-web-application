@@ -37,10 +37,27 @@ export function EventInteractionView() {
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
   const [currentEventOutcome, setCurrentEventOutcome] =
     useState<EventOutcomeDto | null>(null);
+  const [allInteractions, setAllInteractions] = useState<EventInteractionUI[]>(
+    []
+  );
+  const [currentInteractionIndex, setCurrentInteractionIndex] =
+    useState<number>(0);
 
   // Find current event from available events
   const currentEvent = availableEvents.find(
     (event) => event.eventId === selectedEventId
+  );
+
+  // Check if interaction is completed
+  const isInteractionCompleted = useCallback(
+    (interactionId: string) => {
+      const completedInteractions = userGameState?.completedInteractions || [];
+      return completedInteractions.some(
+        (ci) =>
+          ci.eventId === selectedEventId && ci.interactionId === interactionId
+      );
+    },
+    [userGameState?.completedInteractions, selectedEventId]
   );
 
   // Initialize component
@@ -63,13 +80,17 @@ export function EventInteractionView() {
         const interactions = await loadEventInteractions(selectedEventId);
 
         if (interactions && interactions.length > 0) {
-          // Find first available interaction
-          const availableInteraction = interactions.find(
+          // Store all interactions
+          setAllInteractions(interactions);
+
+          // Find the next incomplete interaction in sequence
+          const nextInteractionIndex = interactions.findIndex(
             (interaction) => !isInteractionCompleted(interaction.id)
           );
 
-          if (availableInteraction) {
-            setCurrentInteraction(availableInteraction);
+          if (nextInteractionIndex !== -1) {
+            setCurrentInteraction(interactions[nextInteractionIndex]);
+            setCurrentInteractionIndex(nextInteractionIndex);
             setInteractionState("selecting");
           } else {
             // All interactions completed
@@ -86,7 +107,14 @@ export function EventInteractionView() {
     };
 
     initializeComponent();
-  }, [selectedEventId]);
+  }, [
+    selectedEventId,
+    availableEvents.length,
+    isInteractionCompleted,
+    loadAvailableEvents,
+    loadEventInteractions,
+    selectedLocationId,
+  ]);
 
   // Handle manual navigation back to event view
   const handleBackToEvents = () => {
@@ -94,43 +122,43 @@ export function EventInteractionView() {
     setCurrentView("event");
   };
 
-  // Check if interaction is completed
-  const isInteractionCompleted = useCallback((interactionId: string) => {
-    const completedInteractions =
-      (userGameState?.completedInteractions as unknown as Array<{
-        eventId: string;
-        interactionId: string;
-      }>) || [];
-    return completedInteractions.some(
-      (ci) =>
-        ci.eventId === selectedEventId && ci.interactionId === interactionId
-    );
-  }, [userGameState?.completedInteractions, selectedEventId]);
-
   // Move to next interaction or complete
   const moveToNextInteraction = useCallback(async () => {
-    if (!selectedEventId) {
+    if (!selectedEventId || allInteractions.length === 0) {
       setInteractionState("completed");
       return;
     }
 
     try {
-      const interactions = await loadEventInteractions(selectedEventId);
+      // Find the next incomplete interaction starting from current index + 1
+      const nextInteractionIndex = allInteractions.findIndex(
+        (interaction, index) =>
+          index > currentInteractionIndex &&
+          !isInteractionCompleted(interaction.id)
+      );
 
-      if (interactions && interactions.length > 0) {
-        const nextInteraction = interactions.find(
-          (interaction) => !isInteractionCompleted(interaction.id)
+      if (nextInteractionIndex !== -1) {
+        setCurrentInteraction(allInteractions[nextInteractionIndex]);
+        setCurrentInteractionIndex(nextInteractionIndex);
+        setInteractionState("selecting");
+        setSelectedChoice(null);
+      } else {
+        // Check if there are any incomplete interactions before current index
+        const previousIncompleteIndex = allInteractions.findIndex(
+          (interaction, index) =>
+            index < currentInteractionIndex &&
+            !isInteractionCompleted(interaction.id)
         );
 
-        if (nextInteraction) {
-          setCurrentInteraction(nextInteraction);
+        if (previousIncompleteIndex !== -1) {
+          setCurrentInteraction(allInteractions[previousIncompleteIndex]);
+          setCurrentInteractionIndex(previousIncompleteIndex);
           setInteractionState("selecting");
           setSelectedChoice(null);
         } else {
+          // All interactions completed
           setInteractionState("completed");
         }
-      } else {
-        setInteractionState("completed");
       }
     } catch (error) {
       console.error(
@@ -139,7 +167,12 @@ export function EventInteractionView() {
       );
       setInteractionState("completed");
     }
-  }, [selectedEventId, loadEventInteractions, isInteractionCompleted]);
+  }, [
+    selectedEventId,
+    allInteractions,
+    currentInteractionIndex,
+    isInteractionCompleted,
+  ]);
 
   // Handle manual continue after outcome display
   const handleContinueAfterOutcome = () => {
@@ -147,8 +180,6 @@ export function EventInteractionView() {
     // Move to next interaction or complete
     moveToNextInteraction();
   };
-
-
 
   const handleChoiceSelect = (choiceKey: string) => {
     if (interactionState !== "selecting") return;
@@ -161,6 +192,13 @@ export function EventInteractionView() {
       !selectedChoice ||
       interactionState !== "selecting"
     ) {
+      return;
+    }
+
+    // Prevent duplicate submissions
+    if (isInteractionCompleted(currentInteraction.id)) {
+      console.warn("Interaction already completed, moving to next");
+      moveToNextInteraction();
       return;
     }
 
@@ -254,8 +292,12 @@ export function EventInteractionView() {
     return (
       <div className="text-center py-12">
         <div className="text-green-400 text-6xl mb-4">✅</div>
-        <h2 className="text-2xl font-bold text-green-400 mb-4">เหตุการณ์สมบูรณ์!</h2>
-        <p className="text-blue-200 mb-6">คุณได้ทำการโต้ตอบทั้งหมดของเหตุการณ์นี้เสร็จสิ้นแล้ว</p>
+        <h2 className="text-2xl font-bold text-green-400 mb-4">
+          เหตุการณ์สมบูรณ์!
+        </h2>
+        <p className="text-blue-200 mb-6">
+          คุณได้ทำการโต้ตอบทั้งหมดของเหตุการณ์นี้เสร็จสิ้นแล้ว
+        </p>
         <button
           onClick={handleBackToEvents}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
@@ -369,21 +411,25 @@ export function EventInteractionView() {
                 </div>
                 {currentEventOutcome && (
                   <div className="bg-blue-900/80 backdrop-blur-sm rounded-lg p-6 border border-blue-700">
-            <h3 className="text-xl font-bold text-yellow-400 mb-4">ผลลัพธ์</h3>
-            <div className="text-blue-100 mb-6 whitespace-pre-line">
-              {currentEventOutcome?.title}
-              {currentEventOutcome?.description && (
-                <div className="mt-2 text-blue-200">{currentEventOutcome.description}</div>
-              )}
-            </div>
-            <div className="flex justify-center">
-              <button
-                onClick={handleContinueAfterOutcome}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
-              >
-                ดำเนินการต่อ
-              </button>
-            </div>
+                    <h3 className="text-xl font-bold text-yellow-400 mb-4">
+                      ผลลัพธ์
+                    </h3>
+                    <div className="text-blue-100 mb-6 whitespace-pre-line">
+                      {currentEventOutcome?.title}
+                      {currentEventOutcome?.description && (
+                        <div className="mt-2 text-blue-200">
+                          {currentEventOutcome.description}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleContinueAfterOutcome}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
+                      >
+                        ดำเนินการต่อ
+                      </button>
+                    </div>
                   </div>
                 )}
                 {currentEventOutcome.effects &&

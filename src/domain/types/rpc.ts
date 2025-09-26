@@ -65,6 +65,12 @@ export interface LocationSchema {
   is_alway_hide_until_unlock: boolean;
 }
 
+export interface CompletedInteractionSchema {
+  event_id: string;
+  interaction_id: string;
+  completed_at: string;
+}
+
 export interface AvailableEventSchema {
   event_id: string;
   event_title: string;
@@ -92,7 +98,7 @@ export interface UserGameStateSchema {
   unlocked_events: string[];
   completed_chapters: string[];
   completed_events: string[];
-  completed_interactions: Record<string, unknown>[];
+  completed_interactions: CompletedInteractionSchema[];
   inventory: Record<string, unknown>[];
   party_members: Record<string, unknown>[];
   character_relationships: Record<string, unknown>;
@@ -123,7 +129,7 @@ export interface InitializeUserProgressSchema {
   unlocked_events: string[];
   completed_chapters: string[];
   completed_events: string[];
-  completed_interactions: Record<string, unknown>[];
+  completed_interactions: CompletedInteractionSchema[];
   inventory: Record<string, unknown>[];
   party_members: Record<string, unknown>[];
   character_relationships: Record<string, unknown>;
@@ -219,6 +225,12 @@ export interface AvailableEventDto {
   interactionsCount: number;
 }
 
+export interface CompletedInteractionDto {
+  eventId: string;
+  interactionId: string;
+  completedAt: string;
+}
+
 export interface UserGameStateDto {
   id: string;
   userId: string;
@@ -236,7 +248,7 @@ export interface UserGameStateDto {
   unlockedEvents: string[];
   completedChapters: string[];
   completedEvents: string[];
-  completedInteractions: Record<string, unknown>[];
+  completedInteractions: CompletedInteractionDto[];
   inventory: Record<string, unknown>[];
   partyMembers: Record<string, unknown>[];
   characterRelationships: Record<string, unknown>;
@@ -267,7 +279,7 @@ export interface InitializeUserProgressDto {
   unlockedEvents: string[];
   completedChapters: string[];
   completedEvents: string[];
-  completedInteractions: Record<string, unknown>[];
+  completedInteractions: CompletedInteractionDto[];
   inventory: Record<string, unknown>[];
   partyMembers: Record<string, unknown>[];
   characterRelationships: Record<string, unknown>;

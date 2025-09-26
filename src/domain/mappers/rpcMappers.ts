@@ -1,32 +1,35 @@
 import {
-  EventOutcomeSchema,
-  CompleteInteractionSchema,
-  EventInteractionSchema,
-  WorldMapSchema,
-  LocationSchema,
   AvailableEventSchema,
-  UserGameStateSchema,
-  InitializeUserProgressSchema,
+  CompletedInteractionSchema,
+  CompleteInteractionSchema,
   DeleteUserProgressSchema,
+  EventInteractionSchema,
+  EventOutcomeSchema,
+  InitializeUserProgressSchema,
+  LocationSchema,
+  UserGameStateSchema,
+  WorldMapSchema,
 } from "@/src/domain/types/rpc";
 
 import {
-  EventOutcomeDto,
-  CompleteInteractionDto,
-  EventInteractionDto,
-  WorldMapDto,
-  LocationDto,
   AvailableEventDto,
-  UserGameStateDto,
-  InitializeUserProgressDto,
+  CompleteInteractionDto,
   DeleteUserProgressDto,
+  EventInteractionDto,
+  EventOutcomeDto,
+  InitializeUserProgressDto,
+  LocationDto,
+  UserGameStateDto,
+  WorldMapDto,
 } from "@/src/domain/types/rpc";
 
 /**
  * Map EventOutcomeSchema to EventOutcomeDto
  * Converts snake_case properties to camelCase
  */
-export const mapEventOutcomeToDto = (schema: EventOutcomeSchema): EventOutcomeDto => {
+export const mapEventOutcomeToDto = (
+  schema: EventOutcomeSchema
+): EventOutcomeDto => {
   return {
     id: schema.id,
     interactionId: schema.interaction_id,
@@ -43,7 +46,9 @@ export const mapEventOutcomeToDto = (schema: EventOutcomeSchema): EventOutcomeDt
  * Map CompleteInteractionSchema to CompleteInteractionDto
  * Converts snake_case properties to camelCase
  */
-export const mapCompleteInteractionToDto = (schema: CompleteInteractionSchema): CompleteInteractionDto => {
+export const mapCompleteInteractionToDto = (
+  schema: CompleteInteractionSchema
+): CompleteInteractionDto => {
   return {
     success: schema.success,
     nextEventId: schema.next_event_id,
@@ -51,7 +56,9 @@ export const mapCompleteInteractionToDto = (schema: CompleteInteractionSchema): 
     choiceKey: schema.choice_key,
     autoUnlockedLocations: schema.auto_unlocked_locations,
     autoUnlockedRegions: schema.auto_unlocked_regions,
-    eventOutcome: schema.event_outcome ? mapEventOutcomeToDto(schema.event_outcome) : undefined,
+    eventOutcome: schema.event_outcome
+      ? mapEventOutcomeToDto(schema.event_outcome)
+      : undefined,
     error: schema.error,
   };
 };
@@ -60,7 +67,9 @@ export const mapCompleteInteractionToDto = (schema: CompleteInteractionSchema): 
  * Map EventInteractionSchema to EventInteractionDto
  * Converts snake_case properties to camelCase
  */
-export const mapEventInteractionToDto = (schema: EventInteractionSchema): EventInteractionDto => {
+export const mapEventInteractionToDto = (
+  schema: EventInteractionSchema
+): EventInteractionDto => {
   return {
     id: schema.id,
     title: schema.title,
@@ -116,7 +125,9 @@ export const mapWorldMapToDto = (schema: WorldMapSchema): WorldMapDto => {
  * Map AvailableEventSchema to AvailableEventDto
  * Converts snake_case properties to camelCase
  */
-export const mapAvailableEventToDto = (schema: AvailableEventSchema): AvailableEventDto => {
+export const mapAvailableEventToDto = (
+  schema: AvailableEventSchema
+): AvailableEventDto => {
   return {
     eventId: schema.event_id,
     eventTitle: schema.event_title,
@@ -132,7 +143,9 @@ export const mapAvailableEventToDto = (schema: AvailableEventSchema): AvailableE
  * Map UserGameStateSchema to UserGameStateDto
  * Converts snake_case properties to camelCase
  */
-export const mapUserGameStateToDto = (schema: UserGameStateSchema): UserGameStateDto => {
+export const mapUserGameStateToDto = (
+  schema: UserGameStateSchema
+): UserGameStateDto => {
   return {
     id: schema.id,
     userId: schema.user_id,
@@ -150,7 +163,13 @@ export const mapUserGameStateToDto = (schema: UserGameStateSchema): UserGameStat
     unlockedEvents: schema.unlocked_events,
     completedChapters: schema.completed_chapters,
     completedEvents: schema.completed_events,
-    completedInteractions: schema.completed_interactions,
+    completedInteractions: schema.completed_interactions.map(
+      (interaction: CompletedInteractionSchema) => ({
+        eventId: interaction.event_id,
+        interactionId: interaction.interaction_id,
+        completedAt: interaction.completed_at,
+      })
+    ),
     inventory: schema.inventory,
     partyMembers: schema.party_members,
     characterRelationships: schema.character_relationships,
@@ -172,7 +191,9 @@ export const mapUserGameStateToDto = (schema: UserGameStateSchema): UserGameStat
  * Map InitializeUserProgressSchema to InitializeUserProgressDto
  * Converts snake_case properties to camelCase
  */
-export const mapInitializeUserProgressToDto = (schema: InitializeUserProgressSchema): InitializeUserProgressDto => {
+export const mapInitializeUserProgressToDto = (
+  schema: InitializeUserProgressSchema
+): InitializeUserProgressDto => {
   return {
     id: schema.id,
     userId: schema.user_id,
@@ -187,7 +208,13 @@ export const mapInitializeUserProgressToDto = (schema: InitializeUserProgressSch
     unlockedEvents: schema.unlocked_events,
     completedChapters: schema.completed_chapters,
     completedEvents: schema.completed_events,
-    completedInteractions: schema.completed_interactions,
+    completedInteractions: schema.completed_interactions.map(
+      (interaction: CompletedInteractionSchema) => ({
+        eventId: interaction.event_id,
+        interactionId: interaction.interaction_id,
+        completedAt: interaction.completed_at,
+      })
+    ),
     inventory: schema.inventory,
     partyMembers: schema.party_members,
     characterRelationships: schema.character_relationships,
@@ -204,7 +231,9 @@ export const mapInitializeUserProgressToDto = (schema: InitializeUserProgressSch
  * Map DeleteUserProgressSchema to DeleteUserProgressDto
  * Converts snake_case properties to camelCase
  */
-export const mapDeleteUserProgressToDto = (schema: DeleteUserProgressSchema): DeleteUserProgressDto => {
+export const mapDeleteUserProgressToDto = (
+  schema: DeleteUserProgressSchema
+): DeleteUserProgressDto => {
   return {
     success: schema.success,
     deletedRecords: schema.deleted_records,
