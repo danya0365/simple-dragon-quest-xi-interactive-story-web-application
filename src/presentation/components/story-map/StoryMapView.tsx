@@ -11,7 +11,7 @@ import { useGameStore } from "@/src/stores/gameStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function DashboardView() {
+export function StoryMapView() {
   const router = useRouter();
   const { user, signOut, loading: authLoading } = useAuthStore();
   const {
@@ -39,13 +39,20 @@ export function DashboardView() {
           setProgressError(null);
         } catch (error) {
           console.error("Failed to initialize user progress:", error);
-          setProgressError("ไม่สามารถเริ่มต้นความคืบหน้าเกมได้ กรุณาลองใหม่อีกครั้ง");
+          setProgressError(
+            "ไม่สามารถเริ่มต้นความคืบหน้าเกมได้ กรุณาลองใหม่อีกครั้ง"
+          );
         }
       }
     };
 
     initializeProgress();
-  }, [user?.id, progressInitialized, userGameState?.id, initializeUserProgress]);
+  }, [
+    user?.id,
+    progressInitialized,
+    userGameState?.id,
+    initializeUserProgress,
+  ]);
 
   // Load user game state when progress is initialized
   useEffect(() => {
