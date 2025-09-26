@@ -292,8 +292,8 @@ export function EventInteractionView() {
     );
   }
 
-  // No event or interaction data state
-  if (!currentEvent || !currentInteraction) {
+  // Completed state - all interactions done
+  if (interactionState === "completed") {
     return (
       <div className="text-center py-12">
         <div className="text-green-400 text-6xl mb-4">✅</div>
@@ -302,6 +302,27 @@ export function EventInteractionView() {
         </h2>
         <p className="text-blue-200 mb-6">
           คุณได้ทำการโต้ตอบทั้งหมดของเหตุการณ์นี้เสร็จสิ้นแล้ว
+        </p>
+        <button
+          onClick={handleBackToEvents}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
+        >
+          กลับไปหน้าเหตุการณ์
+        </button>
+      </div>
+    );
+  }
+
+  // No event or interaction data state
+  if (!currentEvent || !currentInteraction) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-yellow-400 text-6xl mb-4">⚠️</div>
+        <h2 className="text-2xl font-bold text-yellow-400 mb-4">
+          ไม่พบข้อมูลเหตุการณ์
+        </h2>
+        <p className="text-blue-200 mb-6">
+          ไม่สามารถโหลดข้อมูลเหตุการณ์หรือการโต้ตอบได้
         </p>
         <button
           onClick={handleBackToEvents}
