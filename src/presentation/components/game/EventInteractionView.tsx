@@ -6,7 +6,7 @@ import { EffectsDisplay } from "@/src/presentation/components/game/EffectsDispla
 import { mapGameEffectsToUI } from "@/src/domain/mappers/uiMappers";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 type InteractionState =
   | "loading"
@@ -44,6 +44,14 @@ export function EventInteractionView() {
   );
   const [currentInteractionIndex, setCurrentInteractionIndex] =
     useState<number>(0);
+  
+  // Use ref to track interaction state without causing re-renders
+  const interactionStateRef = useRef<InteractionState>("loading");
+  
+  // Update ref when state changes
+  useEffect(() => {
+    interactionStateRef.current = interactionState;
+  }, [interactionState]);
 
   // Find current event from available events
   const currentEvent = availableEvents.find(
@@ -67,6 +75,11 @@ export function EventInteractionView() {
     const initializeComponent = async () => {
       if (!selectedEventId) {
         setInteractionState("completed");
+        return;
+      }
+
+      // Prevent re-initialization when showing outcome or processing
+      if (interactionStateRef.current === "showing_outcome" || interactionStateRef.current === "processing") {
         return;
       }
 
