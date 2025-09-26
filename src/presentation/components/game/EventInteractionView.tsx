@@ -1,23 +1,19 @@
 "use client";
 
-import { useAuthStore } from "@/src/stores/authStore";
-import { useGameStore, EventInteraction } from "@/src/stores/gameStore";
-import { useState, useEffect } from "react";
-import Image from "next/image";
-
-interface EventData {
-  id: string;
-  title: string;
-  description: string;
-  eventType: string;
-  chapterTitle: string;
-  locationName: string;
-}
-
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
+import { EventInteractionUI } from "@/src/domain/types/ui";
+import { useGameStore } from "@/src/stores/gameStore";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+
+type InteractionState =
+  | "loading"
+  | "selecting"
+  | "processing"
+  | "showing_outcome"
+  | "completed";
 
 export function EventInteractionView() {
-  const { user } = useAuthStore();
   const {
     selectedEventId,
     selectedLocationId,
@@ -32,181 +28,74 @@ export function EventInteractionView() {
     userGameState,
   } = useGameStore();
 
-  const [eventData, setEventData] = useState<EventData | null>(null);
-  const [interactions, setInteractions] = useState<EventInteraction[]>([]);
-  const [currentInteractionIndex, setCurrentInteractionIndex] = useState(0);
+  // Component state
+  const [interactionState, setInteractionState] =
+    useState<InteractionState>("loading");
+  const [currentInteraction, setCurrentInteraction] =
+    useState<EventInteractionUI | null>(null);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [currentEventOutcome, setCurrentEventOutcome] = useState<EventOutcomeDto | null>(null);
+  const [currentEventOutcome, setCurrentEventOutcome] =
+    useState<EventOutcomeDto | null>(null);
 
   // Find current event from available events
   const currentEvent = availableEvents.find(
     (event) => event.eventId === selectedEventId
   );
 
-  // Initialize component - load available events if not already loaded
+  // Initialize component
   useEffect(() => {
-    if (!isInitialized && user?.id && selectedLocationId) {
-      loadAvailableEvents(selectedLocationId);
-      setIsInitialized(true);
-    }
-  }, [user?.id, selectedLocationId, loadAvailableEvents, isInitialized]);
+    const initializeComponent = async () => {
+      if (!selectedEventId) {
+        setInteractionState("completed");
+        return;
+      }
 
-  // Load event interactions when event is selected
-  useEffect(() => {
-    if (selectedEventId && user?.id) {
-      const loadInteractions = async () => {
-        try {
-          const data = await loadEventInteractions(selectedEventId);
+      setInteractionState("loading");
 
-          if (data && !(data as unknown as { error: unknown }).error) {
-            // API คืนค่ามาเป็น array ของ interactions ตรงๆ
-            const interactions = Array.isArray(data) ? data : [];
+      try {
+        // Load available events if needed
+        if (selectedLocationId && availableEvents.length === 0) {
+          await loadAvailableEvents(selectedLocationId);
+        }
 
-            // แปลง StoryEvent เป็น EventData structure
-            const eventData = currentEvent
-              ? {
-                  id: currentEvent.eventId,
-                  title: currentEvent.eventTitle,
-                  description: currentEvent.eventDescription || "",
-                  eventType: currentEvent.eventType,
-                  chapterTitle: currentEvent.chapterTitle || "",
-                  locationName: currentEvent.locationName || "",
-                }
-              : null;
+        // Load interactions for current event
+        const interactions = await loadEventInteractions(selectedEventId);
 
-            // Set all interactions first (we'll handle filtering in render)
-            setEventData(eventData);
-            setInteractions(interactions);
-            setCurrentInteractionIndex(0);
-            setInteractionHistory([]);
-            setSelectedChoice(null);
+        if (interactions && interactions.length > 0) {
+          // Find first available interaction
+          const availableInteraction = interactions.find(
+            (interaction) => !isInteractionCompleted(interaction.id)
+          );
+
+          if (availableInteraction) {
+            setCurrentInteraction(availableInteraction);
+            setInteractionState("selecting");
           } else {
-            console.error(
-              "EventInteractionView: Error loading interactions:",
-              data
-            );
+            // All interactions completed
+            setInteractionState("completed");
           }
-        } catch (error) {
-          console.error(
-            "EventInteractionView: Exception loading interactions:",
-            error
-          );
+        } else {
+          // No interactions found
+          setInteractionState("completed");
         }
-      };
+      } catch (error) {
+        console.error("EventInteractionView: Initialization error:", error);
+        setInteractionState("completed");
+      }
+    };
 
-      loadInteractions();
-    }
-  }, [selectedEventId, user?.id, loadEventInteractions, currentEvent]);
+    initializeComponent();
+  }, [selectedEventId]);
 
-  const handleChoiceSelect = (choiceKey: string) => {
-    console.log("EventInteractionView: Choice selected:", choiceKey);
-    setSelectedChoice(choiceKey);
+  // Handle manual navigation back to event view
+  const handleBackToEvents = () => {
+    setSelectedEventId(null);
+    setCurrentView("event");
   };
 
-  const handleConfirmChoice = async () => {
-    if (!user?.id || !currentAvailableInteraction) {
-      console.error("EventInteractionView: Missing user or interaction", {
-        user: !!user,
-        interaction: !!currentAvailableInteraction,
-      });
-      return;
-    }
-
-    // Prepare choice data
-    const choiceData = selectedChoice
-      ? {
-          choiceKey: selectedChoice,
-          interactionId: currentAvailableInteraction.id,
-        }
-      : {
-          choiceKey: "default",
-          interactionId: currentAvailableInteraction.id,
-        };
-
-    try {
-      // Complete the interaction
-      const result = await completeInteraction(
-        currentAvailableInteraction.id,
-        choiceData
-      );
-      console.log(
-        "EventInteractionView: Interaction completion result:",
-        result
-      );
-
-      // Store the event outcome for display
-      if (result && result.eventOutcome) {
-        setCurrentEventOutcome(result.eventOutcome);
-      }
-
-      // Add to history
-      if (selectedChoice) {
-        const choice = currentAvailableInteraction.choices.find(
-          (c: { id: string }) => c.id === selectedChoice
-        );
-        if (choice) {
-          setInteractionHistory((prev) => [...prev, choice.text]);
-        }
-      } else {
-        setInteractionHistory((prev) => [...prev, "ดำเนินการต่อ"]);
-      }
-
-      // Check if there are more interactions in the current event
-      const remainingInteractions = interactions.filter(
-        (interaction, index) =>
-          index > currentInteractionIndex &&
-          !isInteractionCompleted(interaction.id)
-      );
-
-      console.log(
-        "EventInteractionView: Remaining interactions:",
-        remainingInteractions.length
-      );
-
-      if (remainingInteractions.length > 0) {
-        // Move to next available interaction
-        const nextInteractionIndex = interactions.findIndex(
-          (interaction, index) =>
-            index > currentInteractionIndex &&
-            !isInteractionCompleted(interaction.id)
-        );
-
-        if (nextInteractionIndex !== -1) {
-          setCurrentInteractionIndex(nextInteractionIndex);
-          console.log(
-            "EventInteractionView: Moving to next interaction:",
-            nextInteractionIndex
-          );
-        }
-      } else {
-        console.log(
-          "EventInteractionView: No more interactions, returning to event list"
-        );
-        // If no more interactions, go back to event list
-        setTimeout(() => {
-          setSelectedEventId(null);
-          setCurrentView("event");
-        }, 1000);
-      }
-
-      setSelectedChoice(null);
-      
-      // Clear event outcome after a delay to show it briefly
-      setTimeout(() => {
-        setCurrentEventOutcome(null);
-      }, 3000);
-    } catch (error) {
-      console.error(
-        "EventInteractionView: Error completing interaction:",
-        error
-      );
-    }
-  };
-
-  // Helper function to check if interaction is completed
-  const isInteractionCompleted = (interactionId: string) => {
+  // Check if interaction is completed
+  const isInteractionCompleted = useCallback((interactionId: string) => {
     const completedInteractions =
       (userGameState?.completedInteractions as unknown as Array<{
         eventId: string;
@@ -216,46 +105,120 @@ export function EventInteractionView() {
       (ci) =>
         ci.eventId === selectedEventId && ci.interactionId === interactionId
     );
+  }, [userGameState?.completedInteractions, selectedEventId]);
+
+  // Move to next interaction or complete
+  const moveToNextInteraction = useCallback(async () => {
+    if (!selectedEventId) {
+      setInteractionState("completed");
+      return;
+    }
+
+    try {
+      const interactions = await loadEventInteractions(selectedEventId);
+
+      if (interactions && interactions.length > 0) {
+        const nextInteraction = interactions.find(
+          (interaction) => !isInteractionCompleted(interaction.id)
+        );
+
+        if (nextInteraction) {
+          setCurrentInteraction(nextInteraction);
+          setInteractionState("selecting");
+          setSelectedChoice(null);
+        } else {
+          setInteractionState("completed");
+        }
+      } else {
+        setInteractionState("completed");
+      }
+    } catch (error) {
+      console.error(
+        "EventInteractionView: Error loading next interaction:",
+        error
+      );
+      setInteractionState("completed");
+    }
+  }, [selectedEventId, loadEventInteractions, isInteractionCompleted]);
+
+  // Handle manual continue after outcome display
+  const handleContinueAfterOutcome = () => {
+    setCurrentEventOutcome(null);
+    // Move to next interaction or complete
+    moveToNextInteraction();
   };
 
-  // Filter out completed interactions and get current interaction
-  const availableInteractions = interactions.filter(
-    (interaction) => !isInteractionCompleted(interaction.id)
-  );
 
-  const currentAvailableInteraction =
-    availableInteractions[currentInteractionIndex] || null;
 
-  // Check if all interactions are completed
-  const allInteractionsCompleted =
-    availableInteractions.length === 0 && interactions.length > 0;
+  const handleChoiceSelect = (choiceKey: string) => {
+    if (interactionState !== "selecting") return;
+    setSelectedChoice(choiceKey);
+  };
 
-  // If all interactions are completed, go back to event list
-  useEffect(() => {
-    if (allInteractionsCompleted && interactions.length > 0) {
-      console.log(
-        "EventInteractionView: All interactions completed, going back to event list"
-      );
-      setTimeout(() => {
-        setSelectedEventId(null);
-        setCurrentView("event");
-      }, 1000);
+  const handleConfirmChoice = async () => {
+    if (
+      !currentInteraction ||
+      !selectedChoice ||
+      interactionState !== "selecting"
+    ) {
+      return;
     }
-  }, [
-    allInteractionsCompleted,
-    interactions.length,
-    setSelectedEventId,
-    setCurrentView,
-  ]);
+
+    setInteractionState("processing");
+
+    try {
+      const choiceData = {
+        choiceKey: selectedChoice,
+        interactionId: currentInteraction.id,
+      };
+
+      // Complete the interaction
+      const result = await completeInteraction(
+        currentInteraction.id,
+        choiceData
+      );
+
+      if (result.success) {
+        // Add to history
+        const choice = currentInteraction.choices.find(
+          (c: { id: string }) => c.id === selectedChoice
+        );
+        if (choice) {
+          setInteractionHistory((prev: string[]) => [...prev, choice.text]);
+        }
+
+        // Show outcome if available
+        if (result.eventOutcome) {
+          setCurrentEventOutcome(result.eventOutcome);
+          setInteractionState("showing_outcome");
+        } else {
+          // No outcome, move to next interaction
+          moveToNextInteraction();
+        }
+      } else {
+        // Handle error
+        console.error(
+          "EventInteractionView: Interaction failed:",
+          result.error
+        );
+        setInteractionState("selecting");
+      }
+    } catch (error) {
+      console.error(
+        "EventInteractionView: Error completing interaction:",
+        error
+      );
+      setInteractionState("selecting");
+    }
+  };
 
   const handleBackToEventList = () => {
-    console.log("EventInteractionView: Going back to event list");
     setSelectedEventId(null);
     setCurrentView("event");
   };
 
   // Loading state
-  if (loading) {
+  if (loading || interactionState === "loading") {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -287,44 +250,15 @@ export function EventInteractionView() {
   }
 
   // No event or interaction data state
-  if (!currentEvent) {
+  if (!currentEvent || !currentInteraction) {
     return (
       <div className="text-center py-12">
-        <div className="text-blue-400 text-6xl mb-4">❓</div>
-        <p className="text-blue-200 font-medium mb-2">ไม่พบเหตุการณ์</p>
-        <p className="text-blue-300 text-sm mb-4">
-          Selected Event ID: {selectedEventId}
-        </p>
-        <p className="text-blue-300 text-sm mb-4">
-          Available Events: {availableEvents?.length || 0}
-        </p>
+        <div className="text-green-400 text-6xl mb-4">✅</div>
+        <h2 className="text-2xl font-bold text-green-400 mb-4">เหตุการณ์สมบูรณ์!</h2>
+        <p className="text-blue-200 mb-6">คุณได้ทำการโต้ตอบทั้งหมดของเหตุการณ์นี้เสร็จสิ้นแล้ว</p>
         <button
-          onClick={handleBackToEventList}
-          className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          กลับไปหน้าเหตุการณ์
-        </button>
-      </div>
-    );
-  }
-
-  if (!currentAvailableInteraction) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-blue-400 text-6xl mb-4">📝</div>
-        <p className="text-blue-200 font-medium mb-2">ไม่พบการโต้ตอบ</p>
-        <p className="text-blue-300 text-sm mb-4">
-          Event: {currentEvent?.eventTitle}
-        </p>
-        <p className="text-blue-300 text-sm mb-4">
-          Loaded Interactions: {interactions.length}
-        </p>
-        <p className="text-blue-300 text-sm mb-4">
-          Available Interactions: {availableInteractions.length}
-        </p>
-        <button
-          onClick={handleBackToEventList}
-          className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-4 py-2 rounded-lg font-medium transition-colors"
+          onClick={handleBackToEvents}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
         >
           กลับไปหน้าเหตุการณ์
         </button>
@@ -336,238 +270,266 @@ export function EventInteractionView() {
     <>
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
       <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={handleBackToEventList}
-          className="flex items-center text-blue-300 hover:text-blue-200 transition-colors"
-        >
-          <span className="mr-2">←</span>
-          กลับไปหน้าเหตุการณ์
-        </button>
-
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-yellow-400 font-serif">
-            {eventData?.title || currentEvent?.eventTitle || "เหตุการณ์"}
-          </h2>
-          <p className="text-blue-200">
-            {eventData?.chapterTitle || currentEvent?.chapterTitle}
-          </p>
-        </div>
-
-        <div className="text-blue-300 text-sm">
-          {currentInteractionIndex + 1} / {availableInteractions.length}
-        </div>
-      </div>
-
-      {/* Event Scene */}
-      <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-8">
-        {/* Character Speaker */}
-        {currentAvailableInteraction.characterSpeaker && (
-          <div className="flex items-center mb-6">
-            {currentAvailableInteraction.characterAvatar && (
-              <Image
-                src={currentAvailableInteraction.characterAvatar}
-                alt={currentAvailableInteraction.characterSpeaker}
-                width={64}
-                height={64}
-                className="w-16 h-16 rounded-full border-2 border-yellow-400"
-              />
-            )}
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-yellow-400">
-                {currentAvailableInteraction.characterSpeaker}
-              </h3>
-              <p className="text-sm text-blue-200">
-                {currentAvailableInteraction.interactionType === "dialogue"
-                  ? "บทสนทนา"
-                  : "เหตุการณ์"}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Dialogue */}
-        {currentAvailableInteraction.dialogueText && (
-          <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
-            <p className="text-white text-lg leading-relaxed">
-              {currentAvailableInteraction.dialogueText}
-            </p>
-          </div>
-        )}
-
-        {/* Description/Context */}
-        {currentAvailableInteraction.description && (
-          <div className="bg-yellow-900/30 rounded-lg border border-yellow-500/30 p-6 mb-6">
-            <div className="flex items-center mb-3">
-              <div className="text-yellow-400 text-2xl mr-3">💡</div>
-              <h4 className="text-yellow-400 font-medium">คำแนะนำ:</h4>
-            </div>
-            <p className="text-yellow-100 text-lg leading-relaxed">
-              {currentAvailableInteraction.description}
-            </p>
-          </div>
-        )}
-
-        {/* Event Outcome Display */}
-        {currentEventOutcome && (
-          <div 
-            className="mb-6" 
-            style={{
-              animation: 'fadeIn 0.5s ease-in-out'
-            }}
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={handleBackToEventList}
+            className="flex items-center text-blue-300 hover:text-blue-200 transition-colors"
           >
-            <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <div className="text-purple-400 text-2xl mr-3">✨</div>
-                <h4 className="text-purple-400 font-medium text-lg">ผลลัพธ์:</h4>
+            <span className="mr-2">←</span>
+            กลับไปหน้าเหตุการณ์
+          </button>
+
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-yellow-400 font-serif">
+              {currentEvent?.eventTitle || "เหตุการณ์"}
+            </h2>
+            <p className="text-blue-200">{currentEvent?.chapterTitle}</p>
+          </div>
+
+          <div className="text-blue-300 text-sm">
+            {interactionHistory.length + 1}
+          </div>
+        </div>
+
+        {/* Event Scene */}
+        <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-8">
+          {/* Character Speaker */}
+          {currentInteraction.characterSpeaker && (
+            <div className="flex items-center mb-6">
+              {currentInteraction.characterAvatar && (
+                <Image
+                  src={currentInteraction.characterAvatar}
+                  alt={currentInteraction.characterSpeaker}
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-full border-2 border-yellow-400"
+                />
+              )}
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-yellow-400">
+                  {currentInteraction.characterSpeaker}
+                </h3>
+                <p className="text-sm text-blue-200">
+                  {currentInteraction.interactionType === "dialogue"
+                    ? "บทสนทนา"
+                    : "เหตุการณ์"}
+                </p>
               </div>
-              {currentEventOutcome && (
-                <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-                  <h3 className="font-bold text-lg mb-2">ผลลัพธ์</h3>
-                  <p>{currentEventOutcome.outcomeText}</p>
-                </div>
-              )}
-              {currentEventOutcome?.description && (
-                <div className="mb-4">
-                  <p className="text-purple-200 text-base leading-relaxed">
-                    {currentEventOutcome?.description}
-                  </p>
-                </div>
-              )}
-              {currentEventOutcome.effects && Object.keys(currentEventOutcome.effects).length > 0 && (
-                <div className="mt-4 pt-4 border-t border-purple-500/30">
-                  <h5 className="text-purple-300 font-medium mb-2">ผลกระทบ:</h5>
-                  <div className="text-sm text-purple-200">
-                    {Object.entries(currentEventOutcome.effects).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-1">
-                        <span className="capitalize">{key.replace(/_/g, ' ')}:</span>
-                        <span>{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Interaction History */}
-        {interactionHistory.length > 0 && (
-          <div className="mb-6">
-            <h4 className="text-yellow-400 font-medium mb-3">
-              การตอบสนองก่อนหน้า:
-            </h4>
-            <div className="space-y-2">
-              {interactionHistory.map((response, index) => (
-                <div
-                  key={index}
-                  className="bg-green-900/20 border border-green-500/30 rounded-lg p-3"
-                >
-                  <p className="text-green-200 text-sm">คุณ: {response}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Interaction Instruction */}
-        {!currentAvailableInteraction.dialogueText &&
-          !currentAvailableInteraction.description && (
+          {/* Dialogue */}
+          {currentInteraction.dialogueText && (
             <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
-              <div className="flex items-center mb-3">
-                <div className="text-blue-400 text-2xl mr-3">🎯</div>
-                <h4 className="text-blue-400 font-medium">เลือกการกระทำ:</h4>
-              </div>
-              <p className="text-blue-200 text-lg leading-relaxed">
-                เลือกสิ่งที่คุณต้องการทำจากตัวเลือกด้านล่าง
+              <p className="text-white text-lg leading-relaxed">
+                {currentInteraction.dialogueText}
               </p>
             </div>
           )}
 
-        {/* Choices - Hide when showing outcome */}
-        {!currentEventOutcome && (
-          <>
-            {currentAvailableInteraction.choices &&
-            currentAvailableInteraction.choices.length > 0 ? (
-              <div className="space-y-3">
-                <h4 className="text-yellow-400 font-medium mb-3">เลือกตัวเลือก:</h4>
-                {currentAvailableInteraction.choices.map(
-                  (choice: { id: string; text: string }) => (
-                    <button
-                      key={choice.id}
-                      onClick={() => handleChoiceSelect(choice.id)}
-                      disabled={!!currentEventOutcome}
-                      className={`w-full text-left p-4 rounded-lg border transition-colors ${
-                        selectedChoice === choice.id
-                          ? "bg-yellow-500 border-yellow-400 text-blue-900"
-                          : "bg-blue-900/50 border-blue-500/50 text-blue-100 hover:bg-blue-900/70"
-                      } ${currentEventOutcome ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      {choice.text}
-                    </button>
-                  )
-                )}
+          {/* Description/Context */}
+          {currentInteraction.description && (
+            <div className="bg-yellow-900/30 rounded-lg border border-yellow-500/30 p-6 mb-6">
+              <div className="flex items-center mb-3">
+                <div className="text-yellow-400 text-2xl mr-3">💡</div>
+                <h4 className="text-yellow-400 font-medium">คำแนะนำ:</h4>
               </div>
-            ) : (
-              <div className="text-center">
-                <button
-                  onClick={() => handleChoiceSelect("default")}
-                  disabled={!!currentEventOutcome}
-                  className={`bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-8 py-3 rounded-lg font-medium transition-colors ${
-                    currentEventOutcome ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  ดำเนินการต่อ
-                </button>
+              <p className="text-yellow-100 text-lg leading-relaxed">
+                {currentInteraction.description}
+              </p>
+            </div>
+          )}
+
+          {/* Event Outcome Display */}
+          {currentEventOutcome && (
+            <div
+              className="mb-6"
+              style={{
+                animation: "fadeIn 0.5s ease-in-out",
+              }}
+            >
+              <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <div className="text-purple-400 text-2xl mr-3">✨</div>
+                  <h4 className="text-purple-400 font-medium text-lg">
+                    ผลลัพธ์:
+                  </h4>
+                </div>
+                {currentEventOutcome && (
+                  <div className="bg-blue-900/80 backdrop-blur-sm rounded-lg p-6 border border-blue-700">
+            <h3 className="text-xl font-bold text-yellow-400 mb-4">ผลลัพธ์</h3>
+            <div className="text-blue-100 mb-6 whitespace-pre-line">
+              {currentEventOutcome?.outcomeText}
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={handleContinueAfterOutcome}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
+              >
+                ดำเนินการต่อ
+              </button>
+            </div>
+                  </div>
+                )}
+                {currentEventOutcome.effects &&
+                  Object.keys(currentEventOutcome.effects).length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-purple-500/30">
+                      <h5 className="text-purple-300 font-medium mb-2">
+                        ผลกระทบ:
+                      </h5>
+                      <div className="text-sm text-purple-200">
+                        {Object.entries(currentEventOutcome.effects).map(
+                          ([key, value]) => (
+                            <div
+                              key={key}
+                              className="flex justify-between py-1"
+                            >
+                              <span className="capitalize">
+                                {key.replace(/_/g, " ")}:
+                              </span>
+                              <span>{String(value)}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+              </div>
+            </div>
+          )}
+
+          {/* Interaction History */}
+          {interactionHistory.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-yellow-400 font-medium mb-3">
+                การตอบสนองก่อนหน้า:
+              </h4>
+              <div className="space-y-2">
+                {interactionHistory.map((response, index) => (
+                  <div
+                    key={index}
+                    className="bg-green-900/20 border border-green-500/30 rounded-lg p-3"
+                  >
+                    <p className="text-green-200 text-sm">คุณ: {response}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Interaction Instruction */}
+          {!currentInteraction.dialogueText &&
+            !currentInteraction.description && (
+              <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-6 mb-6">
+                <div className="flex items-center mb-3">
+                  <div className="text-blue-400 text-2xl mr-3">🎯</div>
+                  <h4 className="text-blue-400 font-medium">เลือกการกระทำ:</h4>
+                </div>
+                <p className="text-blue-200 text-lg leading-relaxed">
+                  เลือกสิ่งที่คุณต้องการทำจากตัวเลือกด้านล่าง
+                </p>
               </div>
             )}
-          </>
-        )}
 
-        {/* Confirm Button - Hide when showing outcome */}
-        {selectedChoice && !currentEventOutcome && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={handleConfirmChoice}
-              disabled={!!currentEventOutcome}
-              className={`bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors ${
-                currentEventOutcome ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              ยืนยัน
-            </button>
-          </div>
-        )}
-      </div>
+          {/* Choices - Hide when showing outcome or processing */}
+          {interactionState === "selecting" && (
+            <>
+              {currentInteraction.choices &&
+              currentInteraction.choices.length > 0 ? (
+                <div className="space-y-3">
+                  <h4 className="text-yellow-400 font-medium mb-3">
+                    เลือกตัวเลือก:
+                  </h4>
+                  {currentInteraction.choices.map(
+                    (choice: { id: string; text: string }) => (
+                      <button
+                        key={choice.id}
+                        onClick={() => handleChoiceSelect(choice.id)}
+                        className={`w-full text-left p-4 rounded-lg border transition-colors ${
+                          selectedChoice === choice.id
+                            ? "bg-yellow-500 border-yellow-400 text-blue-900"
+                            : "bg-blue-900/50 border-blue-500/50 text-blue-100 hover:bg-blue-900/70"
+                        }`}
+                      >
+                        {choice.text}
+                      </button>
+                    )
+                  )}
+                </div>
+              ) : (
+                <div className="text-center">
+                  <button
+                    onClick={() => handleChoiceSelect("default")}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-8 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    ดำเนินการต่อ
+                  </button>
+                </div>
+              )}
+            </>
+          )}
 
-      {/* Event Info */}
-      <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <span className="text-yellow-400 font-medium">ประเภท:</span>
-            <span className="text-blue-200 ml-2">
-              {currentEvent?.eventType}
-            </span>
-          </div>
-          <div>
-            <span className="text-yellow-400 font-medium">สถานที่:</span>
-            <span className="text-blue-200 ml-2">
-              {currentEvent?.locationName || "ไม่ระบุ"}
-            </span>
-          </div>
-          <div>
-            <span className="text-yellow-400 font-medium">การโต้ตอบ:</span>
-            <span className="text-blue-200 ml-2">{interactions.length}</span>
+          {/* Confirm Button - Show only when choice is selected and not processing */}
+          {selectedChoice && interactionState === "selecting" && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleConfirmChoice}
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
+              >
+                ยืนยัน
+              </button>
+            </div>
+          )}
+
+          {/* Processing State */}
+          {interactionState === "processing" && (
+            <div className="flex justify-center mt-6">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mx-auto mb-2"></div>
+                <p className="text-green-200">กำลังดำเนินการ...</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Event Info */}
+        <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-yellow-400 font-medium">ประเภท:</span>
+              <span className="text-blue-200 ml-2">
+                {currentEvent?.eventType}
+              </span>
+            </div>
+            <div>
+              <span className="text-yellow-400 font-medium">สถานที่:</span>
+              <span className="text-blue-200 ml-2">
+                {currentEvent?.locationName || "ไม่ระบุ"}
+              </span>
+            </div>
+            <div>
+              <span className="text-yellow-400 font-medium">
+                การโต้ตอบที่ผ่านมา:
+              </span>
+              <span className="text-blue-200 ml-2">
+                {interactionHistory.length}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
