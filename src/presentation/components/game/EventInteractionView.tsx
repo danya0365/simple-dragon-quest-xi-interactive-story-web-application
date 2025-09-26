@@ -189,11 +189,13 @@ export function EventInteractionView() {
   const handleConfirmChoice = async () => {
     if (
       !currentInteraction ||
-      !selectedChoice ||
       interactionState !== "selecting"
     ) {
       return;
     }
+
+    // If there are no choices, use a default choice
+    const choiceToUse = selectedChoice || "default";
 
     // Prevent duplicate submissions
     if (isInteractionCompleted(currentInteraction.id)) {
@@ -206,7 +208,7 @@ export function EventInteractionView() {
 
     try {
       const choiceData = {
-        choiceKey: selectedChoice,
+        choiceKey: choiceToUse,
         interactionId: currentInteraction.id,
       };
 
@@ -217,12 +219,14 @@ export function EventInteractionView() {
       );
 
       if (result.success) {
-        // Add to history
-        const choice = currentInteraction.choices.find(
-          (c: { id: string }) => c.id === selectedChoice
-        );
-        if (choice) {
-          setInteractionHistory((prev: string[]) => [...prev, choice.text]);
+        // Add to history only if there are actual choices
+        if (currentInteraction.choices && currentInteraction.choices.length > 0) {
+          const choice = currentInteraction.choices.find(
+            (c: { id: string }) => c.id === selectedChoice
+          );
+          if (choice) {
+            setInteractionHistory((prev: string[]) => [...prev, choice.text]);
+          }
         }
 
         // Show outcome if available
@@ -520,7 +524,7 @@ export function EventInteractionView() {
               ) : (
                 <div className="text-center">
                   <button
-                    onClick={() => handleChoiceSelect("default")}
+                    onClick={handleConfirmChoice}
                     className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 px-8 py-3 rounded-lg font-medium transition-colors"
                   >
                     ดำเนินการต่อ
@@ -530,8 +534,11 @@ export function EventInteractionView() {
             </>
           )}
 
-          {/* Confirm Button - Show only when choice is selected and not processing */}
-          {selectedChoice && interactionState === "selecting" && (
+          {/* Confirm Button - Show only when choice is selected, not processing, and there are actual choices */}
+          {selectedChoice && 
+           interactionState === "selecting" && 
+           currentInteraction.choices && 
+           currentInteraction.choices.length > 0 && (
             <div className="flex justify-center mt-6">
               <button
                 onClick={handleConfirmChoice}
