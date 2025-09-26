@@ -115,6 +115,17 @@ export interface UserGameStateUI {
   lastPlayedAt: string;
 }
 
+export interface EventOutcomeUI {
+  id: string;
+  interactionId: string;
+  choiceKey: string;
+  title: string;
+  description: string | null;
+  outcomeType: string;
+  effects: Record<string, unknown>;
+  nextEventId: string | null;
+}
+
 export interface CompletedInteractionUI {
   eventId: string;
   interactionId: string;

@@ -2,6 +2,7 @@
 
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
 import { EventInteractionUI } from "@/src/domain/types/ui";
+import { formatEffectsForDisplay } from "@/src/domain/mappers/uiMappers";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -187,10 +188,7 @@ export function EventInteractionView() {
   };
 
   const handleConfirmChoice = async () => {
-    if (
-      !currentInteraction ||
-      interactionState !== "selecting"
-    ) {
+    if (!currentInteraction || interactionState !== "selecting") {
       return;
     }
 
@@ -220,7 +218,10 @@ export function EventInteractionView() {
 
       if (result.success) {
         // Add to history only if there are actual choices
-        if (currentInteraction.choices && currentInteraction.choices.length > 0) {
+        if (
+          currentInteraction.choices &&
+          currentInteraction.choices.length > 0
+        ) {
           const choice = currentInteraction.choices.find(
             (c: { id: string }) => c.id === selectedChoice
           );
@@ -440,19 +441,16 @@ export function EventInteractionView() {
                   Object.keys(currentEventOutcome.effects).length > 0 && (
                     <div className="mt-4 pt-4 border-t border-purple-500/30">
                       <h5 className="text-purple-300 font-medium mb-2">
-                        ผลกระทบ:
+                        สิ่งที่ได้รับ:
                       </h5>
-                      <div className="text-sm text-purple-200">
-                        {Object.entries(currentEventOutcome.effects).map(
-                          ([key, value]) => (
+                      <div className="text-sm text-purple-200 space-y-1">
+                        {formatEffectsForDisplay(currentEventOutcome.effects).map(
+                          (line, index) => (
                             <div
-                              key={key}
-                              className="flex justify-between py-1"
+                              key={index}
+                              className="py-1"
                             >
-                              <span className="capitalize">
-                                {key.replace(/_/g, " ")}:
-                              </span>
-                              <span>{String(value)}</span>
+                              {line}
                             </div>
                           )
                         )}
@@ -535,19 +533,19 @@ export function EventInteractionView() {
           )}
 
           {/* Confirm Button - Show only when choice is selected, not processing, and there are actual choices */}
-          {selectedChoice && 
-           interactionState === "selecting" && 
-           currentInteraction.choices && 
-           currentInteraction.choices.length > 0 && (
-            <div className="flex justify-center mt-6">
-              <button
-                onClick={handleConfirmChoice}
-                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
-              >
-                ยืนยัน
-              </button>
-            </div>
-          )}
+          {selectedChoice &&
+            interactionState === "selecting" &&
+            currentInteraction.choices &&
+            currentInteraction.choices.length > 0 && (
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={handleConfirmChoice}
+                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
+                >
+                  ยืนยัน
+                </button>
+              </div>
+            )}
 
           {/* Processing State */}
           {interactionState === "processing" && (

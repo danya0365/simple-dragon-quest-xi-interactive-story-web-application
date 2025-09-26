@@ -6,12 +6,14 @@ import {
 import {
   AvailableEventDto,
   EventInteractionDto,
+  EventOutcomeDto,
   LocationDto,
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
 import {
   EventInteractionUI,
+  EventOutcomeUI,
   InventoryItemUI,
   LocationUI,
   PartyMemberUI,
@@ -181,4 +183,101 @@ export const mapUserGameStateDtoToUI = (
     >[],
     lastPlayedAt: dto.lastPlayedAt,
   };
+};
+
+/**
+ * Map EventOutcomeDto to EventOutcomeUI
+ * Since DTO is already in camelCase, this is mainly for type safety
+ */
+export const mapEventOutcomeDtoToUI = (
+  dto: EventOutcomeDto
+): EventOutcomeUI => {
+  return {
+    id: dto.id,
+    interactionId: dto.interactionId,
+    choiceKey: dto.choiceKey,
+    title: dto.title,
+    description: dto.description,
+    outcomeType: dto.outcomeType,
+    effects: dto.effects,
+    nextEventId: dto.nextEventId,
+  };
+};
+
+/**
+ * Format effects for display based on database schema documentation
+ */
+export const formatEffectsForDisplay = (effects: Record<string, unknown>): string[] => {
+  const displayLines: string[] = [];
+  
+  Object.entries(effects).forEach(([key, value]) => {
+    switch (key) {
+      case 'items':
+        // Handle items array: [{"id": uuid, "quantity": integer}]
+        if (Array.isArray(value)) {
+          value.forEach((item: { id: string; quantity?: number }) => {
+            displayLines.push(`ไอเทม: ${item.id} x${item.quantity || 1}`);
+          });
+        }
+        break;
+        
+      case 'relationship':
+        // Handle relationship object: {character_name: integer}
+        if (typeof value === 'object' && value !== null) {
+          Object.entries(value as Record<string, number>).forEach(([charName, points]) => {
+            displayLines.push(`ความสัมพันธ์กับ ${charName}: +${points}`);
+          });
+        }
+        break;
+        
+      case 'experience':
+        // Handle experience integer
+        if (typeof value === 'number') {
+          displayLines.push(`ค่าประสบการณ์: +${value}`);
+        }
+        break;
+        
+      case 'gold':
+        // Handle gold integer
+        if (typeof value === 'number') {
+          displayLines.push(`เงิน: +${value} ทอง`);
+        }
+        break;
+        
+      case 'party_join':
+        // Handle party_join UUID
+        if (typeof value === 'string') {
+          displayLines.push(`ตัวละครเข้าร่วมปาร์ตี้: ${value}`);
+        }
+        break;
+        
+      case 'unlock_events':
+      case 'unlock_chapters':
+      case 'unlock_locations':
+      case 'unlock_regions':
+        // Handle unlock arrays
+        if (Array.isArray(value)) {
+          const typeMap: Record<string, string> = {
+            unlock_events: 'เหตุการณ์',
+            unlock_chapters: 'บท',
+            unlock_locations: 'สถานที่',
+            unlock_regions: 'ภูมิภาค'
+          };
+          displayLines.push(`${typeMap[key]} ที่ปลดล็อก: ${value.length} รายการ`);
+        }
+        break;
+        
+      default:
+        // Handle unknown types
+        if (Array.isArray(value)) {
+          displayLines.push(`${key.replace(/_/g, ' ')}: ${value.length} รายการ`);
+        } else if (typeof value === 'object' && value !== null) {
+          displayLines.push(`${key.replace(/_/g, ' ')}: ${JSON.stringify(value)}`);
+        } else {
+          displayLines.push(`${key.replace(/_/g, ' ')}: ${String(value)}`);
+        }
+    }
+  });
+  
+  return displayLines;
 };
