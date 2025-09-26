@@ -1,8 +1,9 @@
 // UI Types for frontend components - all properties in camelCase
+import { EventType, InteractionType, ChoiceType } from "./enums";
 
 export interface EventInteractionUI {
   id: string;
-  interactionType: string;
+  interactionType: InteractionType;
   title: string;
   description: string;
   dialogueText: string;
@@ -11,7 +12,7 @@ export interface EventInteractionUI {
   choices: Array<{
     id: string;
     text: string;
-    type: string;
+    type: ChoiceType;
     description?: string;
   }>;
 }
@@ -40,7 +41,7 @@ export interface StoryEventUI {
   eventId: string;
   eventTitle: string;
   eventDescription: string;
-  eventType: string;
+  eventType: EventType;
   chapterTitle: string;
   locationName: string;
   interactionsCount: number;
