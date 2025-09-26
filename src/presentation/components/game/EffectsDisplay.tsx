@@ -1,7 +1,8 @@
-import React from 'react';
+import { GameEffects } from "@/src/domain/types/rpc";
+import React from "react";
 
 interface EffectsDisplayProps {
-  effects: Record<string, unknown>;
+  effects: GameEffects;
   className?: string;
 }
 
@@ -9,229 +10,269 @@ interface EffectsDisplayProps {
  * Component for displaying game effects with exciting UI and icons
  * Transforms effect data into visually appealing cards with animations
  */
-export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({ 
-  effects, 
-  className = "" 
+export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
+  effects,
+  className = "",
 }) => {
   const displayElements: React.ReactNode[] = [];
-  
-  Object.entries(effects).forEach(([key, value], index) => {
-    switch (key) {
-      case 'items':
-        // Handle items array: [{"id": uuid, "quantity": integer}]
-        if (Array.isArray(value)) {
-          value.forEach((item: { id: string; quantity?: number }, itemIndex: number) => {
-            displayElements.push(
-              <div 
-                key={`items-${index}-${itemIndex}`}
-                className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-yellow-500/20 rounded-xl border border-yellow-400/40 animate-pulse shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/20 transition-all duration-300"
-              >
-                <div className="flex-shrink-0">
-                  <span className="text-yellow-400 text-2xl animate-bounce">🎁</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-yellow-200 font-bold text-lg block">ได้รับไอเทม!</span>
-                  <div className="text-yellow-100 text-sm font-medium">ID: {item.id} x{item.quantity || 1}</div>
-                </div>
-                <div className="flex-shrink-0">
-                  <span className="text-yellow-300 text-2xl animate-spin-slow">✨</span>
-                </div>
-              </div>
-            );
-          });
-        }
-        break;
-        
-      case 'relationship':
-        // Handle relationship object: {character_name: integer}
-        if (typeof value === 'object' && value !== null) {
-          Object.entries(value as Record<string, number>).forEach(([charName, points], relIndex: number) => {
-            displayElements.push(
-              <div 
-                key={`relationship-${index}-${relIndex}`}
-                className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-pink-500/20 rounded-xl border border-pink-400/40 shadow-lg shadow-pink-500/10 hover:shadow-pink-500/20 transition-all duration-300"
-              >
-                <div className="flex-shrink-0">
-                  <span className="text-pink-400 text-2xl animate-pulse">💝</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-pink-200 font-bold text-lg block">ความสัมพันธ์เพิ่มขึ้น!</span>
-                  <div className="text-pink-100 text-sm font-medium">กับ {charName}: +{points}</div>
-                </div>
-                <div className="flex-shrink-0">
-                  <span className="text-pink-300 text-2xl animate-bounce">❤️</span>
-                </div>
-              </div>
-            );
-          });
-        }
-        break;
-        
-      case 'experience':
-        // Handle experience integer
-        if (typeof value === 'number') {
-          displayElements.push(
-            <div 
-              key={`experience-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-xl border border-green-400/40 shadow-lg shadow-green-500/10 hover:shadow-green-500/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-green-400 text-2xl animate-bounce">⭐</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-green-200 font-bold text-lg block">ได้รับค่าประสบการณ์!</span>
-                <div className="text-green-100 text-sm font-medium">+{value} EXP</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-green-300 text-2xl animate-spin-slow">🌟</span>
+
+  // Handle items
+  if (effects.items && effects.items.length > 0) {
+    effects.items.forEach((item, index) => {
+      displayElements.push(
+        <div
+          key={`items-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-yellow-500/20 rounded-xl border border-yellow-400/40 animate-pulse shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            <span className="text-yellow-400 text-2xl animate-bounce">🎁</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-yellow-200 font-bold text-lg block">
+              ได้รับไอเทม!
+            </span>
+            <div className="text-yellow-100 text-sm font-medium">
+              ID: {item.id} x{item.quantity || 1}
+            </div>
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-yellow-300 text-2xl animate-spin-slow">
+              ✨
+            </span>
+          </div>
+        </div>
+      );
+    });
+  }
+
+  // Handle relationships
+  if (effects.relationship) {
+    Object.entries(effects.relationship).forEach(
+      ([charName, points], index) => {
+        displayElements.push(
+          <div
+            key={`relationship-${index}`}
+            className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-pink-500/20 rounded-xl border border-pink-400/40 shadow-lg shadow-pink-500/10 hover:shadow-pink-500/20 transition-all duration-300"
+          >
+            <div className="flex-shrink-0">
+              <span className="text-pink-400 text-2xl animate-pulse">💝</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-pink-200 font-bold text-lg block">
+                ความสัมพันธ์เพิ่มขึ้น!
+              </span>
+              <div className="text-pink-100 text-sm font-medium">
+                กับ {charName}: +{points}
               </div>
             </div>
-          );
-        }
-        break;
-        
-      case 'gold':
-        // Handle gold integer
-        if (typeof value === 'number') {
-          displayElements.push(
-            <div 
-              key={`gold-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-yellow-600/20 via-amber-600/20 to-yellow-600/20 rounded-xl border border-yellow-500/40 shadow-lg shadow-yellow-600/10 hover:shadow-yellow-600/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-yellow-500 text-2xl animate-bounce">💰</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-yellow-300 font-bold text-lg block">ได้รับเงิน!</span>
-                <div className="text-yellow-200 text-sm font-medium">+{value} ทอง</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-yellow-400 text-2xl animate-spin-slow">🪙</span>
-              </div>
+            <div className="flex-shrink-0">
+              <span className="text-pink-300 text-2xl animate-bounce">❤️</span>
             </div>
-          );
-        }
-        break;
-        
-      case 'party_join':
-        // Handle party_join UUID
-        if (typeof value === 'string') {
-          displayElements.push(
-            <div 
-              key={`party_join-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-blue-500/20 rounded-xl border border-blue-400/40 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-blue-400 text-2xl animate-pulse">👥</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-blue-200 font-bold text-lg block">ตัวละครเข้าร่วมปาร์ตี้!</span>
-                <div className="text-blue-100 text-sm font-medium">{value}</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-blue-300 text-2xl animate-bounce">🎉</span>
-              </div>
+          </div>
+        );
+      }
+    );
+  }
+
+  // Handle experience
+  if (effects.experience) {
+    displayElements.push(
+      <div
+        key="experience"
+        className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-xl border border-green-400/40 shadow-lg shadow-green-500/10 hover:shadow-green-500/20 transition-all duration-300"
+      >
+        <div className="flex-shrink-0">
+          <span className="text-green-400 text-2xl animate-bounce">⭐</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <span className="text-green-200 font-bold text-lg block">
+            ได้รับค่าประสบการณ์!
+          </span>
+          <div className="text-green-100 text-sm font-medium">
+            +{effects.experience} EXP
+          </div>
+        </div>
+        <div className="flex-shrink-0">
+          <span className="text-green-300 text-2xl animate-spin-slow">🌟</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle gold
+  if (effects.gold) {
+    displayElements.push(
+      <div
+        key="gold"
+        className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-yellow-600/20 via-amber-600/20 to-yellow-600/20 rounded-xl border border-yellow-500/40 shadow-lg shadow-yellow-600/10 hover:shadow-yellow-600/20 transition-all duration-300"
+      >
+        <div className="flex-shrink-0">
+          <span className="text-yellow-500 text-2xl animate-bounce">💰</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <span className="text-yellow-300 font-bold text-lg block">
+            ได้รับเงิน!
+          </span>
+          <div className="text-yellow-200 text-sm font-medium">
+            +{effects.gold} ทอง
+          </div>
+        </div>
+        <div className="flex-shrink-0">
+          <span className="text-yellow-400 text-2xl animate-spin-slow">🪙</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle party join
+  if (effects.party_join) {
+    displayElements.push(
+      <div
+        key="party_join"
+        className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-blue-500/20 rounded-xl border border-blue-400/40 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300"
+      >
+        <div className="flex-shrink-0">
+          <span className="text-blue-400 text-2xl animate-pulse">👥</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <span className="text-blue-200 font-bold text-lg block">
+            ตัวละครเข้าร่วมปาร์ตี้!
+          </span>
+          <div className="text-blue-100 text-sm font-medium">
+            {effects.party_join}
+          </div>
+        </div>
+        <div className="flex-shrink-0">
+          <span className="text-blue-300 text-2xl animate-bounce">🎉</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle unlocks
+  const unlockTypes = [
+    { key: "unlock_events", icon: "📜", label: "เหตุการณ์" },
+    { key: "unlock_chapters", icon: "📖", label: "บท" },
+    { key: "unlock_locations", icon: "🏰", label: "สถานที่" },
+    { key: "unlock_regions", icon: "🗺️", label: "ภูมิภาค" },
+  ];
+
+  unlockTypes.forEach(({ key, icon, label }) => {
+    const unlockArray = effects[key as keyof GameEffects] as
+      | string[]
+      | undefined;
+    if (unlockArray && unlockArray.length > 0) {
+      displayElements.push(
+        <div
+          key={key}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-purple-500/20 rounded-xl border border-purple-400/40 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            <span className="text-purple-400 text-2xl animate-bounce">
+              {icon}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-purple-200 font-bold text-lg block">
+              ปลดล็อกใหม่!
+            </span>
+            <div className="text-purple-100 text-sm font-medium">
+              {label}: {unlockArray.length} รายการ
             </div>
-          );
-        }
-        break;
-        
-      case 'unlock_events':
-      case 'unlock_chapters':
-      case 'unlock_locations':
-      case 'unlock_regions':
-        // Handle unlock arrays
-        if (Array.isArray(value)) {
-          const typeMap: Record<string, string> = {
-            unlock_events: 'เหตุการณ์',
-            unlock_chapters: 'บท',
-            unlock_locations: 'สถานที่',
-            unlock_regions: 'ภูมิภาค'
-          };
-          const icons: Record<string, string> = {
-            unlock_events: '📜',
-            unlock_chapters: '📖',
-            unlock_locations: '🏰',
-            unlock_regions: '🗺️'
-          };
-          
-          displayElements.push(
-            <div 
-              key={`unlock-${key}-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-purple-500/20 rounded-xl border border-purple-400/40 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-purple-400 text-2xl animate-bounce">{icons[key]}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-purple-200 font-bold text-lg block">ปลดล็อกใหม่!</span>
-                <div className="text-purple-100 text-sm font-medium">{typeMap[key]}: {value.length} รายการ</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-purple-300 text-2xl animate-spin-slow">🔓</span>
-              </div>
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-purple-300 text-2xl animate-spin-slow">
+              🔓
+            </span>
+          </div>
+        </div>
+      );
+    }
+  });
+
+  // Handle unknown effects (fallback for any other properties)
+  const unknownEffects = Object.entries(effects).filter(
+    ([key]) =>
+      ![
+        "items",
+        "relationship",
+        "experience",
+        "gold",
+        "party_join",
+        "unlock_events",
+        "unlock_chapters",
+        "unlock_locations",
+        "unlock_regions",
+      ].includes(key)
+  );
+
+  unknownEffects.forEach(([key, value], index) => {
+    if (Array.isArray(value)) {
+      displayElements.push(
+        <div
+          key={`unknown-array-${key}-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-gray-500/20 rounded-xl border border-gray-400/40 shadow-lg shadow-gray-500/10 hover:shadow-gray-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            <span className="text-gray-400 text-2xl animate-pulse">📋</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-gray-200 font-bold text-lg block">
+              {key.replace(/_/g, " ")}
+            </span>
+            <div className="text-gray-100 text-sm font-medium">
+              {value.length} รายการ
             </div>
-          );
-        }
-        break;
-        
-      default:
-        // Handle unknown types
-        if (Array.isArray(value)) {
-          displayElements.push(
-            <div 
-              key={`default-array-${key}-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-gray-500/20 rounded-xl border border-gray-400/40 shadow-lg shadow-gray-500/10 hover:shadow-gray-500/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-gray-400 text-2xl animate-pulse">📋</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-gray-200 font-bold text-lg block">{key.replace(/_/g, ' ')}</span>
-                <div className="text-gray-100 text-sm font-medium">{value.length} รายการ</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-gray-300 text-2xl animate-bounce">📊</span>
-              </div>
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-gray-300 text-2xl animate-bounce">📊</span>
+          </div>
+        </div>
+      );
+    } else if (typeof value === "object" && value !== null) {
+      displayElements.push(
+        <div
+          key={`default-object-${key}-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-gray-500/20 rounded-xl border border-gray-400/40 shadow-lg shadow-gray-500/10 hover:shadow-gray-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            <span className="text-gray-400 text-2xl animate-pulse">📦</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-gray-200 font-bold text-lg block">
+              {key.replace(/_/g, " ")}
+            </span>
+            <div className="text-gray-100 text-sm font-medium">
+              {JSON.stringify(value)}
             </div>
-          );
-        } else if (typeof value === 'object' && value !== null) {
-          displayElements.push(
-            <div 
-              key={`default-object-${key}-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-gray-500/20 rounded-xl border border-gray-400/40 shadow-lg shadow-gray-500/10 hover:shadow-gray-500/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-gray-400 text-2xl animate-pulse">📦</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-gray-200 font-bold text-lg block">{key.replace(/_/g, ' ')}</span>
-                <div className="text-gray-100 text-sm font-medium">{JSON.stringify(value)}</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-gray-300 text-2xl animate-bounce">🔍</span>
-              </div>
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-gray-300 text-2xl animate-bounce">🔍</span>
+          </div>
+        </div>
+      );
+    } else {
+      displayElements.push(
+        <div
+          key={`default-value-${key}-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-gray-500/20 rounded-xl border border-gray-400/40 shadow-lg shadow-gray-500/10 hover:shadow-gray-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            <span className="text-gray-400 text-2xl animate-pulse">📝</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-gray-200 font-bold text-lg block">
+              {key.replace(/_/g, " ")}
+            </span>
+            <div className="text-gray-100 text-sm font-medium">
+              {String(value)}
             </div>
-          );
-        } else {
-          displayElements.push(
-            <div 
-              key={`default-value-${key}-${index}`}
-              className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-gray-500/20 rounded-xl border border-gray-400/40 shadow-lg shadow-gray-500/10 hover:shadow-gray-500/20 transition-all duration-300"
-            >
-              <div className="flex-shrink-0">
-                <span className="text-gray-400 text-2xl animate-pulse">📝</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-gray-200 font-bold text-lg block">{key.replace(/_/g, ' ')}</span>
-                <div className="text-gray-100 text-sm font-medium">{String(value)}</div>
-              </div>
-              <div className="flex-shrink-0">
-                <span className="text-gray-300 text-2xl animate-bounce">💡</span>
-              </div>
-            </div>
-          );
-        }
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-gray-300 text-2xl animate-bounce">💡</span>
+          </div>
+        </div>
+      );
     }
   });
 
@@ -243,88 +284,5 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
     );
   }
 
-  return (
-    <div className={`space-y-3 ${className}`}>
-      {displayElements}
-    </div>
-  );
-};
-
-/**
- * Format effects for display (legacy function for backward compatibility)
- * @deprecated Use EffectsDisplay component instead
- */
-export const formatEffectsForDisplay = (effects: Record<string, unknown>): string[] => {
-  const displayLines: string[] = [];
-  
-  Object.entries(effects).forEach(([key, value]) => {
-    switch (key) {
-      case 'items':
-        // Handle items array: [{"id": uuid, "quantity": integer}]
-        if (Array.isArray(value)) {
-          value.forEach((item: { id: string; quantity?: number }) => {
-            displayLines.push(`ไอเทม: ${item.id} x${item.quantity || 1}`);
-          });
-        }
-        break;
-        
-      case 'relationship':
-        // Handle relationship object: {character_name: integer}
-        if (typeof value === 'object' && value !== null) {
-          Object.entries(value as Record<string, number>).forEach(([charName, points]) => {
-            displayLines.push(`ความสัมพันธ์กับ ${charName}: +${points}`);
-          });
-        }
-        break;
-        
-      case 'experience':
-        // Handle experience integer
-        if (typeof value === 'number') {
-          displayLines.push(`ค่าประสบการณ์: +${value}`);
-        }
-        break;
-        
-      case 'gold':
-        // Handle gold integer
-        if (typeof value === 'number') {
-          displayLines.push(`เงิน: +${value} ทอง`);
-        }
-        break;
-        
-      case 'party_join':
-        // Handle party_join UUID
-        if (typeof value === 'string') {
-          displayLines.push(`ตัวละครเข้าร่วมปาร์ตี้: ${value}`);
-        }
-        break;
-        
-      case 'unlock_events':
-      case 'unlock_chapters':
-      case 'unlock_locations':
-      case 'unlock_regions':
-        // Handle unlock arrays
-        if (Array.isArray(value)) {
-          const typeMap: Record<string, string> = {
-            unlock_events: 'เหตุการณ์',
-            unlock_chapters: 'บท',
-            unlock_locations: 'สถานที่',
-            unlock_regions: 'ภูมิภาค'
-          };
-          displayLines.push(`${typeMap[key]} ที่ปลดล็อก: ${value.length} รายการ`);
-        }
-        break;
-        
-      default:
-        // Handle unknown types
-        if (Array.isArray(value)) {
-          displayLines.push(`${key.replace(/_/g, ' ')}: ${value.length} รายการ`);
-        } else if (typeof value === 'object' && value !== null) {
-          displayLines.push(`${key.replace(/_/g, ' ')}: ${JSON.stringify(value)}`);
-        } else {
-          displayLines.push(`${key.replace(/_/g, ' ')}: ${String(value)}`);
-        }
-    }
-  });
-  
-  return displayLines;
+  return <div className={`space-y-3 ${className}`}>{displayElements}</div>;
 };

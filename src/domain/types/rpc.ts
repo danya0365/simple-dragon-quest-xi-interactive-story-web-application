@@ -1,4 +1,21 @@
 // Database Schema Types (from RPC responses) - snake_case
+
+// Game Effects Types - matches database schema
+export type GameEffects = {
+  relationship?: Record<string, number>; // {character_name: integer}
+  unlock_events?: string[]; // [uuid]
+  unlock_chapters?: string[]; // [uuid]
+  unlock_locations?: string[]; // [uuid]
+  unlock_regions?: string[]; // [uuid]
+  party_join?: string; // uuid
+  items?: Array<{
+    id: string; // uuid
+    quantity?: number; // integer, defaults to 1
+  }>;
+  experience?: number; // integer
+  gold?: number; // integer
+};
+
 export interface EventOutcomeSchema {
   id: string;
   interaction_id: string;
@@ -6,14 +23,14 @@ export interface EventOutcomeSchema {
   title: string;
   description: string | null;
   outcome_type: string;
-  effects: Record<string, unknown>;
+  effects: GameEffects;
   next_event_id: string | null;
 }
 
 export interface CompleteInteractionSchema {
   success: boolean;
   next_event_id?: string | null;
-  effects?: Record<string, unknown>;
+  effects?: GameEffects;
   choice_key?: string;
   auto_unlocked_locations?: string[];
   auto_unlocked_regions?: string[];
@@ -156,14 +173,14 @@ export interface EventOutcomeDto {
   title: string;
   description: string | null;
   outcomeType: string;
-  effects: Record<string, unknown>;
+  effects: GameEffects;
   nextEventId: string | null;
 }
 
 export interface CompleteInteractionDto {
   success: boolean;
   nextEventId?: string | null;
-  effects?: Record<string, unknown>;
+  effects?: GameEffects;
   choiceKey?: string;
   autoUnlockedLocations?: string[];
   autoUnlockedRegions?: string[];
