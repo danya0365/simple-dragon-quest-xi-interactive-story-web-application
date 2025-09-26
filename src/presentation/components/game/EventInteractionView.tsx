@@ -2,7 +2,7 @@
 
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
 import { EventInteractionUI } from "@/src/domain/types/ui";
-import { formatEffectsForDisplay } from "@/src/domain/mappers/uiMappers";
+import { formatEffectsForDisplay } from "@/src/presentation/components/game/EffectsDisplay";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -445,7 +445,7 @@ export function EventInteractionView() {
                       </h5>
                       <div className="text-sm text-purple-200 space-y-1">
                         {formatEffectsForDisplay(currentEventOutcome.effects).map(
-                          (line, index) => (
+                          (line: string, index: number) => (
                             <div
                               key={index}
                               className="py-1"
