@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Birthday Cake -->
+  <!-- Cake base -->
+  <rect x="25" y="60" width="50" height="25" rx="2" fill="#FFE4B5" stroke="#333" stroke-width="2"/>
+  
+  <!-- Cake layers -->
+  <rect x="30" y="50" width="40" height="15" rx="2" fill="#FFB6C1" stroke="#333" stroke-width="2"/>
+  <rect x="35" y="40" width="30" height="15" rx="2" fill="#FFC0CB" stroke="#333" stroke-width="2"/>
+  
+  <!-- Frosting -->
+  <path d="M30 50 Q35 45 40 50 Q45 45 50 50 Q55 45 60 50 Q65 45 70 50" fill="none" stroke="#FFF" stroke-width="3"/>
+  <path d="M35 40 Q40 35 45 40 Q50 35 55 40 Q60 35 65 40" fill="none" stroke="#FFF" stroke-width="3"/>
+  
+  <!-- Candles -->
+  <rect x="42" y="30" width="3" height="15" rx="1" fill="#FFD700" stroke="#333" stroke-width="0.5"/>
+  <rect x="48" y="28" width="3" height="17" rx="1" fill="#FFD700" stroke="#333" stroke-width="0.5"/>
+  <rect x="54" y="30" width="3" height="15" rx="1" fill="#FFD700" stroke="#333" stroke-width="0.5"/>
+  
+  <!-- Flames -->
+  <ellipse cx="43.5" cy="28" rx="2" ry="3" fill="#FF4500"/>
+  <ellipse cx="49.5" cy="26" rx="2" ry="3" fill="#FF4500"/>
+  <ellipse cx="55.5" cy="28" rx="2" ry="3" fill="#FF4500"/>
+  
+  <!-- Decorations -->
+  <circle cx="40" cy="55" r="2" fill="#FF69B4"/>
+  <circle cx="50" cy="55" r="2" fill="#FF69B4"/>
+  <circle cx="60" cy="55" r="2" fill="#FF69B4"/>
+  
+  <!-- Plate -->
+  <ellipse cx="50" cy="87" rx="30" ry="5" fill="#E6E6FA" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- "16" for birthday -->
+  <text x="50" y="58" text-anchor="middle" font-size="8" fill="#8B4513">16</text>
+</svg>

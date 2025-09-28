@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Village Clothes - Simple peasant outfit -->
+  <!-- Shirt -->
+  <path d="M30 30 L35 60 L65 60 L70 30 Z" fill="#87CEEB" stroke="#333" stroke-width="2"/>
+  <!-- Shirt collar -->
+  <path d="M40 30 L45 35 L55 35 L60 30" fill="none" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Sleeves -->
+  <rect x="20" y="35" width="15" height="20" rx="7" fill="#87CEEB" stroke="#333" stroke-width="1.5"/>
+  <rect x="65" y="35" width="15" height="20" rx="7" fill="#87CEEB" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Pants -->
+  <rect x="35" y="60" width="12" height="30" rx="2" fill="#4682B4" stroke="#333" stroke-width="1.5"/>
+  <rect x="53" y="60" width="12" height="30" rx="2" fill="#4682B4" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Belt -->
+  <rect x="32" y="58" width="36" height="4" rx="1" fill="#8B4513" stroke="#333" stroke-width="1"/>
+  <!-- Belt buckle -->
+  <rect x="47" y="57" width="6" height="6" rx="1" fill="#C0C0C0" stroke="#333" stroke-width="0.5"/>
+  
+  <!-- Shoes -->
+  <ellipse cx="41" cy="92" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
+  <ellipse cx="59" cy="92" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
+  
+  <!-- Simple pattern on shirt -->
+  <rect x="45" y="40" width="10" height="2" fill="#4682B4"/>
+  <rect x="45" y="48" width="10" height="2" fill="#4682B4"/>
+  
+  <!-- Patch on elbow -->
+  <rect x="22" y="45" width="8" height="6" rx="1" fill="#CD853F" stroke="#333" stroke-width="0.5"/>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Gemma - Friend -->
+  <circle cx="50" cy="30" r="15" fill="#fdbcb4" stroke="#333" stroke-width="2"/>
+  <!-- Long hair -->
+  <path d="M35 20 Q50 10 65 20 Q65 35 50 40 Q35 35 35 20" fill="#8B4513" stroke="#333" stroke-width="1.5"/>
+  <path d="M35 25 Q30 30 32 40" fill="none" stroke="#8B4513" stroke-width="8"/>
+  <path d="M65 25 Q70 30 68 40" fill="none" stroke="#8B4513" stroke-width="8"/>
+  
+  <!-- Face -->
+  <circle cx="42" cy="28" r="2" fill="#333"/>
+  <circle cx="58" cy="28" r="2" fill="#333"/>
+  <path d="M45 35 Q50 38 55 35" fill="none" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Body - Dress -->
+  <path d="M35 45 L40 75 L60 75 L65 45 Z" fill="#FF69B4" stroke="#333" stroke-width="2"/>
+  <!-- Dress pattern -->
+  <rect x="45" y="55" width="10" height="3" fill="#FF1493"/>
+  <rect x="45" y="65" width="10" height="3" fill="#FF1493"/>
+  
+  <!-- Arms -->
+  <rect x="25" y="48" width="15" height="20" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  <rect x="60" y="48" width="15" height="20" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Legs -->
+  <rect x="38" y="75" width="10" height="20" rx="5" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  <rect x="52" y="75" width="10" height="20" rx="5" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Shoes -->
+  <ellipse cx="43" cy="95" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
+  <ellipse cx="57" cy="95" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
+  
+  <!-- Holding cake -->
+  <rect x="72" y="55" width="15" height="10" rx="2" fill="#FFE4B5" stroke="#333" stroke-width="1"/>
+  <rect x="74" y="52" width="11" height="6" rx="3" fill="#FFB6C1" stroke="#333" stroke-width="1"/>
+  <circle cx="79.5" cy="55" r="1" fill="#FF69B4"/>
+</svg>
