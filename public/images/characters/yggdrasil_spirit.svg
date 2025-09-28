@@ -1,0 +1,112 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Yggdrasil Spirit Character -->
+  <g transform="translate(100, 100)">
+    <!-- Spirit Body - Ethereal Form -->
+    <ellipse cx="0" cy="20" rx="35" ry="45" fill="#90EE90" opacity="0.6" stroke="#228B22" stroke-width="2"/>
+    
+    <!-- Spirit Core -->
+    <circle cx="0" cy="15" r="20" fill="#32CD32" opacity="0.8" stroke="#228B22" stroke-width="2"/>
+    
+    <!-- Head -->
+    <circle cx="0" cy="-25" r="18" fill="#98FB98" opacity="0.7" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Spirit Hair - Leaf-like -->
+    <g transform="translate(0, -35)">
+      <path d="M -15 -5 Q -18 -12, -12 -15 Q -6 -17, 0 -15 Q 6 -17, 12 -15 Q 18 -12, 15 -5" fill="#228B22" opacity="0.7" stroke="#006400" stroke-width="1"/>
+      <!-- Leaf Details -->
+      <path d="M -12 -8 L -10 -12 L -8 -8" fill="#32CD32" stroke="#228B22" stroke-width="0.5"/>
+      <path d="M -5 -9 L -3 -13 L -1 -9" fill="#32CD32" stroke="#228B22" stroke-width="0.5"/>
+      <path d="M 5 -9 L 3 -13 L 1 -9" fill="#32CD32" stroke="#228B22" stroke-width="0.5"/>
+      <path d="M 12 -8 L 10 -12 L 8 -8" fill="#32CD32" stroke="#228B22" stroke-width="0.5"/>
+    </g>
+    
+    <!-- Eyes - Glowing Green -->
+    <circle cx="-6" cy="-25" r="3" fill="#00FF00"/>
+    <circle cx="6" cy="-25" r="3" fill="#00FF00"/>
+    <circle cx="-6" cy="-26" r="1" fill="#FFFFFF"/>
+    <circle cx="6" cy="-26" r="1" fill="#FFFFFF"/>
+    
+    <!-- Spirit Arms - Flowing Energy -->
+    <ellipse cx="-25" cy="5" rx="8" ry="20" fill="#90EE90" opacity="0.5" stroke="#228B22" stroke-width="1"/>
+    <ellipse cx="25" cy="5" rx="8" ry="20" fill="#90EE90" opacity="0.5" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Spirit Hands - Energy Orbs -->
+    <circle cx="-25" cy="20" r="10" fill="#32CD32" opacity="0.8" stroke="#228B22" stroke-width="1"/>
+    <circle cx="25" cy="20" r="10" fill="#32CD32" opacity="0.8" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Hand Energy -->
+    <circle cx="-25" cy="20" r="6" fill="#00FF00" opacity="0.9">
+      <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="25" cy="20" r="6" fill="#00FF00" opacity="0.9">
+      <animate attributeName="r" values="6;8;6" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Spirit Robes - Flowing Nature Energy -->
+    <path d="M -30 0 Q -35 15, -30 35 L -20 45 L -15 40 L -10 45 L -5 40 L 0 45 L 5 40 L 10 45 L 15 40 L 20 45 L 30 35 Q 35 15, 30 0" fill="#90EE90" opacity="0.4" stroke="#228B22" stroke-width="1"/>
+    
+    <!-- Robe Patterns - Vine-like -->
+    <path d="M -20 10 Q -15 15, -10 10 Q -5 15, 0 10 Q 5 15, 10 10 Q 15 15, 20 10" fill="none" stroke="#32CD32" stroke-width="1" opacity="0.7"/>
+    <path d="M -18 20 Q -13 25, -8 20 Q -3 25, 2 20 Q 7 25, 12 20 Q 17 25, 22 20" fill="none" stroke="#32CD32" stroke-width="1" opacity="0.7"/>
+    
+    <!-- Floating Leaves -->
+    <g transform="translate(-40, -20)">
+      <ellipse cx="0" cy="0" rx="4" ry="6" fill="#228B22" opacity="0.8">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 10,-15; 0,0" dur="6s" repeatCount="indefinite" additive="sum"/>
+        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="6s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <g transform="translate(35, -10)">
+      <ellipse cx="0" cy="0" rx="3" ry="5" fill="#32CD32" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0;-360" dur="7s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; -8,-12; 0,0" dur="5s" repeatCount="indefinite" additive="sum"/>
+        <animate attributeName="opacity" values="0.7;0.2;0.7" dur="5s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <g transform="translate(-30, 40)">
+      <ellipse cx="0" cy="0" rx="2" ry="4" fill="#90EE90" opacity="0.6">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="6s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 12,-8; 0,0" dur="7s" repeatCount="indefinite" additive="sum"/>
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="7s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    
+    <!-- Life Force Aura -->
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#32CD32" stroke-width="2" opacity="0.4">
+      <animate attributeName="r" values="60;70;60" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Inner Energy Core -->
+    <circle cx="0" cy="15" r="25" fill="none" stroke="#00FF00" stroke-width="1" opacity="0.6">
+      <animate attributeName="r" values="25;30;25" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Nature Symbols -->
+    <g transform="translate(0, 15)" opacity="0.8">
+      <text x="-8" y="3" font-family="Arial" font-size="12" fill="#228B22">🌿</text>
+      <text x="2" y="3" font-family="Arial" font-size="12" fill="#32CD32">🍃</text>
+    </g>
+    
+    <!-- Spirit Energy Particles -->
+    <circle cx="-15" cy="-10" r="1.5" fill="#90EE90" opacity="0.8">
+      <animate attributeName="cy" values="-10;-30;-10" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="15" cy="5" r="1" fill="#32CD32" opacity="0.7">
+      <animate attributeName="cy" values="5;-25;5" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="0" cy="30" r="1.2" fill="#00FF00" opacity="0.6">
+      <animate attributeName="cy" values="30;10;30" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

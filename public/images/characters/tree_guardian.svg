@@ -1,0 +1,152 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Tree Guardian Character -->
+  <g transform="translate(100, 100)">
+    <!-- Guardian Body - Tree-like Form -->
+    <ellipse cx="0" cy="20" rx="40" ry="50" fill="#8B4513" stroke="#654321" stroke-width="3"/>
+    
+    <!-- Bark Texture -->
+    <path d="M -30 -10 Q -28 -5, -25 -10" fill="none" stroke="#654321" stroke-width="2"/>
+    <path d="M -20 0 Q -18 5, -15 0" fill="none" stroke="#654321" stroke-width="2"/>
+    <path d="M -10 10 Q -8 15, -5 10" fill="none" stroke="#654321" stroke-width="2"/>
+    <path d="M 5 -10 Q 7 -5, 10 -10" fill="none" stroke="#654321" stroke-width="2"/>
+    <path d="M 15 0 Q 17 5, 20 0" fill="none" stroke="#654321" stroke-width="2"/>
+    <path d="M 25 10 Q 27 15, 30 10" fill="none" stroke="#654321" stroke-width="2"/>
+    
+    <!-- Head - Wood-like -->
+    <circle cx="0" cy="-30" r="22" fill="#A0522D" stroke="#654321" stroke-width="2"/>
+    
+    <!-- Wooden Face Details -->
+    <path d="M -15 -35 Q -12 -38, -8 -35" fill="none" stroke="#654321" stroke-width="1"/>
+    <path d="M 8 -35 Q 12 -38, 15 -35" fill="none" stroke="#654321" stroke-width="1"/>
+    
+    <!-- Eyes - Glowing Green -->
+    <circle cx="-8" cy="-30" r="3" fill="#32CD32"/>
+    <circle cx="8" cy="-30" r="3" fill="#32CD32"/>
+    <circle cx="-8" cy="-31" r="1" fill="#90EE90"/>
+    <circle cx="8" cy="-31" r="1" fill="#90EE90"/>
+    
+    <!-- Moss Beard -->
+    <path d="M -18 -20 Q -20 -10, -18 0 Q -14 5, -10 8 Q -5 10, 0 8 Q 5 10, 10 8 Q 14 5, 18 0 Q 20 -10, 18 -20" fill="#228B22" opacity="0.8" stroke="#006400" stroke-width="1"/>
+    
+    <!-- Branch Antlers -->
+    <g transform="translate(0, -45)">
+      <!-- Left Branch -->
+      <path d="M -15 -5 L -20 -15 L -18 -20 L -22 -25" fill="none" stroke="#8B4513" stroke-width="3" stroke-linecap="round"/>
+      <path d="M -18 -20 L -15 -23" fill="none" stroke="#8B4513" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="-22" cy="-25" r="3" fill="#228B22"/>
+      <circle cx="-15" cy="-23" r="2" fill="#32CD32"/>
+      
+      <!-- Right Branch -->
+      <path d="M 15 -5 L 20 -15 L 18 -20 L 22 -25" fill="none" stroke="#8B4513" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 18 -20 L 15 -23" fill="none" stroke="#8B4513" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="-25" r="3" fill="#228B22"/>
+      <circle cx="15" cy="-23" r="2" fill="#32CD32"/>
+      
+      <!-- Center Branch -->
+      <path d="M 0 -8 L 0 -18 L -2 -23 L 0 -28" fill="none" stroke="#8B4513" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 0 -18 L 3 -21" fill="none" stroke="#8B4513" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="0" cy="-28" r="3" fill="#228B22"/>
+      <circle cx="3" cy="-21" r="2" fill="#32CD32"/>
+    </g>
+    
+    <!-- Massive Tree Arms -->
+    <ellipse cx="-35" cy="10" rx="15" ry="35" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    <ellipse cx="35" cy="10" rx="15" ry="35" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    
+    <!-- Root Hands -->
+    <g transform="translate(-35, 40)">
+      <ellipse cx="0" cy="0" rx="18" ry="15" fill="#A0522D" stroke="#654321" stroke-width="2"/>
+      <!-- Root Fingers -->
+      <ellipse cx="-8" cy="-5" rx="4" ry="8" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="0" cy="-8" rx="4" ry="10" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="8" cy="-5" rx="4" ry="8" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="-6" cy="5" rx="3" ry="6" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="6" cy="5" rx="3" ry="6" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+    </g>
+    
+    <g transform="translate(35, 40)">
+      <ellipse cx="0" cy="0" rx="18" ry="15" fill="#A0522D" stroke="#654321" stroke-width="2"/>
+      <!-- Root Fingers -->
+      <ellipse cx="-8" cy="-5" rx="4" ry="8" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="0" cy="-8" rx="4" ry="10" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="8" cy="-5" rx="4" ry="8" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="-6" cy="5" rx="3" ry="6" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="6" cy="5" rx="3" ry="6" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+    </g>
+    
+    <!-- Tree Legs -->
+    <ellipse cx="-15" cy="70" rx="18" ry="30" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    <ellipse cx="15" cy="70" rx="18" ry="30" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    
+    <!-- Root Feet -->
+    <g transform="translate(-15, 95)">
+      <ellipse cx="0" cy="0" rx="20" ry="12" fill="#A0522D" stroke="#654321" stroke-width="2"/>
+      <!-- Root Toes -->
+      <ellipse cx="-10" cy="-3" rx="5" ry="4" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="0" cy="-5" rx="5" ry="4" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="10" cy="-3" rx="5" ry="4" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+    </g>
+    
+    <g transform="translate(15, 95)">
+      <ellipse cx="0" cy="0" rx="20" ry="12" fill="#A0522D" stroke="#654321" stroke-width="2"/>
+      <!-- Root Toes -->
+      <ellipse cx="-10" cy="-3" rx="5" ry="4" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="0" cy="-5" rx="5" ry="4" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="10" cy="-3" rx="5" ry="4" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+    </g>
+    
+    <!-- Leaf Covering -->
+    <g transform="translate(0, 15)">
+      <ellipse cx="-20" cy="-5" rx="8" ry="6" fill="#228B22" opacity="0.8"/>
+      <ellipse cx="20" cy="-5" rx="8" ry="6" fill="#228B22" opacity="0.8"/>
+      <ellipse cx="0" cy="-10" rx="10" ry="7" fill="#32CD32" opacity="0.8"/>
+      <ellipse cx="-15" cy="10" rx="6" ry="5" fill="#228B22" opacity="0.7"/>
+      <ellipse cx="15" cy="10" rx="6" ry="5" fill="#228B22" opacity="0.7"/>
+      <ellipse cx="0" cy="15" rx="8" ry="6" fill="#32CD32" opacity="0.7"/>
+    </g>
+    
+    <!-- Floating Leaves -->
+    <g transform="translate(-45, -30)">
+      <ellipse cx="0" cy="0" rx="4" ry="6" fill="#228B22" opacity="0.8">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 12,-18; 0,0" dur="6s" repeatCount="indefinite" additive="sum"/>
+        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="6s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <g transform="translate(40, -15)">
+      <ellipse cx="0" cy="0" rx="3" ry="5" fill="#32CD32" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0;-360" dur="7s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; -10,-15; 0,0" dur="5s" repeatCount="indefinite" additive="sum"/>
+        <animate attributeName="opacity" values="0.7;0.2;0.7" dur="5s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <g transform="translate(-35, 45)">
+      <ellipse cx="0" cy="0" rx="2" ry="4" fill="#90EE90" opacity="0.6">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="6s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 15,-10; 0,0" dur="7s" repeatCount="indefinite" additive="sum"/>
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="7s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    
+    <!-- Nature Shield Aura -->
+    <circle cx="0" cy="20" r="55" fill="none" stroke="#32CD32" stroke-width="2" opacity="0.4">
+      <animate attributeName="r" values="55;65;55" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Guardian Power Glow -->
+    <circle cx="0" cy="20" r="35" fill="none" stroke="#228B22" stroke-width="1" opacity="0.5">
+      <animate attributeName="r" values="35;40;35" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Nature Symbols -->
+    <g transform="translate(0, 20)" opacity="0.8">
+      <text x="-8" y="3" font-family="Arial" font-size="12" fill="#228B22">🌳</text>
+      <text x="2" y="3" font-family="Arial" font-size="12" fill="#32CD32">🍂</text>
+    </g>
+  </g>
+</svg>
