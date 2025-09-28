@@ -1,0 +1,191 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="voidCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#191970;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#000080;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#000033;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+    
+    <linearGradient id="sentinelArmor" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2F2F4F;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1A1A33;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0D0D1A;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="voidEnergy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4B0082;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#191970;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#000080;stop-opacity:0.4" />
+    </linearGradient>
+    
+    <radialGradient id="eyeBeam" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00FFFF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0080FF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#004080;stop-opacity:0.6" />
+    </radialGradient>
+    
+    <filter id="voidGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="sentinelShine">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Void energy aura -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#191970" stroke-width="2" opacity="0.4" filter="url(#voidGlow)">
+    <animate attributeName="r" values="80;90;80" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="100" cy="100" r="60" fill="none" stroke="#000080" stroke-width="1.5" opacity="0.5" filter="url(#voidGlow)">
+    <animate attributeName="r" values="60;70;60" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.8;0.5" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Sentinel body (armored guardian) -->
+  <ellipse cx="100" cy="120" rx="30" ry="45" fill="url(#sentinelArmor)" stroke="#000000" stroke-width="2"/>
+  
+  <!-- Armor plates -->
+  <rect x="85" y="90" width="30" height="15" rx="3" fill="#2F2F4F" stroke="#000000" stroke-width="1"/>
+  <rect x="85" y="110" width="30" height="15" rx="3" fill="#1A1A33" stroke="#000000" stroke-width="1"/>
+  <rect x="85" y="130" width="30" height="15" rx="3" fill="#0D0D1A" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Head (helmet) -->
+  <ellipse cx="100" cy="70" rx="20" ry="25" fill="url(#sentinelArmor)" stroke="#000000" stroke-width="2"/>
+  
+  <!-- Helmet details -->
+  <path d="M 85 60 Q 100 55 115 60" fill="none" stroke="#000000" stroke-width="1"/>
+  <path d="M 80 70 Q 100 65 120 70" fill="none" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Visor (glowing) -->
+  <ellipse cx="100" cy="70" rx="15" ry="8" fill="url(#eyeBeam)" filter="url(#sentinelShine)">
+    <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Visor scan line -->
+  <line x1="85" y1="70" x2="115" y2="70" stroke="#00FFFF" stroke-width="1" opacity="0.8">
+    <animate attributeName="y1" values="66;74;66" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="66;74;66" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Arms -->
+  <ellipse cx="70" cy="110" rx="8" ry="30" fill="url(#sentinelArmor)" stroke="#000000" stroke-width="1"/>
+  <ellipse cx="130" cy="110" rx="8" ry="30" fill="url(#sentinelArmor)" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Shoulders -->
+  <circle cx="70" cy="95" r="12" fill="#2F2F4F" stroke="#000000" stroke-width="1"/>
+  <circle cx="130" cy="95" r="12" fill="#2F2F4F" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Shoulder spikes -->
+  <path d="M 65 90 L 60 85 M 65 90 L 63 82 M 65 90 L 67 83" 
+        stroke="#000000" 
+        stroke-width="2" 
+        stroke-linecap="round"/>
+  
+  <path d="M 135 90 L 140 85 M 135 90 L 137 82 M 135 90 L 133 83" 
+        stroke="#000000" 
+        stroke-width="2" 
+        stroke-linecap="round"/>
+  
+  <!-- Hands (weaponized) -->
+  <rect x="65" y="135" width="10" height="15" rx="2" fill="#1A1A33" stroke="#000000" stroke-width="1"/>
+  <rect x="125" y="135" width="10" height="15" rx="2" fill="#1A1A33" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Hand energy cores -->
+  <circle cx="70" cy="142" r="3" fill="url(#eyeBeam)" filter="url(#sentinelShine)">
+    <animate attributeName="r" values="3;5;3" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="130" cy="142" r="3" fill="url(#eyeBeam)" filter="url(#sentinelShine)">
+    <animate attributeName="r" values="3;5;3" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Void energy chest core -->
+  <circle cx="100" cy="115" r="8" fill="url(#voidCore)" filter="url(#voidGlow)">
+    <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Core energy pulses -->
+  <g opacity="0.4">
+    <circle cx="100" cy="115" r="12" fill="none" stroke="#191970" stroke-width="1">
+      <animate attributeName="r" values="12;18;12" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="115" r="16" fill="none" stroke="#000080" stroke-width="1">
+      <animate attributeName="r" values="16;22;16" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Void particles -->
+  <circle cx="60" cy="80" r="2" fill="#191970" opacity="0.7">
+    <animate attributeName="cx" values="60;40;60" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="80;60;80" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="140" cy="90" r="1.5" fill="#000080" opacity="0.6">
+    <animate attributeName="cx" values="140;160;140" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="90;70;90" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="80" cy="140" r="2.5" fill="#000033" opacity="0.8">
+    <animate attributeName="cx" values="80;60;80" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="140;160;140" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="120" cy="150" r="1.8" fill="#191970" opacity="0.5">
+    <animate attributeName="cx" values="120;140;120" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="150;170;150" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Energy beams from hands -->
+  <g opacity="0.6">
+    <line x1="70" y1="142" x2="50" y2="130" stroke="url(#eyeBeam)" stroke-width="2">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <line x1="130" y1="142" x2="150" y2="130" stroke="url(#eyeBeam)" stroke-width="2">
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+    </line>
+  </g>
+  
+  <!-- Shield projection -->
+  <ellipse cx="100" cy="100" rx="40" ry="50" fill="none" stroke="url(#voidEnergy)" stroke-width="1" opacity="0.3">
+    <animate attributeName="rx" values="40;45;40" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="ry" values="50;55;50" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Leg armor -->
+  <ellipse cx="90" cy="160" rx="8" ry="20" fill="url(#sentinelArmor)" stroke="#000000" stroke-width="1"/>
+  <ellipse cx="110" cy="160" rx="8" ry="20" fill="url(#sentinelArmor)" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Feet -->
+  <ellipse cx="90" cy="180" rx="10" ry="8" fill="#0D0D1A" stroke="#000000" stroke-width="1"/>
+  <ellipse cx="110" cy="180" rx="10" ry="8" fill="#0D0D1A" stroke="#000000" stroke-width="1"/>
+  
+  <!-- Boot energy -->
+  <circle cx="90" cy="180" r="3" fill="url(#eyeBeam)" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="110" cy="180" r="3" fill="url(#eyeBeam)" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

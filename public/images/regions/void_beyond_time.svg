@@ -1,0 +1,327 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="voidBackground" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#000033;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#000066;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#000011;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Void energy gradient -->
+    <radialGradient id="voidEnergy" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#4B0082;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#2E0854;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.8" />
+    </radialGradient>
+    
+    <!-- Time distortion gradient -->
+    <linearGradient id="timeDistortion" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E6E6FA;stop-opacity:0.2" />
+      <stop offset="50%" style="stop-color:#9370DB;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#4B0082;stop-opacity:0.2" />
+    </linearGradient>
+    
+    <!-- Crystal gradient -->
+    <radialGradient id="crystalGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#E6E6FA;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#9370DB;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#4B0082;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Filter for glow effects -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Filter for shadow effects -->
+    <filter id="shadow">
+      <feDropShadow dx="3" dy="3" stdDeviation="5" flood-color="#000000" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#voidBackground)"/>
+  
+  <!-- Time distortion effects -->
+  <g opacity="0.6">
+    <ellipse cx="400" cy="300" rx="350" ry="250" 
+             fill="none" 
+             stroke="url(#timeDistortion)" 
+             stroke-width="3"
+             filter="url(#glow)">
+      <animateTransform attributeName="transform" 
+                        type="rotate" 
+                        from="0 400 300" 
+                        to="360 400 300" 
+                        dur="60s" 
+                        repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="400" cy="300" rx="280" ry="200" 
+             fill="none" 
+             stroke="url(#timeDistortion)" 
+             stroke-width="2"
+             opacity="0.7">
+      <animateTransform attributeName="transform" 
+                        type="rotate" 
+                        from="360 400 300" 
+                        to="0 400 300" 
+                        dur="45s" 
+                        repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Floating time crystals -->
+  <g>
+    <!-- Large crystal -->
+    <g transform="translate(200, 150)">
+      <polygon points="0,-40 35,-20 35,20 0,40 -35,20 -35,-20" 
+               fill="url(#crystalGradient)" 
+               stroke="#E6E6FA" 
+               stroke-width="2"
+               filter="url(#shadow)">
+        <animateTransform attributeName="transform" 
+                          type="rotate" 
+                          from="0 0 0" 
+                          to="360 0 0" 
+                          dur="20s" 
+                          repeatCount="indefinite"/>
+      </polygon>
+      <circle cx="0" cy="0" r="8" 
+              fill="#FFFFFF" 
+              opacity="0.8"
+              filter="url(#glow)">
+        <animate attributeName="r" 
+                 values="8;12;8" 
+                 dur="3s" 
+                 repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Medium crystal -->
+    <g transform="translate(600, 200)">
+      <polygon points="0,-30 26,-15 26,15 0,30 -26,15 -26,-15" 
+               fill="url(#crystalGradient)" 
+               stroke="#E6E6FA" 
+               stroke-width="1.5"
+               filter="url(#shadow)">
+        <animateTransform attributeName="transform" 
+                          type="rotate" 
+                          from="0 0 0" 
+                          to="-360 0 0" 
+                          dur="25s" 
+                          repeatCount="indefinite"/>
+      </polygon>
+      <circle cx="0" cy="0" r="6" 
+              fill="#FFFFFF" 
+              opacity="0.7"
+              filter="url(#glow)">
+        <animate attributeName="r" 
+                 values="6;9;6" 
+                 dur="2.5s" 
+                 repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Small crystal -->
+    <g transform="translate(150, 450)">
+      <polygon points="0,-20 17,-10 17,10 0,20 -17,10 -17,-10" 
+               fill="url(#crystalGradient)" 
+               stroke="#E6E6FA" 
+               stroke-width="1"
+               filter="url(#shadow)">
+        <animateTransform attributeName="transform" 
+                          type="rotate" 
+                          from="0 0 0" 
+                          to="360 0 0" 
+                          dur="15s" 
+                          repeatCount="indefinite"/>
+      </polygon>
+      <circle cx="0" cy="0" r="4" 
+              fill="#FFFFFF" 
+              opacity="0.6"
+              filter="url(#glow)">
+        <animate attributeName="r" 
+                 values="4;6;4" 
+                 dur="2s" 
+                 repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Floating crystal -->
+    <g transform="translate(650, 400)">
+      <polygon points="0,-25 22,-12 22,12 0,25 -22,12 -22,-12" 
+               fill="url(#crystalGradient)" 
+               stroke="#E6E6FA" 
+               stroke-width="1.5"
+               filter="url(#shadow)">
+        <animateTransform attributeName="transform" 
+                          type="rotate" 
+                          from="0 0 0" 
+                          to="-360 0 0" 
+                          dur="18s" 
+                          repeatCount="indefinite"/>
+      </polygon>
+      <circle cx="0" cy="0" r="5" 
+              fill="#FFFFFF" 
+              opacity="0.7"
+              filter="url(#glow)">
+        <animate attributeName="r" 
+                 values="5;8;5" 
+                 dur="2.2s" 
+                 repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+  
+  <!-- Void energy pools -->
+  <g opacity="0.7">
+    <ellipse cx="300" cy="350" rx="80" ry="60" 
+             fill="url(#voidEnergy)" 
+             filter="url(#glow)">
+      <animate attributeName="rx" 
+               values="80;90;80" 
+               dur="8s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="ry" 
+               values="60;70;60" 
+               dur="8s" 
+               repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="500" cy="250" rx="70" ry="50" 
+             fill="url(#voidEnergy)" 
+             filter="url(#glow)">
+      <animate attributeName="rx" 
+               values="70;80;70" 
+               dur="6s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="ry" 
+               values="50;60;50" 
+               dur="6s" 
+               repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Time rifts -->
+  <g opacity="0.5">
+    <path d="M 100,100 Q 200,50 300,100 T 500,100" 
+          fill="none" 
+          stroke="#E6E6FA" 
+          stroke-width="2"
+          filter="url(#glow)">
+      <animate attributeName="d" 
+               values="M 100,100 Q 200,50 300,100 T 500,100;
+                       M 100,100 Q 200,150 300,100 T 500,100;
+                       M 100,100 Q 200,50 300,100 T 500,100" 
+               dur="10s" 
+               repeatCount="indefinite"/>
+    </path>
+    <path d="M 300,500 Q 400,450 500,500 T 700,500" 
+          fill="none" 
+          stroke="#9370DB" 
+          stroke-width="2"
+          filter="url(#glow)">
+      <animate attributeName="d" 
+               values="M 300,500 Q 400,450 500,500 T 700,500;
+                       M 300,500 Q 400,550 500,500 T 700,500;
+                       M 300,500 Q 400,450 500,500 T 700,500" 
+               dur="12s" 
+               repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Floating void particles -->
+  <g opacity="0.6">
+    <circle cx="250" cy="200" r="3" fill="#4B0082">
+      <animate attributeName="cy" 
+               values="200;150;200" 
+               dur="6s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="opacity" 
+               values="0.6;0.2;0.6" 
+               dur="6s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="550" cy="350" r="2" fill="#9370DB">
+      <animate attributeName="cy" 
+               values="350;300;350" 
+               dur="5s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="opacity" 
+               values="0.6;0.2;0.6" 
+               dur="5s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="400" cy="400" r="2.5" fill="#4B0082">
+      <animate attributeName="cy" 
+               values="400;350;400" 
+               dur="7s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="opacity" 
+               values="0.6;0.2;0.6" 
+               dur="7s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="150" cy="300" r="2" fill="#9370DB">
+      <animate attributeName="cy" 
+               values="300;250;300" 
+               dur="4.5s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="opacity" 
+               values="0.6;0.2;0.6" 
+               dur="4.5s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="650" cy="150" r="3" fill="#4B0082">
+      <animate attributeName="cy" 
+               values="150;100;150" 
+               dur="5.5s" 
+               repeatCount="indefinite"/>
+      <animate attributeName="opacity" 
+               values="0.6;0.2;0.6" 
+               dur="5.5s" 
+               repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Central void vortex -->
+  <g transform="translate(400, 300)">
+    <circle cx="0" cy="0" r="100" 
+            fill="url(#voidEnergy)" 
+            opacity="0.8"
+            filter="url(#glow)">
+      <animate attributeName="r" 
+               values="100;120;100" 
+               dur="8s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="0" cy="0" r="80" 
+            fill="#000000" 
+            opacity="0.9">
+      <animate attributeName="r" 
+               values="80;100;80" 
+               dur="6s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="0" cy="0" r="60" 
+            fill="#4B0082" 
+            opacity="0.7">
+      <animate attributeName="r" 
+               values="60;80;60" 
+               dur="4s" 
+               repeatCount="indefinite"/>
+    </circle>
+    <circle cx="0" cy="0" r="40" 
+            fill="#000000" 
+            opacity="1">
+      <animate attributeName="r" 
+               values="40;50;40" 
+               dur="3s" 
+               repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
