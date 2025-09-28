@@ -1,0 +1,89 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Winter Cloak Item -->
+  <g transform="translate(100, 100)">
+    <!-- Cloak Main Body -->
+    <path d="M -30 -40 Q -35 -30, -30 -20 L -25 30 L -20 45 L -15 50 L -10 45 L -5 50 L 0 45 L 5 50 L 10 45 L 15 50 L 20 45 L 25 30 L 30 -20 Q 35 -30, 30 -40 Z" fill="#4682B4" stroke="#2F4F4F" stroke-width="2"/>
+    
+    <!-- Cloak Hood -->
+    <path d="M -25 -40 Q -30 -55, -20 -60 Q -10 -65, 0 -63 Q 10 -65, 20 -60 Q 30 -55, 25 -40" fill="#5F9EA0" stroke="#2F4F4F" stroke-width="2"/>
+    
+    <!-- Hood Opening -->
+    <ellipse cx="0" cy="-45" rx="18" ry="12" fill="#87CEEB" stroke="#4682B4" stroke-width="1"/>
+    
+    <!-- Cloak Faux Fur Trim -->
+    <path d="M -30 -40 Q -32 -35, -28 -32 L -25 -30 Q -22 -32, -20 -30 L -18 -32 Q -15 -30, -12 -32 L -10 -30 Q -7 -32, -5 -30 L -3 -32 Q 0 -30, 3 -32 L 5 -30 Q 7 -32, 10 -30 L 12 -32 Q 15 -30, 18 -32 L 20 -30 Q 22 -32, 25 -30 L 28 -32 Q 32 -35, 30 -40" fill="#F0F8FF" stroke="#B0E0E6" stroke-width="1"/>
+    
+    <!-- Fur Trim on Hood Edge -->
+    <path d="M -25 -40 Q -27 -45, -23 -47 Q -18 -49, -13 -47 Q -8 -49, -3 -47 Q 2 -49, 7 -47 Q 12 -49, 17 -47 Q 22 -49, 27 -47 Q 27 -45, 25 -40" fill="#F0F8FF" stroke="#B0E0E6" stroke-width="1"/>
+    
+    <!-- Cloak Clasp -->
+    <circle cx="0" cy="-15" r="6" fill="#C0C0C0" stroke="#808080" stroke-width="1"/>
+    <circle cx="0" cy="-15" r="3" fill="#F0F8FF" stroke="#B0E0E6" stroke-width="1"/>
+    
+    <!-- Cloak Fold Lines -->
+    <path d="M -15 -20 L -12 20" stroke="#2F4F4F" stroke-width="1" opacity="0.5"/>
+    <path d="M 15 -20 L 12 20" stroke="#2F4F4F" stroke-width="1" opacity="0.5"/>
+    <path d="M 0 -20 L 0 25" stroke="#2F4F4F" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Snowflake Patterns -->
+    <g transform="translate(-10, 10)" opacity="0.7">
+      <path d="M 0 0 L 0 -4 M 0 0 L 3 -2 M 0 0 L 3 2 M 0 0 L 0 4 M 0 0 L -3 2 M 0 0 L -3 -2" stroke="#F0F8FF" stroke-width="0.5"/>
+    </g>
+    <g transform="translate(12, 5)" opacity="0.7">
+      <path d="M 0 0 L 0 -3 M 0 0 L 2 -1 M 0 0 L 2 1 M 0 0 L 0 3 M 0 0 L -2 1 M 0 0 L -2 -1" stroke="#F0F8FF" stroke-width="0.5"/>
+    </g>
+    <g transform="translate(0, 25)" opacity="0.7">
+      <path d="M 0 0 L 0 -3 M 0 0 L 2 -1 M 0 0 L 2 1 M 0 0 L 0 3 M 0 0 L -2 1 M 0 0 L -2 -1" stroke="#F0F8FF" stroke-width="0.5"/>
+    </g>
+    
+    <!-- Warmth Glow -->
+    <ellipse cx="0" cy="0" rx="35" ry="55" fill="none" stroke="#FFA500" stroke-width="2" opacity="0.3">
+      <animate attributeName="rx" values="35;40;35" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+    
+    <!-- Floating Snowflakes -->
+    <g transform="translate(-35, -30)">
+      <g opacity="0.8">
+        <path d="M 0 0 L 0 -4 M 0 0 L 3 -2 M 0 0 L 3 2 M 0 0 L 0 4 M 0 0 L -3 2 M 0 0 L -3 -2" stroke="#F0F8FF" stroke-width="0.5"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 5,-10; 0,0" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/>
+      </g>
+    </g>
+    <g transform="translate(40, -15)">
+      <g opacity="0.7">
+        <path d="M 0 0 L 0 -3 M 0 0 L 2 -1 M 0 0 L 2 1 M 0 0 L 0 3 M 0 0 L -2 1 M 0 0 L -2 -1" stroke="#E0F2FE" stroke-width="0.5"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; -4,-8; 0,0" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3s" repeatCount="indefinite"/>
+      </g>
+    </g>
+    <g transform="translate(-30, 35)">
+      <g opacity="0.6">
+        <path d="M 0 0 L 0 -3 M 0 0 L 2 -1 M 0 0 L 2 1 M 0 0 L 0 3 M 0 0 L -2 1 M 0 0 L -2 -1" stroke="#BAE6FD" stroke-width="0.5"/>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 6,-6; 0,0" dur="5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="5s" repeatCount="indefinite"/>
+      </g>
+    </g>
+    
+    <!-- Magic Protection Aura -->
+    <circle cx="0" cy="0" r="50" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.4">
+      <animate attributeName="r" values="50;55;50" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Cold Resistance Symbol -->
+    <g transform="translate(0, -15)" opacity="0.8">
+      <text x="-8" y="3" font-family="Arial" font-size="12" fill="#F0F8FF">❄</text>
+    </g>
+    
+    <!-- Cloak Movement Animation -->
+    <g>
+      <path d="M -30 -40 Q -35 -30, -30 -20 L -25 30 L -20 45 L -15 50 L -10 45 L -5 50 L 0 45 L 5 50 L 10 45 L 15 50 L 20 45 L 25 30 L 30 -20 Q 35 -30, 30 -40 Z" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.3">
+        <animate attributeName="d" values="M -30 -40 Q -35 -30, -30 -20 L -25 30 L -20 45 L -15 50 L -10 45 L -5 50 L 0 45 L 5 50 L 10 45 L 15 50 L 20 45 L 25 30 L 30 -20 Q 35 -30, 30 -40 Z;M -32 -40 Q -37 -30, -32 -20 L -27 30 L -22 45 L -17 50 L -12 45 L -7 50 L -2 45 L 3 50 L 8 45 L 13 50 L 18 45 L 23 30 L 28 -20 Q 33 -30, 28 -40 Z;M -30 -40 Q -35 -30, -30 -20 L -25 30 L -20 45 L -15 50 L -10 45 L -5 50 L 0 45 L 5 50 L 10 45 L 15 50 L 20 45 L 25 30 L 30 -20 Q 35 -30, 30 -40 Z" dur="6s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+</svg>

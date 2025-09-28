@@ -1,0 +1,105 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Crystal of Eternal Ice Item -->
+  <g transform="translate(100, 100)">
+    <!-- Main Crystal Structure -->
+    <g transform="rotate(45)">
+      <!-- Outer Crystal -->
+      <path d="M 0 -40 L 25 -25 L 25 25 L 0 40 L -25 25 L -25 -25 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+      
+      <!-- Inner Crystal Core -->
+      <path d="M 0 -30 L 18 -18 L 18 18 L 0 30 L -18 18 L -18 -18 Z" fill="#BAE6FD" stroke="#0284C7" stroke-width="1"/>
+      
+      <!-- Crystal Center -->
+      <path d="M 0 -20 L 12 -12 L 12 12 L 0 20 L -12 12 L -12 -12 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      
+      <!-- Crystal Heart -->
+      <circle cx="0" cy="0" r="8" fill="#00BFFF" stroke="#0080FF" stroke-width="1">
+        <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Crystal Facets -->
+      <line x1="0" y1="-40" x2="0" y2="40" stroke="#0284C7" stroke-width="1" opacity="0.5"/>
+      <line x1="-25" y1="-25" x2="25" y2="25" stroke="#0284C7" stroke-width="1" opacity="0.5"/>
+      <line x1="-25" y1="25" x2="25" y2="-25" stroke="#0284C7" stroke-width="1" opacity="0.5"/>
+    </g>
+    
+    <!-- Ice Crystal Spikes -->
+    <g transform="rotate(45)">
+      <!-- Top Spike -->
+      <path d="M 0 -40 L -3 -50 L 0 -52 L 3 -50 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      
+      <!-- Side Spikes -->
+      <path d="M 25 -25 L 32 -30 L 35 -27 L 28 -22 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      <path d="M 25 25 L 32 30 L 35 27 L 28 22 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      <path d="M -25 25 L -32 30 L -35 27 L -28 22 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      <path d="M -25 -25 L -32 -30 L -35 -27 L -28 -22 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      
+      <!-- Bottom Spike -->
+      <path d="M 0 40 L -3 50 L 0 52 L 3 50 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+    </g>
+    
+    <!-- Floating Ice Particles -->
+    <circle cx="-35" cy="-35" r="2" fill="#F0F9FF" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 8,-12; 0,0" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="40" cy="-20" r="1.5" fill="#BAE6FD" opacity="0.7">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -6,-10; 0,0" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="-30" cy="40" r="1" fill="#E0F2FE" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 10,-8; 0,0" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="35" cy="35" r="1.2" fill="#F0F9FF" opacity="0.7">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -8,-12; 0,0" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Eternal Cold Aura -->
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#0284C7" stroke-width="2" opacity="0.4">
+      <animate attributeName="r" values="60;70;60" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Inner Glow -->
+    <circle cx="0" cy="0" r="45" fill="none" stroke="#00BFFF" stroke-width="1" opacity="0.3">
+      <animate attributeName="r" values="45;50;45" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Magic Ice Runes -->
+    <g transform="rotate(45)" opacity="0.7">
+      <text x="-5" y="-15" font-family="Arial" font-size="10" fill="#0284C7">❄</text>
+      <text x="8" y="-8" font-family="Arial" font-size="10" fill="#0284C7">❅</text>
+      <text x="5" y="12" font-family="Arial" font-size="10" fill="#0284C7">❆</text>
+      <text x="-10" y="8" font-family="Arial" font-size="10" fill="#0284C7">❄</text>
+    </g>
+    
+    <!-- Crystal Light Refraction -->
+    <g transform="rotate(45)">
+      <path d="M -15 -15 L -10 -10 L -5 -15" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 15 -15 L 10 -10 L 5 -15" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" begin="1s" repeatCount="indefinite"/>
+      </path>
+      <path d="M -15 15 L -10 10 L -5 15" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" begin="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 15 15 L 10 10 L 5 15" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" begin="0.5s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    
+    <!-- Eternal Power Pulse -->
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#00BFFF" stroke-width="1" opacity="0.8">
+      <animate attributeName="r" values="25;35;25" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

@@ -1,0 +1,77 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background - Ancient Forest -->
+  <rect width="400" height="300" fill="#1a4d2e"/>
+  
+  <!-- Giant Trees -->
+  <g id="giant-trees">
+    <!-- Central Ancient Tree -->
+    <ellipse cx="200" cy="280" rx="80" ry="20" fill="#2d5a3d"/>
+    <rect x="180" y="180" width="40" height="100" fill="#4a3c28"/>
+    <circle cx="200" cy="160" r="60" fill="#228b22"/>
+    <circle cx="200" cy="150" r="50" fill="#32cd32"/>
+    <circle cx="200" cy="140" r="40" fill="#90ee90"/>
+    
+    <!-- Left Giant Tree -->
+    <ellipse cx="80" cy="280" rx="60" ry="15" fill="#2d5a3d"/>
+    <rect x="65" y="200" width="30" height="80" fill="#4a3c28"/>
+    <circle cx="80" cy="185" r="45" fill="#228b22"/>
+    <circle cx="80" cy="175" r="35" fill="#32cd32"/>
+    
+    <!-- Right Giant Tree -->
+    <ellipse cx="320" cy="280" rx="60" ry="15" fill="#2d5a3d"/>
+    <rect x="305" y="200" width="30" height="80" fill="#4a3c28"/>
+    <circle cx="320" cy="185" r="45" fill="#228b22"/>
+    <circle cx="320" cy="175" r="35" fill="#32cd32"/>
+  </g>
+  
+  <!-- Magical Elements -->
+  <g id="magical-elements">
+    <!-- Floating Magic Orbs -->
+    <circle cx="150" cy="80" r="8" fill="#9370db" opacity="0.8">
+      <animate attributeName="cy" values="80;70;80" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="250" cy="90" r="6" fill="#dda0dd" opacity="0.7">
+      <animate attributeName="cy" values="90;80;90" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="200" cy="60" r="10" fill="#ba55d3" opacity="0.9">
+      <animate attributeName="cy" values="60;50;60" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Magic Sparkles -->
+    <g id="sparkles">
+      <path d="M120 100 L122 106 L128 106 L123 110 L125 116 L120 112 L115 116 L117 110 L112 106 L118 106 Z" fill="#ffd700" opacity="0.8"/>
+      <path d="M280 120 L282 126 L288 126 L283 130 L285 136 L280 132 L275 136 L277 130 L272 126 L278 126 Z" fill="#ffd700" opacity="0.7"/>
+      <path d="M160 140 L162 146 L168 146 L163 150 L165 156 L160 152 L155 156 L157 150 L152 146 L158 146 Z" fill="#ffd700" opacity="0.6"/>
+    </g>
+  </g>
+  
+  <!-- Forest Floor Details -->
+  <g id="forest-floor">
+    <!-- Mushrooms -->
+    <ellipse cx="130" cy="270" rx="8" ry="12" fill="#8b4513"/>
+    <ellipse cx="130" cy="265" rx="12" ry="8" fill="#ff6347"/>
+    <ellipse cx="130" cy="263" rx="8" ry="4" fill="#ffa500"/>
+    
+    <ellipse cx="270" cy="275" rx="6" ry="10" fill="#8b4513"/>
+    <ellipse cx="270" cy="271" rx="10" ry="6" fill="#ff6347"/>
+    <ellipse cx="270" cy="269" rx="6" ry="3" fill="#ffa500"/>
+    
+    <!-- Ferns -->
+    <path d="M50 270 Q45 260 50 250 Q55 260 50 270" fill="#228b22" opacity="0.8"/>
+    <path d="M350 275 Q345 265 350 255 Q355 265 350 275" fill="#228b22" opacity="0.8"/>
+  </g>
+  
+  <!-- Ancient Ruins -->
+  <g id="ruins">
+    <rect x="160" y="250" width="20" height="30" fill="#696969" opacity="0.7"/>
+    <rect x="220" y="245" width="15" height="35" fill="#696969" opacity="0.7"/>
+    <rect x="165" y="255" width="10" height="15" fill="#808080" opacity="0.5"/>
+  </g>
+  
+  <!-- Light Rays -->
+  <g id="light-rays" opacity="0.3">
+    <polygon points="200,50 180,280 220,280" fill="#ffff99"/>
+    <polygon points="100,80 90,280 110,280" fill="#ffff99"/>
+    <polygon points="300,70 290,280 310,280" fill="#ffff99"/>
+  </g>
+</svg>

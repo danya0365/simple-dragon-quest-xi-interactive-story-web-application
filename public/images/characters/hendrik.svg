@@ -1,0 +1,67 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Hendrik - Noble Knight Character -->
+  <g transform="translate(100, 100)">
+    <!-- Body and Armor -->
+    <ellipse cx="0" cy="20" rx="35" ry="45" fill="#4A5568" stroke="#2D3748" stroke-width="2"/>
+    
+    <!-- Knight Armor Details -->
+    <rect x="-30" y="0" width="60" height="50" rx="5" fill="#718096" stroke="#4A5568" stroke-width="1"/>
+    <rect x="-25" y="5" width="50" height="8" rx="2" fill="#A0AEC0"/>
+    <rect x="-25" y="18" width="50" height="8" rx="2" fill="#A0AEC0"/>
+    <rect x="-25" y="31" width="50" height="8" rx="2" fill="#A0AEC0"/>
+    
+    <!-- Head -->
+    <circle cx="0" cy="-25" r="20" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+    
+    <!-- Hair -->
+    <path d="M -20 -35 Q -25 -45, -15 -48 Q -5 -50, 0 -48 Q 5 -50, 15 -48 Q 25 -45, 20 -35" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+    
+    <!-- Knight Helmet -->
+    <path d="M -20 -30 Q -22 -40, -10 -42 Q 0 -43, 10 -42 Q 22 -40, 20 -30" fill="#C0C0C0" stroke="#808080" stroke-width="2" opacity="0.8"/>
+    <rect x="-15" y="-35" width="30" height="8" rx="2" fill="#E5E5E5"/>
+    
+    <!-- Eyes -->
+    <circle cx="-7" cy="-25" r="2" fill="#4A5568"/>
+    <circle cx="7" cy="-25" r="2" fill="#4A5568"/>
+    
+    <!-- Sword -->
+    <rect x="35" y="-40" width="4" height="60" fill="#C0C0C0" stroke="#808080" stroke-width="1"/>
+    <rect x="32" y="-45" width="10" height="8" rx="2" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+    <rect x="33" y="15" width="8" height="15" rx="2" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+    
+    <!-- Shield -->
+    <ellipse cx="-35" cy="10" rx="20" ry="25" fill="#4169E1" stroke="#191970" stroke-width="2"/>
+    <path d="M -35 -10 L -35 30 L -25 35 L -45 35 Z" fill="#6495ED" stroke="#4169E1" stroke-width="1"/>
+    <circle cx="-35" cy="5" r="8" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+    
+    <!-- Arms -->
+    <ellipse cx="-25" cy="5" rx="8" ry="20" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+    <ellipse cx="25" cy="5" rx="8" ry="20" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+    
+    <!-- Knight Gauntlets -->
+    <ellipse cx="-25" cy="20" rx="10" ry="8" fill="#C0C0C0" stroke="#808080" stroke-width="1"/>
+    <ellipse cx="25" cy="20" rx="10" ry="8" fill="#C0C0C0" stroke="#808080" stroke-width="1"/>
+    
+    <!-- Legs -->
+    <ellipse cx="-12" cy="55" rx="10" ry="25" fill="#4A5568" stroke="#2D3748" stroke-width="1"/>
+    <ellipse cx="12" cy="55" rx="10" ry="25" fill="#4A5568" stroke="#2D3748" stroke-width="1"/>
+    
+    <!-- Knight Boots -->
+    <ellipse cx="-12" cy="75" rx="12" ry="10" fill="#2D3748" stroke="#1A1A1A" stroke-width="1"/>
+    <ellipse cx="12" cy="75" rx="12" ry="10" fill="#2D3748" stroke="#1A1A1A" stroke-width="1"/>
+    
+    <!-- Noble Aura -->
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.3">
+      <animate attributeName="r" values="60;70;60" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Shield Glow -->
+    <circle cx="-35" cy="10" r="25" fill="none" stroke="#4169E1" stroke-width="1" opacity="0.4">
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

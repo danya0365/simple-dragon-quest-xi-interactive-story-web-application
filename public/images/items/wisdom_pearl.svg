@@ -1,0 +1,140 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pearl of Wisdom - Rare Accessory -->
+  
+  <defs>
+    <radialGradient id="pearlGradient" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1"/>
+      <stop offset="20%" style="stop-color:#F0F8FF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#E6E6FA;stop-opacity:1"/>
+      <stop offset="80%" style="stop-color:#DDA0DD;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#9370DB;stop-opacity:1"/>
+    </radialGradient>
+    <radialGradient id="innerGlowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9"/>
+      <stop offset="30%" style="stop-color:#E6E6FA;stop-opacity:0.7"/>
+      <stop offset="70%" style="stop-color:#DDA0DD;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#9370DB;stop-opacity:0.3"/>
+    </radialGradient>
+    <linearGradient id="wisdomAuraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9370DB;stop-opacity:0.6"/>
+      <stop offset="50%" style="stop-color:#4169E1;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#00CED1;stop-opacity:0.6"/>
+    </linearGradient>
+    <filter id="pearlGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Wisdom Aura Background -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="url(#wisdomAuraGradient)" stroke-width="2" opacity="0.3">
+    <animate attributeName="r" values="80;95;80" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Outer Wisdom Ring -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#9370DB" stroke-width="1" opacity="0.4">
+    <animate attributeName="r" values="70;85;70" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Main Pearl -->
+  <circle cx="100" cy="100" r="45" fill="url(#pearlGradient)" stroke="#9370DB" stroke-width="2" filter="url(#pearlGlow)">
+    <animate attributeName="r" values="45;48;45" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Inner Glow -->
+  <circle cx="90" cy="90" r="25" fill="url(#innerGlowGradient)" opacity="0.8">
+    <animate attributeName="r" values="25;30;25" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.5;0.8" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Pearl Highlights -->
+  <ellipse cx="85" cy="80" rx="12" ry="8" fill="#FFFFFF" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.4;0.7" dur="2s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="90" cy="85" rx="6" ry="4" fill="#FFFFFF" opacity="0.9">
+    <animate attributeName="opacity" values="0.9;0.6;0.9" dur="1.5s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Wisdom Runes -->
+  <text x="100" y="105" font-family="serif" font-size="16" fill="#4169E1" text-anchor="middle" opacity="0.8">Ψ</text>
+  <text x="100" y="105" font-family="serif" font-size="12" fill="#9370DB" text-anchor="middle" opacity="0.6">∞</text>
+  
+  <!-- Knowledge Symbols -->
+  <g opacity="0.7">
+    <text x="80" y="90" font-family="Arial" font-size="10" fill="#00CED1">α</text>
+    <text x="120" y="90" font-family="Arial" font-size="10" fill="#00CED1">β</text>
+    <text x="80" y="115" font-family="Arial" font-size="10" fill="#00CED1">γ</text>
+    <text x="120" y="115" font-family="Arial" font-size="10" fill="#00CED1">δ</text>
+  </g>
+  
+  <!-- Magical Sparkles -->
+  <circle cx="70" cy="70" r="1.5" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="130" cy="70" r="1.5" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="70" cy="130" r="1.5" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" begin="1.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="130" cy="130" r="1.5" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" begin="0.9s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Wisdom Particles -->
+  <circle cx="60" cy="100" r="1" fill="#9370DB" opacity="0.6">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 5,-8; 0,0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="140" cy="100" r="1" fill="#9370DB" opacity="0.6">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -5,-8; 0,0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="60" r="1" fill="#4169E1" opacity="0.5">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -3,5; 0,0" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="140" r="1" fill="#4169E1" opacity="0.5">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 3,-5; 0,0" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Energy Waves -->
+  <circle cx="100" cy="100" r="50" fill="none" stroke="#E6E6FA" stroke-width="1" opacity="0.5">
+    <animate attributeName="r" values="50;65;50" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="100" r="55" fill="none" stroke="#DDA0DD" stroke-width="0.5" opacity="0.4">
+    <animate attributeName="r" values="55;70;55" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.05;0.4" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Floating Knowledge Orbs -->
+  <circle cx="75" cy="85" r="2" fill="#00CED1" opacity="0.8">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 2,-3; 0,0" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="125" cy="85" r="2" fill="#00CED1" opacity="0.8">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -2,-3; 0,0" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="85" cy="120" r="2" fill="#4169E1" opacity="0.7">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 3,-2; 0,0" dur="2.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="115" cy="120" r="2" fill="#4169E1" opacity="0.7">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -3,-2; 0,0" dur="2.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Wisdom Pulse -->
+  <circle cx="100" cy="100" r="45" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6">
+    <animate attributeName="r" values="45;55;45" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

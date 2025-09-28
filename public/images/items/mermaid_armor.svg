@@ -1,0 +1,185 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mermaid Scale Armor - Rare Armor -->
+  
+  <defs>
+    <linearGradient id="scaleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00CED1;stop-opacity:1"/>
+      <stop offset="30%" style="stop-color:#4682B4;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#5F9EA0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#2F4F4F;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="scaleHighlightGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#00CED1;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#4682B4;stop-opacity:0.4"/>
+    </linearGradient>
+    <radialGradient id="magicCoreGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00FFFF;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#00CED1;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#4682B4;stop-opacity:0.5"/>
+    </radialGradient>
+    <filter id="armorGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Armor Aura -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#00CED1" stroke-width="1" opacity="0.3">
+    <animate attributeName="r" values="85;100;85" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Main Armor Chest Piece -->
+  <path d="M 60 60 Q 55 70, 60 85 L 65 100 L 70 115 L 80 125 L 90 130 L 110 130 L 120 125 L 130 115 L 135 100 L 140 85 Q 145 70, 140 60" fill="url(#scaleGradient)" stroke="#2F4F4F" stroke-width="2" filter="url(#armorGlow)">
+    <animate attributeName="opacity" values="1;0.9;1" dur="3s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Scale Pattern - Row 1 -->
+  <g opacity="0.8">
+    <ellipse cx="70" cy="75" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="90" cy="75" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="110" cy="75" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="130" cy="75" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="0.9s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Scale Pattern - Row 2 -->
+  <g opacity="0.7">
+    <ellipse cx="80" cy="90" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.7;0.9;0.7" dur="2.2s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="100" cy="90" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.7;0.9;0.7" dur="2.2s" begin="0.4s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="120" cy="90" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.7;0.9;0.7" dur="2.2s" begin="0.8s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Scale Pattern - Row 3 -->
+  <g opacity="0.6">
+    <ellipse cx="70" cy="105" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2.5s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="90" cy="105" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="110" cy="105" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2.5s" begin="1s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="130" cy="105" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2.5s" begin="1.5s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Scale Pattern - Row 4 -->
+  <g opacity="0.5">
+    <ellipse cx="80" cy="120" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.5;0.7;0.5" dur="2.8s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="100" cy="120" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.5;0.7;0.5" dur="2.8s" begin="0.6s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="120" cy="120" rx="8" ry="6" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5">
+      <animate attributeName="opacity" values="0.5;0.7;0.5" dur="2.8s" begin="1.2s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Shoulder Guards -->
+  <ellipse cx="55" cy="70" rx="15" ry="10" fill="url(#scaleGradient)" stroke="#2F4F4F" stroke-width="2"/>
+  <ellipse cx="145" cy="70" rx="15" ry="10" fill="url(#scaleGradient)" stroke="#2F4F4F" stroke-width="2"/>
+  
+  <!-- Shoulder Scale Patterns -->
+  <g opacity="0.7">
+    <ellipse cx="50" cy="70" rx="4" ry="3" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5"/>
+    <ellipse cx="60" cy="70" rx="4" ry="3" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5"/>
+    <ellipse cx="140" cy="70" rx="4" ry="3" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5"/>
+    <ellipse cx="150" cy="70" rx="4" ry="3" fill="url(#scaleHighlightGradient)" stroke="#4682B4" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Central Magic Core -->
+  <circle cx="100" cy="95" r="12" fill="url(#magicCoreGradient)" filter="url(#armorGlow)">
+    <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Water Symbol -->
+  <text x="100" y="100" font-family="Arial" font-size="12" fill="#FFFFFF" text-anchor="middle" opacity="0.9">≈</text>
+  
+  <!-- Side Armor Plates -->
+  <rect x="50" y="85" width="8" height="30" fill="url(#scaleGradient)" stroke="#2F4F4F" stroke-width="1" rx="2"/>
+  <rect x="142" y="85" width="8" height="30" fill="url(#scaleGradient)" stroke="#2F4F4F" stroke-width="1" rx="2"/>
+  
+  <!-- Side Plate Scales -->
+  <g opacity="0.6">
+    <ellipse cx="54" cy="90" rx="3" ry="2" fill="url(#scaleHighlightGradient)"/>
+    <ellipse cx="54" cy="100" rx="3" ry="2" fill="url(#scaleHighlightGradient)"/>
+    <ellipse cx="54" cy="110" rx="3" ry="2" fill="url(#scaleHighlightGradient)"/>
+    <ellipse cx="146" cy="90" rx="3" ry="2" fill="url(#scaleHighlightGradient)"/>
+    <ellipse cx="146" cy="100" rx="3" ry="2" fill="url(#scaleHighlightGradient)"/>
+    <ellipse cx="146" cy="110" rx="3" ry="2" fill="url(#scaleHighlightGradient)"/>
+  </g>
+  
+  <!-- Water Particles -->
+  <circle cx="40" cy="80" r="1" fill="#87CEEB" opacity="0.6">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -3,-6; 0,0" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="160" cy="85" r="1" fill="#87CEEB" opacity="0.5">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 3,-7; 0,0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="45" cy="110" r="1" fill="#87CEEB" opacity="0.4">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -2,-5; 0,0" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="155" cy="115" r="1" fill="#87CEEB" opacity="0.4">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 2,-5; 0,0" dur="2.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Magical Water Waves -->
+  <path d="M 60 50 Q 80 45, 100 50 T 140 50" fill="none" stroke="#00CED1" stroke-width="1" opacity="0.4">
+    <animate attributeName="d" values="M 60 50 Q 80 45, 100 50 T 140 50; M 60 50 Q 80 55, 100 50 T 140 50; M 60 50 Q 80 45, 100 50 T 140 50" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Energy Waves -->
+  <circle cx="100" cy="95" r="20" fill="none" stroke="#00CED1" stroke-width="1" opacity="0.5">
+    <animate attributeName="r" values="20;30;20" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="95" r="25" fill="none" stroke="#4682B4" stroke-width="0.5" opacity="0.4">
+    <animate attributeName="r" values="25;35;25" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.05;0.4" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Protection Sparkles -->
+  <circle cx="75" cy="65" r="1" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="125" cy="65" r="1" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="60" r="1" fill="#FFFFFF">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Underwater Breathing Effect -->
+  <circle cx="100" cy="140" r="3" fill="#87CEEB" opacity="0.7">
+    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="100" y="145" font-family="Arial" font-size="8" fill="#FFFFFF" text-anchor="middle" opacity="0.8">O₂</text>
+</svg>

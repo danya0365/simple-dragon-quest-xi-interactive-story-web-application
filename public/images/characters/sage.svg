@@ -1,0 +1,85 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sage Character -->
+  <g id="sage">
+    <!-- Body - Ancient Robes -->
+    <ellipse cx="100" cy="250" rx="40" ry="30" fill="#4b0082"/>
+    <rect x="70" y="180" width="60" height="80" fill="#6a0dad"/>
+    <path d="M70 180 Q100 170 130 180 L130 220 Q100 230 70 220 Z" fill="#8a2be2"/>
+    
+    <!-- Robe Details -->
+    <line x1="100" y1="180" x2="100" y2="250" stroke="#ffd700" stroke-width="2"/>
+    <circle cx="100" cy="200" r="8" fill="#ffd700"/>
+    <circle cx="100" cy="220" r="6" fill="#ffd700"/>
+    
+    <!-- Arms -->
+    <rect x="50" y="190" width="20" height="50" rx="10" fill="#fdbcb4"/>
+    <rect x="130" y="190" width="20" height="50" rx="10" fill="#fdbcb4"/>
+    
+    <!-- Hands -->
+    <circle cx="60" cy="245" r="12" fill="#fdbcb4"/>
+    <circle cx="140" cy="245" r="12" fill="#fdbcb4"/>
+    
+    <!-- Head -->
+    <circle cx="100" cy="140" r="35" fill="#fdbcb4"/>
+    
+    <!-- Beard -->
+    <path d="M70 150 Q100 170 130 150 Q120 180 100 185 Q80 180 70 150" fill="#dcdcdc"/>
+    
+    <!-- Eyes - Wise and Ancient -->
+    <circle cx="85" cy="135" r="3" fill="#4b0082"/>
+    <circle cx="115" cy="135" r="3" fill="#4b0082"/>
+    <path d="M80 130 Q85 128 90 130" stroke="#4b0082" stroke-width="1" fill="none"/>
+    <path d="M110 130 Q115 128 120 130" stroke="#4b0082" stroke-width="1" fill="none"/>
+    
+    <!-- Hat - Sage's Wisdom Hat -->
+    <path d="M60 120 Q100 100 140 120 L135 110 Q100 95 65 110 Z" fill="#4b0082"/>
+    <circle cx="100" cy="105" r="8" fill="#ffd700"/>
+    <path d="M100 105 L100 95" stroke="#ffd700" stroke-width="2"/>
+    
+    <!-- Staff of Wisdom -->
+    <rect x="55" y="160" width="8" height="100" fill="#8b4513"/>
+    <circle cx="59" cy="155" r="12" fill="#9370db"/>
+    <circle cx="59" cy="155" r="8" fill="#dda0dd"/>
+    <circle cx="59" cy="155" r="4" fill="#ffffff"/>
+    
+    <!-- Magical Aura -->
+    <circle cx="100" cy="150" r="60" fill="none" stroke="#9370db" stroke-width="2" opacity="0.5">
+      <animate attributeName="r" values="60;70;60" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Ancient Symbols -->
+    <text x="85" y="210" font-family="serif" font-size="12" fill="#ffd700">☉</text>
+    <text x="105" y="210" font-family="serif" font-size="12" fill="#ffd700">☾</text>
+    
+    <!-- Floating Ancient Books -->
+    <g id="books">
+      <rect x="140" y="160" width="15" height="20" fill="#8b4513" transform="rotate(-10 147 170)">
+        <animate attributeName="y" values="160;150;160" dur="4s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="142" y="162" width="11" height="16" fill="#daa520" transform="rotate(-10 147 170)">
+        <animate attributeName="y" values="162;152;162" dur="4s" repeatCount="indefinite"/>
+      </rect>
+      
+      <rect x="30" y="180" width="15" height="20" fill="#8b4513" transform="rotate(10 37 190)">
+        <animate attributeName="y" values="180;170;180" dur="3.5s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="32" y="182" width="11" height="16" fill="#daa520" transform="rotate(10 37 190)">
+        <animate attributeName="y" values="182;172;182" dur="3.5s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    
+    <!-- Wisdom Sparkles -->
+    <g id="wisdom-sparkles">
+      <circle cx="120" cy="120" r="2" fill="#ffd700">
+        <animate attributeName="opacity" values="1;0;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="80" cy="110" r="2" fill="#ffd700">
+        <animate attributeName="opacity" values="1;0;1" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="90" r="2" fill="#ffd700">
+        <animate attributeName="opacity" values="1;0;1" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+</svg>

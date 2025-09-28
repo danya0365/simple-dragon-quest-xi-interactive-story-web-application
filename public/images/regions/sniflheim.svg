@@ -1,0 +1,170 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#E6F3FF"/>
+  
+  <!-- Sky Gradient -->
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#B0E0E6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F2FE;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="iceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0F8FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#E0F2FE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B0E0E6;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#F0F8FF;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#B0E0E6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4682B4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="400" height="300" fill="url(#skyGradient)"/>
+  
+  <!-- Distant Mountains -->
+  <g transform="translate(0, 150)">
+    <path d="M 0 50 L 80 20 L 120 35 L 160 15 L 200 30 L 240 10 L 280 25 L 320 5 L 360 20 L 400 15 L 400 150 L 0 150 Z" fill="url(#mountainGradient)" opacity="0.7"/>
+  </g>
+  
+  <!-- Ice Palace in Distance -->
+  <g transform="translate(200, 120)">
+    <!-- Palace Base -->
+    <rect x="-40" y="20" width="80" height="40" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    
+    <!-- Palace Towers -->
+    <rect x="-35" y="0" width="15" height="25" fill="#F0F8FF" stroke="#0284C7" stroke-width="1"/>
+    <rect x="-20" y="-5" width="15" height="30" fill="#F0F8FF" stroke="#0284C7" stroke-width="1"/>
+    <rect x="5" y="-5" width="15" height="30" fill="#F0F8FF" stroke="#0284C7" stroke-width="1"/>
+    <rect x="20" y="0" width="15" height="25" fill="#F0F8FF" stroke="#0284C7" stroke-width="1"/>
+    
+    <!-- Tower Spires -->
+    <path d="M -35 0 L -27.5 -10 L -20 0" fill="#FFFFFF" stroke="#0284C7" stroke-width="1"/>
+    <path d="M -20 -5 L -12.5 -15 L -5 -5" fill="#FFFFFF" stroke="#0284C7" stroke-width="1"/>
+    <path d="M 5 -5 L 12.5 -15 L 20 -5" fill="#FFFFFF" stroke="#0284C7" stroke-width="1"/>
+    <path d="M 20 0 L 27.5 -10 L 35 0" fill="#FFFFFF" stroke="#0284C7" stroke-width="1"/>
+    
+    <!-- Palace Windows -->
+    <rect x="-30" y="10" width="5" height="5" fill="#00BFFF" opacity="0.8"/>
+    <rect x="-15" y="10" width="5" height="5" fill="#00BFFF" opacity="0.8"/>
+    <rect x="10" y="10" width="5" height="5" fill="#00BFFF" opacity="0.8"/>
+    <rect x="25" y="10" width="5" height="5" fill="#00BFFF" opacity="0.8"/>
+    
+    <!-- Palace Glow -->
+    <ellipse cx="0" cy="20" rx="50" ry="30" fill="#87CEEB" opacity="0.3"/>
+  </g>
+  
+  <!-- Frozen Wasteland -->
+  <g transform="translate(0, 200)">
+    <!-- Ice Ground -->
+    <rect x="0" y="0" width="400" height="100" fill="url(#iceGradient)"/>
+    
+    <!-- Ice Cracks -->
+    <path d="M 50 20 L 55 40 L 52 60" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.6"/>
+    <path d="M 150 15 L 145 35 L 148 55" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.6"/>
+    <path d="M 250 25 L 255 45 L 252 65" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.6"/>
+    <path d="M 350 18 L 345 38 L 348 58" fill="none" stroke="#4682B4" stroke-width="1" opacity="0.6"/>
+    
+    <!-- Snow Drifts -->
+    <ellipse cx="80" cy="30" rx="40" ry="15" fill="#FFFFFF" opacity="0.8"/>
+    <ellipse cx="200" cy="25" rx="50" ry="18" fill="#FFFFFF" opacity="0.8"/>
+    <ellipse cx="320" cy="35" rx="35" ry="12" fill="#FFFFFF" opacity="0.8"/>
+    
+    <!-- Ice Formations -->
+    <g transform="translate(100, 40)">
+      <path d="M 0 0 L -5 -15 L 0 -20 L 5 -15 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+      <path d="M 15 0 L 12 -10 L 15 -13 L 18 -10 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+      <path d="M -20 0 L -17 -12 L -20 -15 L -23 -12 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    </g>
+    
+    <g transform="translate(280, 35)">
+      <path d="M 0 0 L -4 -12 L 0 -16 L 4 -12 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+      <path d="M 12 0 L 10 -8 L 12 -10 L 14 -8 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    </g>
+  </g>
+  
+  <!-- Crystal Caverns Entrance -->
+  <g transform="translate(50, 180)">
+    <!-- Cave Opening -->
+    <ellipse cx="0" cy="20" rx="30" ry="20" fill="#2F4F4F" stroke="#1C1C1C" stroke-width="2"/>
+    <ellipse cx="0" cy="15" rx="25" ry="15" fill="#1C1C1C"/>
+    
+    <!-- Ice Crystals around Cave -->
+    <g transform="translate(-35, 10)">
+      <path d="M 0 0 L -2 -6 L 0 -8 L 2 -6 Z" fill="#F0F8FF" stroke="#0284C7" stroke-width="1"/>
+    </g>
+    <g transform="translate(35, 15)">
+      <path d="M 0 0 L -2 -6 L 0 -8 L 2 -6 Z" fill="#F0F8FF" stroke="#0284C7" stroke-width="1"/>
+    </g>
+    <g transform="translate(-30, 25)">
+      <path d="M 0 0 L -1.5 -4 L 0 -5 L 1.5 -4 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    </g>
+    <g transform="translate(30, 30)">
+      <path d="M 0 0 L -1.5 -4 L 0 -5 L 1.5 -4 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    </g>
+    
+    <!-- Cave Glow -->
+    <ellipse cx="0" cy="20" rx="35" ry="25" fill="#4169E1" opacity="0.2"/>
+  </g>
+  
+  <!-- Falling Snow -->
+  <g opacity="0.8">
+    <circle cx="50" cy="50" r="1" fill="#FFFFFF">
+      <animate attributeName="cy" values="50;300;50" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="120" cy="30" r="1.5" fill="#FFFFFF">
+      <animate attributeName="cy" values="30;300;30" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="200" cy="70" r="1" fill="#FFFFFF">
+      <animate attributeName="cy" values="70;300;70" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="280" cy="40" r="1.2" fill="#FFFFFF">
+      <animate attributeName="cy" values="40;300;40" dur="5.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="5.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="350" cy="60" r="1" fill="#FFFFFF">
+      <animate attributeName="cy" values="60;300;60" dur="4.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="80" cy="20" r="0.8" fill="#FFFFFF">
+      <animate attributeName="cy" values="20;300;20" dur="7s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="150" cy="80" r="1.3" fill="#FFFFFF">
+      <animate attributeName="cy" values="80;300;80" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="250" cy="25" r="0.9" fill="#FFFFFF">
+      <animate attributeName="cy" values="25;300;25" dur="6.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="6.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="320" cy="55" r="1.1" fill="#FFFFFF">
+      <animate attributeName="cy" values="55;300;55" dur="4.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="4.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Northern Lights -->
+  <g opacity="0.4">
+    <path d="M 0 50 Q 100 30, 200 50 T 400 50" fill="none" stroke="#00FF00" stroke-width="2">
+      <animate attributeName="d" values="M 0 50 Q 100 30, 200 50 T 400 50;M 0 40 Q 100 60, 200 40 T 400 40;M 0 50 Q 100 30, 200 50 T 400 50" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 0 80 Q 100 60, 200 80 T 400 80" fill="none" stroke="#FF00FF" stroke-width="1.5">
+      <animate attributeName="d" values="M 0 80 Q 100 60, 200 80 T 400 80;M 0 70 Q 100 90, 200 70 T 400 70;M 0 80 Q 100 60, 200 80 T 400 80" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.1;0.3" dur="10s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Sniflheim Name -->
+  <text x="200" y="280" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2F4F4F" text-anchor="middle">Sniflheim</text>
+  <text x="200" y="295" font-family="Arial, sans-serif" font-size="12" fill="#4682B4" text-anchor="middle">The Frozen Citadel</text>
+</svg>

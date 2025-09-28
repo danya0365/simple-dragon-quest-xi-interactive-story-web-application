@@ -1,0 +1,101 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Luminary's Pendant -->
+  <g id="luminary-pendant">
+    <!-- Chain -->
+    <path d="M100 50 L95 80 L100 90 L105 80 L100 50" stroke="#ffd700" stroke-width="3" fill="none"/>
+    <circle cx="95" cy="80" r="2" fill="#ffd700"/>
+    <circle cx="105" cy="80" r="2" fill="#ffd700"/>
+    <circle cx="100" cy="90" r="2" fill="#ffd700"/>
+    
+    <!-- Pendant Body - Star Shape -->
+    <g id="star-pendant">
+      <!-- Outer Star -->
+      <path d="M100 110 L110 140 L140 140 L118 158 L128 188 L100 170 L72 188 L82 158 L60 140 L90 140 Z" fill="#ffd700" stroke="#ffed4e" stroke-width="2"/>
+      
+      <!-- Inner Star -->
+      <path d="M100 120 L107 142 L130 142 L113 156 L120 178 L100 164 L80 178 L87 156 L70 142 L93 142 Z" fill="#ffed4e" stroke="#fff59d" stroke-width="1"/>
+      
+      <!-- Center Gem -->
+      <circle cx="100" cy="150" r="15" fill="#ffffff" opacity="0.9"/>
+      <circle cx="100" cy="150" r="12" fill="#e3f2fd" opacity="0.8"/>
+      <circle cx="100" cy="150" r="8" fill="#bbdefb" opacity="0.7"/>
+      <circle cx="100" cy="150" r="4" fill="#90caf9" opacity="0.6"/>
+    </g>
+    
+    <!-- Radiant Light -->
+    <g id="radiant-light" opacity="0.6">
+      <path d="M100 100 L100 80" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M100 200 L100 220" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M50 150 L30 150" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M150 150 L170 150" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M65 115 L50 100" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M135 115 L150 100" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M65 185 L50 200" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M135 185 L150 200" stroke="#ffd700" stroke-width="2">
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    
+    <!-- Magical Aura -->
+    <circle cx="100" cy="150" r="60" fill="none" stroke="#ffd700" stroke-width="2" opacity="0.4">
+      <animate attributeName="r" values="60;80;60" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Light Particles -->
+    <g id="light-particles">
+      <circle cx="80" cy="130" r="2" fill="#ffffff">
+        <animate attributeName="cy" values="130;120;130" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="120" cy="170" r="2" fill="#ffffff">
+        <animate attributeName="cy" values="170;160;170" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="120" r="1.5" fill="#ffd700">
+        <animate attributeName="cy" values="120;110;120" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="85" cy="175" r="1.5" fill="#ffffff">
+        <animate attributeName="cy" values="175;165;175" dur="3.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="3.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="115" cy="125" r="1.5" fill="#ffd700">
+        <animate attributeName="cy" values="125;115;125" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Ancient Inscription -->
+    <text x="100" y="240" font-family="serif" font-size="14" fill="#ffd700" text-anchor="middle">✦ LUMINARY ✦</text>
+    
+    <!-- Identity Symbols -->
+    <g id="identity-symbols">
+      <circle cx="70" cy="260" r="8" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.7"/>
+      <circle cx="100" cy="260" r="8" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.7"/>
+      <circle cx="130" cy="260" r="8" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.7"/>
+      <text x="70" y="264" font-family="serif" font-size="8" fill="#ffd700" text-anchor="middle">I</text>
+      <text x="100" y="264" font-family="serif" font-size="8" fill="#ffd700" text-anchor="middle">AM</text>
+      <text x="130" y="264" font-family="serif" font-size="8" fill="#ffd700" text-anchor="middle">I</text>
+    </g>
+    
+    <!-- Glow Effect -->
+    <ellipse cx="100" cy="150" rx="80" ry="60" fill="#ffd700" opacity="0.1">
+      <animate attributeName="opacity" values="0.1;0.3;0.1" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sage's Staff -->
+  <g id="sage-staff">
+    <!-- Staff Body -->
+    <rect x="90" y="50" width="20" height="200" fill="#8b4513" rx="10"/>
+    
+    <!-- Wood Grain -->
+    <line x1="95" y1="60" x2="95" y2="240" stroke="#654321" stroke-width="1" opacity="0.7"/>
+    <line x1="105" y1="70" x2="105" y2="230" stroke="#654321" stroke-width="1" opacity="0.7"/>
+    <line x1="100" y1="80" x2="100" y2="220" stroke="#654321" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Staff Handle -->
+    <rect x="88" y="230" width="24" height="30" fill="#654321" rx="12"/>
+    <circle cx="100" cy="245" r="8" fill="#4b0082"/>
+    
+    <!-- Crystal Orb -->
+    <circle cx="100" cy="50" r="25" fill="#9370db" opacity="0.8"/>
+    <circle cx="100" cy="50" r="20" fill="#dda0dd" opacity="0.9"/>
+    <circle cx="100" cy="50" r="15" fill="#ffffff" opacity="0.7"/>
+    
+    <!-- Crystal Glow -->
+    <circle cx="100" cy="50" r="30" fill="none" stroke="#9370db" stroke-width="2" opacity="0.5">
+      <animate attributeName="r" values="30;40;30" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Ancient Runes on Staff -->
+    <g id="runes">
+      <text x="100" y="100" font-family="serif" font-size="12" fill="#ffd700" text-anchor="middle">☉</text>
+      <text x="100" y="130" font-family="serif" font-size="12" fill="#ffd700" text-anchor="middle">☾</text>
+      <text x="100" y="160" font-family="serif" font-size="12" fill="#ffd700" text-anchor="middle">✦</text>
+      <text x="100" y="190" font-family="serif" font-size="12" fill="#ffd700" text-anchor="middle">◊</text>
+    </g>
+    
+    <!-- Magic Particles -->
+    <g id="magic-particles">
+      <circle cx="80" cy="40" r="3" fill="#dda0dd">
+        <animate attributeName="cy" values="40;30;40" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="120" cy="45" r="2" fill="#9370db">
+        <animate attributeName="cy" values="45;35;45" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="35" r="2.5" fill="#ffffff">
+        <animate attributeName="cy" values="35;25;35" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="85" cy="55" r="2" fill="#dda0dd">
+        <animate attributeName="cy" values="55;45;55" dur="3.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="3.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="115" cy="60" r="1.5" fill="#9370db">
+        <animate attributeName="cy" values="60;50;60" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Energy Flow -->
+    <g id="energy-flow" opacity="0.6">
+      <path d="M100 75 Q90 85 100 95 Q110 105 100 115 Q90 125 100 135" stroke="#9370db" stroke-width="2" fill="none">
+        <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    
+    <!-- Ancient Symbols Floating -->
+    <g id="floating-symbols">
+      <text x="60" y="120" font-family="serif" font-size="10" fill="#ffd700" opacity="0.7">α</text>
+      <text x="130" y="140" font-family="serif" font-size="10" fill="#ffd700" opacity="0.7">β</text>
+      <text x="70" y="180" font-family="serif" font-size="10" fill="#ffd700" opacity="0.7">γ</text>
+      <text x="120" y="200" font-family="serif" font-size="10" fill="#ffd700" opacity="0.7">δ</text>
+    </g>
+    
+    <!-- Staff Tip -->
+    <circle cx="100" cy="50" r="5" fill="#ffd700"/>
+    
+    <!-- Bottom Cap -->
+    <rect x="95" y="255" width="10" height="8" fill="#654321" rx="2"/>
+  </g>
+</svg>

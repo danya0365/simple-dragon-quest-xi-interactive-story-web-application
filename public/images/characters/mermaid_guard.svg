@@ -1,0 +1,159 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mermaid Guard - Underwater Warrior -->
+  
+  <defs>
+    <linearGradient id="guardHairGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00CED1;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#4682B4;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="guardArmorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#708090;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#2F4F4F;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="tridentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C0C0C0;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#00CED1;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C0C0C0;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="guardFaceGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#F0E68C;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#DEB887;stop-opacity:1"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Trident Weapon -->
+  <g>
+    <!-- Trident Handle -->
+    <rect x="45" y="30" width="8" height="100" fill="url(#tridentGradient)" stroke="#696969" stroke-width="1" rx="1">
+      <animateTransform attributeName="transform" type="rotate" values="0 49 80; 10 49 80; 0 49 80; -10 49 80; 0 49 80" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    
+    <!-- Trident Head -->
+    <path d="M 41 25 L 49 15 L 57 25 L 54 35 L 44 35 Z" fill="#C0C0C0" stroke="#696969" stroke-width="1">
+      <animateTransform attributeName="transform" type="rotate" values="0 49 25; 10 49 25; 0 49 25; -10 49 25; 0 49 25" dur="4s" repeatCount="indefinite"/>
+    </path>
+    
+    <!-- Trident Prongs -->
+    <path d="M 44 20 L 46 10" stroke="#C0C0C0" stroke-width="2" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" values="0 49 25; 10 49 25; 0 49 25; -10 49 25; 0 49 25" dur="4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 49 20 L 49 8" stroke="#C0C0C0" stroke-width="2" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" values="0 49 25; 10 49 25; 0 49 25; -10 49 25; 0 49 25" dur="4s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 54 20 L 52 10" stroke="#C0C0C0" stroke-width="2" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" values="0 49 25; 10 49 25; 0 49 25; -10 49 25; 0 49 25" dur="4s" repeatCount="indefinite"/>
+    </path>
+    
+    <!-- Trident Glow -->
+    <circle cx="49" cy="20" r="2" fill="#00CED1" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0.4;0.8" dur="1.5s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 49 25; 10 49 25; 0 49 25; -10 49 25; 0 49 25" dur="4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Helmet -->
+  <ellipse cx="100" cy="50" rx="25" ry="20" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="2"/>
+  <rect x="85" y="45" width="30" height="15" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="1" rx="2"/>
+  
+  <!-- Helmet Crest -->
+  <path d="M 90 35 L 100 25 L 110 35" fill="none" stroke="#00CED1" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="100" cy="25" r="2" fill="#00CED1">
+    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Face (visible through helmet) -->
+  <ellipse cx="100" cy="65" rx="20" ry="25" fill="url(#guardFaceGradient)" stroke="#DEB887" stroke-width="1" opacity="0.9"/>
+  
+  <!-- Eyes - Alert and focused -->
+  <ellipse cx="92" cy="62" rx="5" ry="7" fill="#4682B4">
+    <animate attributeName="ry" values="7;2;7" dur="6s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="108" cy="62" rx="5" ry="7" fill="#4682B4">
+    <animate attributeName="ry" values="7;2;7" dur="6s" begin="0.5s" repeatCount="indefinite"/>
+  </ellipse>
+  <circle cx="94" cy="60" r="1" fill="#FFFFFF"/>
+  <circle cx="106" cy="60" r="1" fill="#FFFFFF"/>
+  
+  <!-- Nose -->
+  <path d="M 100 70 L 97 74 L 100 72" fill="none" stroke="#DEB887" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Mouth - Serious expression -->
+  <path d="M 94 78 Q 100 80, 106 78" fill="none" stroke="#8B4513" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Armor Chest Plate -->
+  <path d="M 75 85 Q 70 95, 75 105 L 80 115 L 85 125 L 95 128 L 105 128 L 115 125 L 120 115 L 125 105 Q 130 95, 125 85" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="2"/>
+  
+  <!-- Armor Details -->
+  <circle cx="100" cy="100" r="8" fill="none" stroke="#00CED1" stroke-width="1.5"/>
+  <circle cx="100" cy="100" r="4" fill="#00CED1">
+    <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Shoulder Guards -->
+  <ellipse cx="70" cy="90" rx="12" ry="6" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="1"/>
+  <ellipse cx="130" cy="90" rx="12" ry="6" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="1"/>
+  
+  <!-- Arms -->
+  <ellipse cx="55" cy="110" rx="7" ry="20" fill="url(#guardFaceGradient)" stroke="#DEB887" stroke-width="1"/>
+  <ellipse cx="145" cy="110" rx="7" ry="20" fill="url(#guardFaceGradient)" stroke="#DEB887" stroke-width="1"/>
+  
+  <!-- Arm Guards -->
+  <rect x="50" y="100" width="10" height="20" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="1" rx="2"/>
+  <rect x="140" y="100" width="10" height="20" fill="url(#guardArmorGradient)" stroke="#2F4F4F" stroke-width="1" rx="2"/>
+  
+  <!-- Hands -->
+  <ellipse cx="55" cy="125" r="5" fill="url(#guardFaceGradient)" stroke="#DEB887" stroke-width="1"/>
+  <ellipse cx="145" cy="125" r="5" fill="url(#guardFaceGradient)" stroke="#DEB887" stroke-width="1"/>
+  
+  <!-- Mermaid Tail -->
+  <path d="M 80 125 Q 70 140, 75 155 Q 80 170, 90 175 Q 100 178, 110 175 Q 120 170, 125 155 Q 130 140, 120 125" fill="#4682B4" stroke="#00CED1" stroke-width="2">
+    <animate attributeName="d" values="M 80 125 Q 70 140, 75 155 Q 80 170, 90 175 Q 100 178, 110 175 Q 120 170, 125 155 Q 130 140, 120 125; M 80 125 Q 68 138, 73 153 Q 78 168, 88 173 Q 100 176, 112 173 Q 122 168, 127 153 Q 132 138, 120 125; M 80 125 Q 70 140, 75 155 Q 80 170, 90 175 Q 100 178, 110 175 Q 120 170, 125 155 Q 130 140, 120 125" dur="4s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Tail Fins -->
+  <path d="M 90 175 L 82 185 L 90 180 Z" fill="#00CED1" stroke="#4682B4" stroke-width="1">
+    <animateTransform attributeName="transform" type="rotate" values="0 90 180; 8 90 180; 0 90 180" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M 110 175 L 118 185 L 110 180 Z" fill="#00CED1" stroke="#4682B4" stroke-width="1">
+    <animateTransform attributeName="transform" type="rotate" values="0 110 180; -8 110 180; 0 110 180" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Armor Scales Pattern -->
+  <g opacity="0.7">
+    <circle cx="85" cy="95" r="2" fill="#00CED1">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="98" r="2" fill="#00CED1">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="115" cy="95" r="2" fill="#00CED1">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="90" cy="108" r="2" fill="#00CED1">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="105" cy="110" r="2" fill="#00CED1">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" begin="1.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Guard Aura -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#00CED1" stroke-width="1" opacity="0.3">
+    <animate attributeName="r" values="70;80;70" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Water Bubbles -->
+  <circle cx="40" cy="60" r="1.5" fill="#87CEEB" opacity="0.6">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -3,-8; 0,0" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="160" cy="80" r="1" fill="#87CEEB" opacity="0.5">
+    <animateTransform attributeName="transform" type="translate" values="0,0; 4,-12; 0,0" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="50" cy="140" r="1" fill="#87CEEB" opacity="0.4">
+    <animateTransform attributeName="transform" type="translate" values="0,0; -2,-6; 0,0" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

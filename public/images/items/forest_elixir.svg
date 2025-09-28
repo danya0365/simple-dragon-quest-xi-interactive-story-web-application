@@ -1,0 +1,92 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Forest Elixir -->
+  <g id="forest-elixir">
+    <!-- Bottle Body -->
+    <path d="M80 120 L80 200 Q80 220 100 220 Q120 220 120 200 L120 120 Z" fill="#8fbc8f" stroke="#556b2f" stroke-width="2"/>
+    
+    <!-- Bottle Neck -->
+    <rect x="90" y="100" width="20" height="25" fill="#8fbc8f" stroke="#556b2f" stroke-width="2"/>
+    
+    <!-- Bottle Cap -->
+    <rect x="85" y="90" width="30" height="15" fill="#daa520" stroke="#b8860b" stroke-width="2" rx="3"/>
+    
+    <!-- Liquid Inside -->
+    <path d="M85 140 L85 195 Q85 210 100 210 Q115 210 115 195 L115 140 Z" fill="#32cd32" opacity="0.8"/>
+    
+    <!-- Magic Bubbles -->
+    <circle cx="95" cy="160" r="4" fill="#90ee90" opacity="0.7">
+      <animate attributeName="cy" values="160;150;160" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.3;0.7" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="105" cy="180" r="3" fill="#90ee90" opacity="0.6">
+      <animate attributeName="cy" values="180;170;180" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="170" r="2" fill="#90ee90" opacity="0.8">
+      <animate attributeName="cy" values="170;160;170" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Bottle Label -->
+    <rect x="85" y="150" width="30" height="40" fill="#f5f5dc" stroke="#8b4513" stroke-width="1" opacity="0.9"/>
+    <text x="100" y="165" font-family="serif" font-size="8" fill="#228b22" text-anchor="middle">FOREST</text>
+    <text x="100" y="175" font-family="serif" font-size="8" fill="#228b22" text-anchor="middle">ELIXIR</text>
+    <text x="100" y="185" font-family="serif" font-size="6" fill="#556b2f" text-anchor="middle">Healing</text>
+    
+    <!-- Magical Glow -->
+    <circle cx="100" cy="160" r="50" fill="none" stroke="#32cd32" stroke-width="2" opacity="0.4">
+      <animate attributeName="r" values="50;60;50" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Nature Particles -->
+    <g id="nature-particles">
+      <circle cx="70" cy="130" r="2" fill="#90ee90">
+        <animate attributeName="cy" values="130;120;130" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="130" cy="140" r="2" fill="#32cd32">
+        <animate attributeName="cy" values="140;130;140" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="110" r="1.5" fill="#90ee90">
+        <animate attributeName="cy" values="110;100;110" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="75" cy="155" r="1.5" fill="#32cd32">
+        <animate attributeName="cy" values="155;145;155" dur="3.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="3.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="125" cy="165" r="1.5" fill="#90ee90">
+        <animate attributeName="cy" values="165;155;165" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Leaf Decorations -->
+    <g id="leaf-decorations">
+      <ellipse cx="65" cy="100" rx="8" ry="4" fill="#228b22" transform="rotate(-30 65 100)"/>
+      <ellipse cx="135" cy="105" rx="8" ry="4" fill="#32cd32" transform="rotate(30 135 105)"/>
+      <ellipse cx="100" cy="85" rx="6" ry="3" fill="#90ee90"/>
+    </g>
+    
+    <!-- Ancient Symbols -->
+    <text x="100" y="240" font-family="serif" font-size="12" fill="#32cd32" text-anchor="middle">🌿 HEALING 🌿</text>
+    
+    <!-- Power Indicators -->
+    <g id="power-indicators">
+      <circle cx="70" cy="260" r="5" fill="#32cd32" opacity="0.8"/>
+      <circle cx="85" cy="260" r="5" fill="#32cd32" opacity="0.8"/>
+      <circle cx="100" cy="260" r="5" fill="#32cd32" opacity="0.8"/>
+      <circle cx="115" cy="260" r="5" fill="#90ee90" opacity="0.6"/>
+      <circle cx="130" cy="260" r="5" fill="#90ee90" opacity="0.6"/>
+    </g>
+    
+    <!-- Sparkle Effects -->
+    <g id="sparkles">
+      <path d="M60 120 L61 123 L64 123 L61 125 L62 128 L60 125 L57 128 L58 125 L55 123 L58 123 Z" fill="#ffd700" opacity="0.7"/>
+      <path d="M140 130 L141 133 L144 133 L141 135 L142 138 L140 135 L137 138 L138 135 L135 133 L138 133 Z" fill="#ffd700" opacity="0.6"/>
+      <path d="M100 75 L101 78 L104 78 L101 80 L102 83 L100 80 L97 83 L98 80 L95 78 L98 78 Z" fill="#ffd700" opacity="0.8"/>
+    </g>
+  </g>
+</svg>

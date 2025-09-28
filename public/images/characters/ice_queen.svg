@@ -1,0 +1,106 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Ice Queen Character -->
+  <g transform="translate(100, 100)">
+    <!-- Ice Crystal Crown -->
+    <g transform="translate(0, -45)">
+      <path d="M -15 -55 L -10 -65 L 0 -60 L 10 -65 L 15 -55 L 10 -45 L -10 -45 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+      <path d="M -8 -55 L -5 -60 L 0 -58 L 5 -60 L 8 -55 L 5 -50 L -5 -50 Z" fill="#BAE6FD" stroke="#0284C7" stroke-width="1"/>
+      <circle cx="0" cy="-58" r="3" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+      
+      <!-- Crown Sparkle -->
+      <circle cx="-12" cy="-50" r="1" fill="#F0F9FF">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="12" cy="-50" r="1" fill="#F0F9FF">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Head -->
+    <circle cx="0" cy="-25" r="18" fill="#FDBCB4" stroke="#87CEEB" stroke-width="1"/>
+    
+    <!-- Ice Queen Hair -->
+    <path d="M -18 -35 Q -22 -45, -15 -48 Q -8 -50, 0 -48 Q 8 -50, 15 -48 Q 22 -45, 18 -35" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    <path d="M -18 -30 Q -20 -40, -12 -42 Q -6 -43, 0 -42 Q 6 -43, 12 -42 Q 20 -40, 18 -30" fill="#BAE6FD" stroke="#0284C7" stroke-width="1"/>
+    
+    <!-- Eyes (Cold Blue) -->
+    <circle cx="-6" cy="-25" r="2" fill="#0284C7"/>
+    <circle cx="6" cy="-25" r="2" fill="#0284C7"/>
+    <circle cx="-6" cy="-26" r="1" fill="#F0F9FF"/>
+    <circle cx="6" cy="-26" r="1" fill="#F0F9FF"/>
+    
+    <!-- Ice Dress -->
+    <ellipse cx="0" cy="20" rx="30" ry="40" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+    
+    <!-- Dress Details -->
+    <path d="M -25 0 Q -20 -5, -15 0 L -10 15 L -20 15 Z" fill="#BAE6FD" stroke="#0284C7" stroke-width="1"/>
+    <path d="M 25 0 Q 20 -5, 15 0 L 10 15 L 20 15 Z" fill="#BAE6FD" stroke="#0284C7" stroke-width="1"/>
+    <rect x="-15" y="10" width="30" height="5" rx="2" fill="#F0F9FF" stroke="#0284C7" stroke-width="1"/>
+    
+    <!-- Ice Crystal Patterns on Dress -->
+    <g transform="translate(0, 15)">
+      <path d="M -10 0 L -5 -5 L 0 0 L 5 -5 L 10 0 L 5 5 L 0 0 L -5 5 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="0.5" opacity="0.7"/>
+      <path d="M -8 10 L -4 6 L 0 10 L 4 6 L 8 10 L 4 14 L 0 10 L -4 14 Z" fill="#F0F9FF" stroke="#0284C7" stroke-width="0.5" opacity="0.7"/>
+    </g>
+    
+    <!-- Arms -->
+    <ellipse cx="-22" cy="5" rx="8" ry="18" fill="#FDBCB4" stroke="#87CEEB" stroke-width="1"/>
+    <ellipse cx="22" cy="5" rx="8" ry="18" fill="#FDBCB4" stroke="#87CEEB" stroke-width="1"/>
+    
+    <!-- Ice Gloves -->
+    <ellipse cx="-22" cy="18" rx="9" ry="8" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    <ellipse cx="22" cy="18" rx="9" ry="8" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+    
+    <!-- Ice Scepter -->
+    <g transform="translate(30, -10)">
+      <rect x="-2" y="0" width="4" height="35" fill="#E0F2FE" stroke="#0284C7" stroke-width="1"/>
+      <circle cx="0" cy="-5" r="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="2"/>
+      <path d="M -5 -8 L 0 -12 L 5 -8 L 0 -5 Z" fill="#BAE6FD" stroke="#0284C7" stroke-width="1"/>
+      <circle cx="0" cy="-5" r="3" fill="#0284C7"/>
+      
+      <!-- Scepter Glow -->
+      <circle cx="0" cy="-5" r="12" fill="none" stroke="#0284C7" stroke-width="1" opacity="0.4">
+        <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Ice Queen Cape -->
+    <path d="M -25 -5 Q -35 10, -30 35 L -20 40 L -15 35 L -10 40 L -5 35 L 0 40 L 5 35 L 10 40 L 15 35 L 20 40 L 25 35 L 30 10 Q 35 -5, 25 -5" fill="#E0F2FE" stroke="#0284C7" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Floating Ice Particles -->
+    <circle cx="-30" cy="-20" r="2" fill="#F0F9FF" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 5,-10; 0,0" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.3;0.8" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="35" cy="10" r="1.5" fill="#BAE6FD" opacity="0.7">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -5,-15; 0,0" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="-25" cy="30" r="1" fill="#E0F2FE" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 8,-12; 0,0" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Queen's Cold Aura -->
+    <circle cx="0" cy="0" r="55" fill="none" stroke="#0284C7" stroke-width="2" opacity="0.3">
+      <animate attributeName="r" values="55;65;55" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Ice Shards -->
+    <g transform="translate(-40, -10)">
+      <path d="M 0 0 L 3 -8 L 6 0 L 3 2 Z" fill="#E0F2FE" stroke="#0284C7" stroke-width="1" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="8s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    <g transform="translate(40, 20)">
+      <path d="M 0 0 L 2 -6 L 4 0 L 2 1 Z" fill="#BAE6FD" stroke="#0284C7" stroke-width="1" opacity="0.6">
+        <animateTransform attributeName="transform" type="rotate" values="0;-360" dur="6s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+</svg>
