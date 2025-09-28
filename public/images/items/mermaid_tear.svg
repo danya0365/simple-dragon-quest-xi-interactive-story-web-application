@@ -1,0 +1,46 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mermaid's Tear - Legendary healing tear -->
+  
+  <!-- Tear shape (main) -->
+  <path d="M 32 10 Q 20 20 20 35 Q 20 50 32 55 Q 44 50 44 35 Q 44 20 32 10" fill="#00BFFF" stroke="#0080FF" stroke-width="2"/>
+  
+  <!-- Inner tear glow -->
+  <path d="M 32 15 Q 24 22 24 35 Q 24 46 32 50 Q 40 46 40 35 Q 40 22 32 15" fill="#87CEEB" opacity="0.6"/>
+  
+  <!-- Tear highlight -->
+  <ellipse cx="28" cy="25" rx="4" ry="6" fill="#FFFFFF" opacity="0.4"/>
+  
+  <!-- Magical sparkles inside -->
+  <polygon points="30,25 32,23 34,25 32,27" fill="#FFD700" opacity="0.8"/>
+  <polygon points="28,35 30,33 32,35 30,37" fill="#FF69B4" opacity="0.8"/>
+  <polygon points="34,30 36,28 38,30 36,32" fill="#87CEEB" opacity="0.8"/>
+  
+  <!-- Healing light rays -->
+  <line x1="32" y1="10" x2="32" y2="5" stroke="#87CEEB" stroke-width="2" opacity="0.6"/>
+  <line x1="25" y1="15" x2="22" y2="12" stroke="#87CEEB" stroke-width="1.5" opacity="0.6"/>
+  <line x1="39" y1="15" x2="42" y2="12" stroke="#87CEEB" stroke-width="1.5" opacity="0.6"/>
+  <line x1="20" y1="25" x2="15" y2="23" stroke="#87CEEB" stroke-width="1.5" opacity="0.6"/>
+  <line x1="44" y1="25" x2="49" y2="23" stroke="#87CEEB" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Floating magic particles -->
+  <circle cx="15" cy="20" r="1" fill="#00BFFF" opacity="0.8"/>
+  <circle cx="50" cy="25" r="1" fill="#FFD700" opacity="0.8"/>
+  <circle cx="20" cy="45" r="1" fill="#87CEEB" opacity="0.8"/>
+  <circle cx="45" cy="40" r="1" fill="#FF69B4" opacity="0.8"/>
+  
+  -- Mermaid scale pattern -->
+  <path d="M 25 30 Q 27 28 29 30 T 33 30 T 37 30 T 39 30" stroke="#0080FF" stroke-width="0.5" fill="none" opacity="0.5"/>
+  <path d="M 25 35 Q 27 33 29 35 T 33 35 T 37 35 T 39 35" stroke="#0080FF" stroke-width="0.5" fill="none" opacity="0.5"/>
+  <path d="M 25 40 Q 27 38 29 40 T 33 40 T 37 40 T 39 40" stroke="#0080FF" stroke-width="0.5" fill="none" opacity="0.5"/>
+  
+  <!-- Legendary glow -->
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#00BFFF" stroke-width="1" opacity="0.3"/>
+  <circle cx="32" cy="32" r="35" fill="none" stroke="#87CEEB" stroke-width="0.5" opacity="0.2"/>
+  
+  -- Healing power text -->
+  <text x="32" y="48" text-anchor="middle" font-family="Arial" font-size="3" fill="#FFFFFF" font-weight="bold">HEAL</text>
+  
+  <!-- Water ripples around base -->
+  <ellipse cx="32" cy="55" rx="8" ry="2" fill="none" stroke="#00BFFF" stroke-width="0.5" opacity="0.6"/>
+  <ellipse cx="32" cy="57" rx="12" ry="3" fill="none" stroke="#00BFFF" stroke-width="0.5" opacity="0.4"/>
+</svg>

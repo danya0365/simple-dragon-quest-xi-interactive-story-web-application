@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Jasper - General of Heliodor -->
+  <circle cx="50" cy="30" r="15" fill="#fdbcb4" stroke="#333" stroke-width="2"/>
+  <!-- Military helmet -->
+  <path d="M32 25 Q50 15 68 25 L68 30 Q50 35 32 30 Z" fill="#696969" stroke="#333" stroke-width="2"/>
+  <!-- Helmet crest -->
+  <rect x="48" y="12" width="4" height="8" fill="#8B0000" stroke="#333" stroke-width="1"/>
+  
+  <!-- Face with stern expression -->
+  <circle cx="42" cy="28" r="2" fill="#333"/>
+  <circle cx="58" cy="28" r="2" fill="#333"/>
+  <!-- Frown -->
+  <path d="M42 36 Q50 34 58 36" fill="none" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Scar on face -->
+  <line x1="35" y1="30" x2="40" y2="32" stroke="#8B0000" stroke-width="1"/>
+  
+  <!-- Body - Military armor -->
+  <rect x="32" y="45" width="36" height="40" rx="5" fill="#2F4F4F" stroke="#333" stroke-width="2"/>
+  <!-- Armor plates -->
+  <rect x="35" y="50" width="30" height="8" rx="2" fill="#708090" stroke="#333" stroke-width="1"/>
+  <rect x="35" y="62" width="30" height="8" rx="2" fill="#708090" stroke="#333" stroke-width="1"/>
+  <rect x="35" y="74" width="30" height="8" rx="2" fill="#708090" stroke="#333" stroke-width="1"/>
+  
+  <!-- Military insignia -->
+  <circle cx="50" cy="55" r="3" fill="#FFD700" stroke="#333" stroke-width="0.5"/>
+  
+  <!-- Arms with armor -->
+  <rect x="22" y="50" width="15" height="25" rx="7" fill="#2F4F4F" stroke="#333" stroke-width="1.5"/>
+  <rect x="63" y="50" width="15" height="25" rx="7" fill="#2F4F4F" stroke="#333" stroke-width="1.5"/>
+  <!-- Shoulder guards -->
+  <circle cx="25" cy="52" r="4" fill="#708090" stroke="#333" stroke-width="1"/>
+  <circle cx="75" cy="52" r="4" fill="#708090" stroke="#333" stroke-width="1"/>
+  
+  <!-- Legs with armor -->
+  <rect x="35" y="85" width="12" height="12" rx="5" fill="#2F4F4F" stroke="#333" stroke-width="1.5"/>
+  <rect x="53" y="85" width="12" height="12" rx="5" fill="#2F4F4F" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Dark sword -->
+  <rect x="72" y="35" width="4" height="35" rx="1" fill="#2F2F2F" stroke="#333" stroke-width="1"/>
+  <rect x="70" y="33" width="8" height="5" rx="2" fill="#8B4513" stroke="#333" stroke-width="1"/>
+  <!-- Dark aura around sword -->
+  <path d="M70 35 Q74 30 78 35" fill="none" stroke="#8B0000" stroke-width="1" opacity="0.7"/>
+  
+  <!-- Military badge -->
+  <rect x="45" y="70" width="10" height="6" rx="1" fill="#FFD700" stroke="#333" stroke-width="0.5"/>
+  <text x="50" y="74" text-anchor="middle" font-size="4" fill="#333">GEN</text>
+</svg>

@@ -1,0 +1,64 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sailor's Coat - Wind and water protective coat -->
+  
+  <!-- Coat body (main) -->
+  <path d="M 20 20 L 20 50 Q 20 55 25 55 L 39 55 Q 44 55 44 50 L 44 20 Q 44 15 39 15 L 25 15 Q 20 15 20 20" fill="#4682B4" stroke="#1E90FF" stroke-width="1"/>
+  
+  <!-- Coat collar -->
+  <path d="M 25 15 Q 25 10 32 10 Q 39 10 39 15" fill="#1E90FF" stroke="#4682B4" stroke-width="1"/>
+  
+  <!-- Collar opening -->
+  <ellipse cx="32" cy="15" rx="8" ry="3" fill="#FDBCB4" stroke="#4682B4" stroke-width="1"/>
+  
+  <!-- Face opening -->
+  <ellipse cx="32" cy="20" rx="6" ry="3" fill="#FDBCB4"/>
+  
+  <!-- Coat sleeves -->
+  <rect x="12" y="25" width="8" height="20" fill="#4682B4" stroke="#1E90FF" stroke-width="1"/>
+  <rect x="44" y="25" width="8" height="20" fill="#4682B4" stroke="#1E90FF" stroke-width="1"/>
+  
+  <!-- Sleeve openings -->
+  <ellipse cx="16" cy="45" rx="4" ry="2" fill="#87CEEB"/>
+  <ellipse cx="48" cy="45" rx="4" ry="2" fill="#87CEEB"/>
+  
+  <!-- Sailor stripes -->
+  <rect x="20" y="25" width="24" height="2" fill="#FFFFFF"/>
+  <rect x="20" y="30" width="24" height="2" fill="#FFFFFF"/>
+  <rect x="20" y="35" width="24" height="2" fill="#FFFFFF"/>
+  <rect x="20" y="40" width="24" height="2" fill="#FFFFFF"/>
+  
+  <!-- Coat buttons -->
+  <circle cx="32" cy="28" r="1" fill="#FFD700"/>
+  <circle cx="32" cy="33" r="1" fill="#FFD700"/>
+  <circle cx="32" cy="38" r="1" fill="#FFD700"/>
+  <circle cx="32" cy="43" r="1" fill="#FFD700"/>
+  
+  -- Sailor anchor emblem -->
+  <circle cx="32" cy="48" r="3" fill="none" stroke="#FFD700" stroke-width="0.5"/>
+  <line x1="32" y1="45" x2="32" y2="51" stroke="#FFD700" stroke-width="0.5"/>
+  <line x1="29" y1="48" x2="35" y2="48" stroke="#FFD700" stroke-width="0.5"/>
+  
+  <!-- Water resistance pattern -->
+  <path d="M 25 22 Q 27 20 29 22 T 33 22 T 37 22 T 39 22" stroke="#87CEEB" stroke-width="0.5" fill="none" opacity="0.6"/>
+  <path d="M 25 50 Q 27 48 29 50 T 33 50 T 37 50 T 39 50" stroke="#87CEEB" stroke-width="0.5" fill="none" opacity="0.6"/>
+  
+  <!-- Wind protection effect -->
+  <path d="M 15 35 Q 20 33 25 35 T 35 35 T 45 35 T 50 35" stroke="#87CEEB" stroke-width="0.5" fill="none" opacity="0.3"/>
+  
+  <!-- Water droplets (beaded up) -->
+  <circle cx="26" cy="27" r="0.5" fill="#00BFFF" opacity="0.7"/>
+  <circle cx="38" cy="32" r="0.5" fill="#00BFFF" opacity="0.7"/>
+  <circle cx="30" cy="37" r="0.5" fill="#00BFFF" opacity="0.7"/>
+  <circle cx="34" cy="42" r="0.5" fill="#00BFFF" opacity="0.7"/>
+  
+  <!-- Coat folds -->
+  <line x1="25" y1="20" x2="25" y2="50" stroke="#1E90FF" stroke-width="0.5" opacity="0.4"/>
+  <line x1="39" y1="20" x2="39" y2="50" stroke="#1E90FF" stroke-width="0.5" opacity="0.4"/>
+  
+  -- Pockets -->
+  <rect x="22" y="35" width="6" height="4" fill="#1E90FF" stroke="#4682B4" stroke-width="0.5"/>
+  <rect x="36" y="35" width="6" height="4" fill="#1E90FF" stroke="#4682B4" stroke-width="0.5"/>
+  
+  -- Sea experience indicator -->
+  <text x="32" y="54" text-anchor="middle" font-family="serif" font-size="3" fill="#FFD700">⚓</text>
+</svg>

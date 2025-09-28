@@ -1,0 +1,59 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Veronica - The Powerful Young Sorceress -->
+  
+  <!-- Head -->
+  <circle cx="32" cy="20" r="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Witch hat -->
+  <polygon points="20,12 32,2 44,12 42,8 32,0 22,8" fill="#4B0082" stroke="#2F0057" stroke-width="1"/>
+  <circle cx="32" cy="8" r="2" fill="#FFD700"/>
+  
+  <!-- Face features (charming) -->
+  <circle cx="28" cy="18" r="1" fill="#000000"/>
+  <circle cx="36" cy="18" r="1" fill="#000000"/>
+  <path d="M 28 24 Q 32 26 36 24" stroke="#8B4513" stroke-width="1" fill="none"/>
+  
+  <!-- Long purple hair -->
+  <path d="M 20 15 Q 15 10 18 5 Q 22 2 32 3 Q 42 2 46 5 Q 49 10 44 15 Q 46 20 44 25 Q 42 30 38 32 Q 34 34 30 32 Q 26 30 24 25 Q 22 20 20 15" fill="#4B0082"/>
+  
+  <!-- Magic sparkles near hair -->
+  <polygon points="18,10 20,8 22,10 20,12" fill="#FF69B4"/>
+  <polygon points="42,12 44,10 46,12 44,14" fill="#FF69B4"/>
+  
+  <!-- Body (sorceress robe) -->
+  <rect x="24" y="32" width="16" height="20" fill="#4B0082" stroke="#2F0057" stroke-width="1"/>
+  
+  <!-- Magic symbols on robe -->
+  <text x="32" y="40" text-anchor="middle" font-family="serif" font-size="6" fill="#FFD700">✦</text>
+  <text x="32" y="48" text-anchor="middle" font-family="serif" font-size="6" fill="#FF69B4">◈</text>
+  
+  <!-- Arms -->
+  <rect x="18" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  <rect x="40" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Magic staff in hand -->
+  <line x1="44" y1="40" x2="50" y2="25" stroke="#8B4513" stroke-width="2"/>
+  <circle cx="50" cy="25" r="3" fill="#FF69B4"/>
+  <polygon points="50,25 48,22 52,22" fill="#FFD700"/>
+  
+  <!-- Hands -->
+  <circle cx="18" cy="46" r="2" fill="#FDBCB4"/>
+  <circle cx="46" cy="46" r="2" fill="#FDBCB4"/>
+  
+  <!-- Legs -->
+  <rect x="26" y="52" width="5" height="10" fill="#4B0082" stroke="#2F0057" stroke-width="1"/>
+  <rect x="33" y="52" width="5" height="10" fill="#4B0082" stroke="#2F0057" stroke-width="1"/>
+  
+  <!-- Boots -->
+  <ellipse cx="28.5" cy="62" rx="3" ry="2" fill="#2F0057"/>
+  <ellipse cx="35.5" cy="62" rx="3" ry="2" fill="#2F0057"/>
+  
+  <!-- Magic aura -->
+  <circle cx="32" cy="32" r="25" fill="none" stroke="#FF69B4" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Floating magic particles -->
+  <circle cx="15" cy="30" r="1" fill="#FF69B4" opacity="0.8"/>
+  <circle cx="50" cy="35" r="1" fill="#FFD700" opacity="0.8"/>
+  <circle cx="20" cy="50" r="1" fill="#9370DB" opacity="0.8"/>
+  <circle cx="45" cy="55" r="1" fill="#FF69B4" opacity="0.8"/>
+</svg>

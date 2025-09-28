@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- King Carnelian - Ruler of Heliodor -->
+  <circle cx="50" cy="30" r="15" fill="#fdbcb4" stroke="#333" stroke-width="2"/>
+  <!-- Crown -->
+  <path d="M30 20 L35 10 L40 15 L45 8 L50 15 L55 8 L60 15 L65 10 L70 20 Z" fill="#FFD700" stroke="#333" stroke-width="2"/>
+  <!-- Crown jewels -->
+  <circle cx="40" cy="12" r="2" fill="#FF0000"/>
+  <circle cx="50" cy="10" r="2" fill="#FF0000"/>
+  <circle cx="60" cy="12" r="2" fill="#FF0000"/>
+  
+  <!-- Face with authoritative expression -->
+  <circle cx="42" cy="28" r="2" fill="#333"/>
+  <circle cx="58" cy="28" r="2" fill="#333"/>
+  <!-- Serious mouth -->
+  <path d="M42 36 Q50 38 58 36" fill="none" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Royal beard -->
+  <path d="M35 38 Q40 42 45 40 Q50 42 55 40 Q60 42 65 38" fill="#8B4513" stroke="#333" stroke-width="1"/>
+  
+  <!-- Body - Royal robes -->
+  <rect x="30" y="45" width="40" height="40" rx="5" fill="#8B0000" stroke="#333" stroke-width="2"/>
+  <!-- Royal collar -->
+  <path d="M35 45 L40 50 L60 50 L65 45" fill="#FFD700" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Royal insignia -->
+  <circle cx="50" cy="60" r="8" fill="#FFD700" stroke="#333" stroke-width="1"/>
+  <path d="M50 55 L50 65 M45 60 L55 60 M47 57 L53 63 M53 57 L47 63" stroke="#8B0000" stroke-width="1"/>
+  
+  <!-- Arms -->
+  <rect x="20" y="50" width="15" height="25" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  <rect x="65" y="50" width="15" height="25" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Royal scepter -->
+  <rect x="72" y="40" width="3" height="30" fill="#8B4513" stroke="#333" stroke-width="1"/>
+  <circle cx="73.5" cy="38" r="4" fill="#FFD700" stroke="#333" stroke-width="1"/>
+  
+  <!-- Legs -->
+  <rect x="35" y="85" width="12" height="12" rx="5" fill="#333" stroke="#333" stroke-width="1.5"/>
+  <rect x="53" y="85" width="12" height="12" rx="5" fill="#333" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Throne shadow -->
+  <ellipse cx="50" cy="98" rx="25" ry="2" fill="#666" opacity="0.5"/>
+</svg>

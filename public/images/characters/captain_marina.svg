@@ -1,0 +1,66 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Captain Marina - Experienced Sea Captain -->
+  
+  <!-- Head -->
+  <circle cx="32" cy="20" r="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Captain's hat -->
+  <ellipse cx="32" cy="12" rx="15" ry="4" fill="#000080" stroke="#000050" stroke-width="1"/>
+  <rect x="28" y="8" width="8" height="6" fill="#000080"/>
+  <circle cx="32" cy="10" r="2" fill="#FFD700"/>
+  
+  <!-- Face features (experienced) -->
+  <circle cx="28" cy="18" r="1" fill="#000000"/>
+  <circle cx="36" cy="18" r="1" fill="#000000"/>
+  <path d="M 28 24 Q 32 25 36 24" stroke="#8B4513" stroke-width="1" fill="none"/>
+  
+  <!-- Beard stubble -->
+  <path d="M 26 22 Q 32 23 38 22" stroke="#696969" stroke-width="0.5" fill="none" opacity="0.7"/>
+  
+  <!-- Short hair -->
+  <path d="M 20 15 Q 20 12 25 10 Q 32 9 39 10 Q 44 12 44 15" fill="#696969"/>
+  
+  <!-- Body (captain's uniform) -->
+  <rect x="24" y="32" width="16" height="20" fill="#000080" stroke="#000050" stroke-width="1"/>
+  
+  <!-- Captain's insignia -->
+  <circle cx="32" cy="40" r="4" fill="none" stroke="#FFD700" stroke-width="1"/>
+  <polygon points="32,37 34,40 32,43 30,40" fill="#FFD700"/>
+  
+  <!-- Shoulder epaulets -->
+  <rect x="22" y="32" width="4" height="3" fill="#FFD700"/>
+  <rect x="38" y="32" width="4" height="3" fill="#FFD700"/>
+  
+  <!-- Arms -->
+  <rect x="18" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  <rect x="40" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Telescope in hand -->
+  <rect x="42" y="38" width="8" height="3" fill="#8B4513"/>
+  <circle cx="50" cy="39.5" r="2" fill="#C0C0C0"/>
+  <circle cx="50" cy="39.5" r="1" fill="#000080"/>
+  
+  <!-- Hands -->
+  <circle cx="18" cy="46" r="2" fill="#FDBCB4"/>
+  <circle cx="46" cy="46" r="2" fill="#FDBCB4"/>
+  
+  <!-- Legs -->
+  <rect x="26" y="52" width="5" height="10" fill="#000080" stroke="#000050" stroke-width="1"/>
+  <rect x="33" y="52" width="5" height="10" fill="#000080" stroke="#000050" stroke-width="1"/>
+  
+  <!-- Boots -->
+  <ellipse cx="28.5" cy="62" rx="3" ry="2" fill="#8B4513"/>
+  <ellipse cx="35.5" cy="62" rx="3" ry="2" fill="#8B4513"/>
+  
+  <!-- Compass on belt -->
+  <circle cx="32" cy="44" r="2" fill="#C0C0C0"/>
+  <line x1="32" y1="42" x2="32" y2="46" stroke="#FF0000" stroke-width="0.5"/>
+  <line x1="30" y1="44" x2="34" y2="44" stroke="#0000FF" stroke-width="0.5"/>
+  
+  <!-- Weathered face lines -->
+  <line x1="25" y1="20" x2="27" y2="22" stroke="#8B4513" stroke-width="0.3" opacity="0.5"/>
+  <line x1="37" y1="20" x2="39" y2="22" stroke="#8B4513" stroke-width="0.3" opacity="0.5"/>
+  
+  -- Sea experience indicator -->
+  <text x="32" y="48" text-anchor="middle" font-family="serif" font-size="3" fill="#FFD700">⚓</text>
+</svg>
