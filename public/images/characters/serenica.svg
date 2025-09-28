@@ -1,0 +1,163 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ancient Magic Aura Effect -->
+  <defs>
+    <radialGradient id="ancientAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#e1bee7;stop-opacity:0.3">
+        <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#9c27b0;stop-opacity:0.2">
+        <animate attributeName="stop-opacity" values="0.2;0.4;0.2" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#4a148c;stop-opacity:0"/>
+    </radialGradient>
+    
+    <linearGradient id="robeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ce93d8"/>
+      <stop offset="50%" style="stop-color:#9c27b0"/>
+      <stop offset="100%" style="stop-color:#6a1b9a"/>
+    </linearGradient>
+    
+    <radialGradient id="magicOrb" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9">
+        <animate attributeName="stop-opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#e1bee7;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#9c27b0;stop-opacity:0.5"/>
+    </radialGradient>
+    
+    <radialGradient id="ancientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#e1bee7;stop-opacity:0.8">
+        <animate attributeName="stop-opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#9c27b0;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#4a148c;stop-opacity:0.2"/>
+    </radialGradient>
+    
+    <filter id="magicGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Ancient Magic Aura Background -->
+  <circle cx="100" cy="100" r="90" fill="url(#ancientAura)">
+    <animate attributeName="r" values="90;100;90" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Body and Robe -->
+  <ellipse cx="100" cy="140" rx="35" ry="40" fill="url(#robeGradient)"/>
+  
+  <!-- Robe Details -->
+  <path d="M 65 120 Q 100 115 135 120 L 135 160 Q 100 165 65 160 Z" fill="url(#robeGradient)" opacity="0.8"/>
+  
+  <!-- Head -->
+  <circle cx="100" cy="70" r="25" fill="#fdbcb4"/>
+  
+  <!-- Hair (Long, flowing, magical) -->
+  <path d="M 75 55 Q 100 45 125 55 Q 130 70 125 85 Q 120 90 115 85 Q 110 88 105 85 Q 100 88 95 85 Q 90 88 85 85 Q 80 90 75 85 Q 70 70 75 55" fill="#9c27b0" filter="url(#magicGlow)"/>
+  
+  <!-- Hair Strands with magical glow -->
+  <path d="M 75 85 Q 70 105 65 125" fill="none" stroke="#9c27b0" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M 125 85 Q 130 105 135 125" fill="none" stroke="#9c27b0" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M 85 88 Q 83 110 80 130" fill="none" stroke="#ce93d8" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 115 88 Q 117 110 120 130" fill="none" stroke="#ce93d8" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Eyes (Ancient wisdom) -->
+  <ellipse cx="92" cy="68" rx="3" ry="4" fill="#424242"/>
+  <ellipse cx="108" cy="68" rx="3" ry="4" fill="#424242"/>
+  <ellipse cx="92" cy="68" rx="1.5" ry="2" fill="#e1bee7" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="108" cy="68" rx="1.5" ry="2" fill="#e1bee7" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Eyebrows -->
+  <path d="M 88 63 Q 92 61 96 63" fill="none" stroke="#6d4c41" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 104 63 Q 108 61 112 63" fill="none" stroke="#6d4c41" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Nose -->
+  <path d="M 100 72 L 98 75 L 100 75" fill="none" stroke="#f4a460" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Mouth (Gentle, wise expression) -->
+  <path d="M 95 78 Q 100 80 105 78" fill="none" stroke="#8e24aa" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Magic Staff -->
+  <rect x="145" y="60" width="8" height="70" fill="#8d6e63" transform="rotate(15 149 95)"/>
+  
+  <!-- Magic Orb on Staff -->
+  <circle cx="155" cy="50" r="12" fill="url(#magicOrb)" filter="url(#magicGlow)">
+    <animate attributeName="r" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Magic Energy Swirls around Orb -->
+  <path d="M 155 40 Q 165 45 160 55 T 155 70 Q 145 65 150 55 T 155 40" 
+        fill="none" stroke="#e1bee7" stroke-width="1" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" 
+                      values="0 155 55;360 155 55" dur="6s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Arms -->
+  <ellipse cx="75" cy="125" rx="8" ry="20" fill="#fdbcb4" transform="rotate(-25 75 125)"/>
+  <ellipse cx="125" cy="125" rx="8" ry="20" fill="#fdbcb4" transform="rotate(30 125 125)"/>
+  
+  <!-- Hands -->
+  <circle cx="70" cy="140" r="6" fill="#fdbcb4"/>
+  <circle cx="130" cy="140" r="6" fill="#fdbcb4"/>
+  
+  <!-- Ancient Magic Particles -->
+  <circle cx="60" cy="60" r="2" fill="#e1bee7" opacity="0.8">
+    <animate attributeName="cy" values="60;50;60" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="140" cy="70" r="1.5" fill="#9c27b0" opacity="0.7">
+    <animate attributeName="cy" values="70;60;70" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.1;0.7" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="80" cy="130" r="2" fill="#ce93d8" opacity="0.6">
+    <animate attributeName="cy" values="130;120;130" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="120" cy="125" r="1" fill="#e1bee7" opacity="0.9">
+    <animate attributeName="cy" values="125;115;125" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Ancient Magic Energy Swirls -->
+  <path d="M 100 50 Q 120 65 115 85 T 100 120 Q 80 105 85 85 T 100 50" 
+        fill="none" stroke="#e1bee7" stroke-width="1.5" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" 
+                      values="0 100 100;360 100 100" dur="8s" repeatCount="indefinite"/>
+  </path>
+  
+  <path d="M 100 50 Q 80 65 85 85 T 100 120 Q 120 105 115 85 T 100 50" 
+        fill="none" stroke="#9c27b0" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" 
+                      values="0 100 100;-360 100 100" dur="6s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Ancient Magic Burst Effect -->
+  <circle cx="100" cy="100" r="40" fill="none" stroke="#e1bee7" stroke-width="0.5" opacity="0">
+    <animate attributeName="r" values="40;70;40" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.6;0" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="100" cy="100" r="45" fill="none" stroke="#9c27b0" stroke-width="0.3" opacity="0">
+    <animate attributeName="r" values="45;75;45" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.4;0" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Ancient Runes on Robe -->
+  <text x="85" y="135" font-size="8" fill="#e1bee7" opacity="0.6">◈</text>
+  <text x="105" y="135" font-size="8" fill="#e1bee7" opacity="0.6">◉</text>
+  <text x="95" y="150" font-size="8" fill="#ce93d8" opacity="0.5">◊</text>
+</svg>
