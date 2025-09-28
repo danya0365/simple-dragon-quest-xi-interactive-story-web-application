@@ -1,0 +1,160 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="transparent"/>
+  
+  <!-- Spirit of Hope Character -->
+  <g transform="translate(100, 100)">
+    <!-- Divine Hope Aura -->
+    <circle cx="0" cy="0" r="55" fill="none" stroke="#FFD700" stroke-width="3" opacity="0.6">
+      <animate attributeName="r" values="55;65;55" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.3;0.6" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Ethereal Body -->
+    <ellipse cx="0" cy="10" rx="30" ry="40" fill="#FFF8DC" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Spirit Glow -->
+    <ellipse cx="0" cy="10" rx="25" ry="35" fill="#FFFFE0" stroke="#FFA500" stroke-width="1" opacity="0.6">
+      <animate attributeName="opacity" values="0.6;0.3;0.6" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+    
+    <!-- Head - Angelic -->
+    <circle cx="0" cy="-25" r="18" fill="#FFF8DC" stroke="#FFD700" stroke-width="2" opacity="0.9"/>
+    
+    <!-- Halo of Hope -->
+    <g transform="translate(0, -40)">
+      <ellipse cx="0" cy="0" rx="25" ry="8" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.8">
+        <animate attributeName="rx" values="25;30;25" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.8;0.4;0.8" dur="3s" repeatCount="indefinite"/>
+      </ellipse>
+      <circle cx="0" cy="0" r="3" fill="#FFD700" opacity="0.9">
+        <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Gentle Eyes - Full of Hope -->
+    <circle cx="-6" cy="-25" r="3" fill="#4169E1"/>
+    <circle cx="6" cy="-25" r="3" fill="#4169E1"/>
+    <circle cx="-6" cy="-26" r="1" fill="#87CEEB"/>
+    <circle cx="6" cy="-26" r="1" fill="#87CEEB"/>
+    
+    <!-- Gentle Smile -->
+    <path d="M -8 -18 Q 0 -14, 8 -18" fill="none" stroke="#FFD700" stroke-width="1"/>
+    
+    <!-- Angelic Wings -->
+    <g transform="translate(0, 5)">
+      <!-- Left Wing -->
+      <path d="M -28 -15 Q -40 -5, -42 10 Q -38 18, -28 15 Q -32 5, -28 -15" fill="#FFF8DC" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
+      <path d="M -32 -12 Q -38 -6, -40 5 Q -36 10, -32 8" fill="#FFFFE0" stroke="#FFA500" stroke-width="1" opacity="0.6"/>
+      
+      <!-- Right Wing -->
+      <path d="M 28 -15 Q 40 -5, 42 10 Q 38 18, 28 15 Q 32 5, 28 -15" fill="#FFF8DC" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
+      <path d="M 32 -12 Q 38 -6, 40 5 Q 36 10, 32 8" fill="#FFFFE0" stroke="#FFA500" stroke-width="1" opacity="0.6"/>
+    </g>
+    
+    <!-- Ethereal Arms -->
+    <ellipse cx="-25" cy="15" rx="10" ry="20" fill="#FFF8DC" stroke="#FFD700" stroke-width="1" opacity="0.8"/>
+    <ellipse cx="25" cy="15" rx="10" ry="20" fill="#FFF8DC" stroke="#FFD700" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Gentle Hands -->
+    <g transform="translate(-25, 30)">
+      <circle cx="0" cy="0" r="8" fill="#FFF8DC" stroke="#FFD700" stroke-width="1" opacity="0.9"/>
+      <!-- Healing Fingers -->
+      <path d="M -4 -4 L -6 -7" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>
+      <path d="M 0 -5 L 0 -8" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>
+      <path d="M 4 -4 L 6 -7" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    
+    <g transform="translate(25, 30)">
+      <circle cx="0" cy="0" r="8" fill="#FFF8DC" stroke="#FFD700" stroke-width="1" opacity="0.9"/>
+      <!-- Healing Fingers -->
+      <path d="M -4 -4 L -6 -7" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>
+      <path d="M 0 -5 L 0 -8" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>
+      <path d="M 4 -4 L 6 -7" stroke="#FFD700" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Flowing Robe -->
+    <path d="M -20 35 Q -15 45, -10 50 Q -5 52, 0 50 Q 5 52, 10 50 Q 15 45, 20 35" fill="#FFF8DC" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Robe Details -->
+    <path d="M -15 40 Q -10 42, -5 40" fill="none" stroke="#FFA500" stroke-width="1"/>
+    <path d="M 5 40 Q 10 42, 15 40" fill="none" stroke="#FFA500" stroke-width="1"/>
+    
+    <!-- Hope Energy Core -->
+    <circle cx="0" cy="10" r="15" fill="#FFD700" opacity="0.5" stroke="#FFA500" stroke-width="2">
+      <animate attributeName="r" values="15;20;15" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Floating Hope Particles -->
+    <circle cx="-35" cy="-20" r="2.5" fill="#FFD700" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 10,-15; 0,0" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="30" cy="-15" r="2" fill="#FFF8DC" opacity="0.7">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -8,-12; 0,0" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="-25" cy="35" r="1.5" fill="#FFA500" opacity="0.6">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 12,-10; 0,0" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="35" cy="30" r="2.2" fill="#FFD700" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -10,-12; 0,0" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Hope's Light Energy -->
+    <g transform="translate(0, 10)">
+      <circle cx="0" cy="0" r="20" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.5">
+        <animate attributeName="r" values="20;25;20" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.5;0.2;0.5" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="0" cy="0" r="15" fill="none" stroke="#FFF8DC" stroke-width="2" opacity="0.6">
+        <animate attributeName="r" values="15;20;15" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;0.3;0.6" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Courage Boost Power -->
+    <g transform="translate(0, 10)">
+      <path d="M -15 -15 L 15 15 M 15 -15 L -15 15" stroke="#FFD700" stroke-width="1" opacity="0.4">
+        <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <path d="M -10 -10 L 10 10 M 10 -10 L -10 10" stroke="#FFF8DC" stroke-width="1" opacity="0.5">
+        <animate attributeName="opacity" values="0.5;0.1;0.5" dur="3s" begin="0.5s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    
+    -- Spirit of Hope Symbol -->
+    <g transform="translate(0, 10)" opacity="0.9">
+      <text x="-8" y="3" font-family="Arial" font-size="16" fill="#FFD700">✨</text>
+    </g>
+    
+    <!-- Final Blessing Aura -->
+    <circle cx="0" cy="10" r="35" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.4">
+      <animate attributeName="r" values="35;40;35" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    -- Divine Protection Field -->
+    <ellipse cx="0" cy="10" rx="28" ry="38" fill="none" stroke="#FFA500" stroke-width="1" opacity="0.5">
+      <animate attributeName="rx" values="28;32;28" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+    
+    -- Angelic Light Beams -->
+    <g transform="translate(0, -25)" opacity="0.3">
+      <path d="M 0 0 L -15 30" stroke="#FFD700" stroke-width="2">
+        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 0 0 L 15 30" stroke="#FFD700" stroke-width="2">
+        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" begin="1s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 0 0 L 0 30" stroke="#FFD700" stroke-width="2">
+        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" begin="2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+</svg>
