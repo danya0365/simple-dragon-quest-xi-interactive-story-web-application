@@ -99,6 +99,7 @@ interface GameActions {
   loadWorldMap: () => Promise<void>;
   loadLocationsForRegion: (regionId: string) => Promise<void>;
   loadAvailableEvents: (locationId: string) => Promise<void>;
+  loadAvailableEventsForUserProgress: () => Promise<void>;
   loadUserGameState: (userProgressId?: string) => Promise<void>;
   loadEventInteractions: (
     eventId: string
@@ -308,6 +309,48 @@ export const useGameStore = create<GameStore>()(
           console.error("Error loading available events:", err);
           set({
             error: "ไม่สามารถโหลดเหตุการณ์ได้",
+            loading: false,
+          });
+        }
+      },
+
+      loadAvailableEventsForUserProgress: async () => {
+        const { userGameState } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
+        const userProgressId = userGameState.id;
+        set({ loading: true, error: null });
+        const supabase = createClientSupabaseClient();
+
+        try {
+          const { data, error } = await supabase.rpc(
+            "get_available_events_for_user_progress",
+            {
+              p_user_progress_uuid: userProgressId,
+            }
+          );
+
+          if (error) throw error;
+
+          const availableEventsSchemas =
+            data as unknown as AvailableEventSchema[];
+          const newAvailableEvents = availableEventsSchemas.map(
+            mapAvailableEventToDto
+          );
+
+          // Map AvailableEventDto to StoryEventUI using UI mapper
+          const mappedEvents = newAvailableEvents.map(mapAvailableEventDtoToUI);
+
+          set({
+            availableEvents: mappedEvents,
+            loading: false,
+          });
+        } catch (err) {
+          console.error("Error loading available events for user progress:", err);
+          set({
+            error: "ไม่สามารถโหลดเหตุการณ์ที่มีได้",
             loading: false,
           });
         }
