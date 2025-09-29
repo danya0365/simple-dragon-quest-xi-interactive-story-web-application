@@ -1,12 +1,12 @@
 "use client";
 
+import { mapGameEffectsToUI } from "@/src/domain/mappers/uiMappers";
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
 import { EventInteractionUI } from "@/src/domain/types/ui";
 import { EffectsDisplay } from "@/src/presentation/components/game/EffectsDisplay";
-import { mapGameEffectsToUI } from "@/src/domain/mappers/uiMappers";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type InteractionState =
   | "loading"
@@ -44,10 +44,10 @@ export function EventInteractionView() {
   );
   const [currentInteractionIndex, setCurrentInteractionIndex] =
     useState<number>(0);
-  
+
   // Use ref to track interaction state without causing re-renders
   const interactionStateRef = useRef<InteractionState>("loading");
-  
+
   // Update ref when state changes
   useEffect(() => {
     interactionStateRef.current = interactionState;
@@ -79,7 +79,10 @@ export function EventInteractionView() {
       }
 
       // Prevent re-initialization when showing outcome or processing
-      if (interactionStateRef.current === "showing_outcome" || interactionStateRef.current === "processing") {
+      if (
+        interactionStateRef.current === "showing_outcome" ||
+        interactionStateRef.current === "processing"
+      ) {
         return;
       }
 
@@ -220,8 +223,8 @@ export function EventInteractionView() {
 
     try {
       const choiceData = {
-        choiceKey: choiceToUse,
-        interactionId: currentInteraction.id,
+        choice_key: choiceToUse,
+        interaction_id: currentInteraction.id,
       };
 
       // Complete the interaction
@@ -478,8 +481,10 @@ export function EventInteractionView() {
                       <h5 className="text-purple-300 font-medium mb-2">
                         สิ่งที่ได้รับ:
                       </h5>
-                      <EffectsDisplay 
-                        effects={mapGameEffectsToUI(currentEventOutcome.effects)}
+                      <EffectsDisplay
+                        effects={mapGameEffectsToUI(
+                          currentEventOutcome.effects
+                        )}
                         className="mt-2"
                       />
                     </div>
