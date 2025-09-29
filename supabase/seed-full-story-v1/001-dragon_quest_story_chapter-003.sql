@@ -17,7 +17,7 @@ SELECT
   region_info.is_alway_hide_until_unlock
 FROM (
   VALUES 
-    ('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิดและน่ากลัว', '/images/regions/dungeons.svg', '{"completed_events": ["66666666-6666-6666-6666-666666666013"]}', 3, false, true)
+    ('11111111-1111-1111-1111-111111111003', 'Heliodor Dungeons', 'คุกใต้ดินของ Heliodor ที่มืดมิดและน่ากลัว', '/images/regions/heliodor_dungeons.svg', '{"completed_events": ["66666666-6666-6666-6666-666666666013"]}', 3, false, true)
 ) AS region_info(id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock);
 
 -- === LOCATIONS ===

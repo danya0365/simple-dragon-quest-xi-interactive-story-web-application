@@ -1,0 +1,63 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Prison Guard Character -->
+  
+  <!-- Body - Dark uniform -->
+  <ellipse cx="100" cy="140" rx="35" ry="45" fill="#2c3e50" stroke="#1a252f" stroke-width="2"/>
+  
+  <!-- Head -->
+  <circle cx="100" cy="70" r="25" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  
+  <!-- Hair - Short dark hair -->
+  <path d="M75 60 Q100 45 125 60 Q120 55 100 50 Q80 55 75 60" fill="#2c3e50"/>
+  
+  <!-- Eyes -->
+  <circle cx="90" cy="70" r="3" fill="#333"/>
+  <circle cx="110" cy="70" r="3" fill="#333"/>
+  
+  <!-- Nose -->
+  <path d="M100 75 L98 80 L102 80 Z" fill="#e8a298"/>
+  
+  <!-- Mouth - Stern expression -->
+  <path d="M92 88 Q100 92 108 88" stroke="#333" stroke-width="2" fill="none"/>
+  
+  <!-- Helmet/Guard hat -->
+  <ellipse cx="100" cy="55" rx="28" ry="15" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="95" y="40" width="10" height="15" fill="#e74c3c"/>
+  
+  <!-- Arms -->
+  <ellipse cx="70" cy="130" rx="12" ry="30" fill="#2c3e50" stroke="#1a252f" stroke-width="2" transform="rotate(-20 70 130)"/>
+  <ellipse cx="130" cy="130" rx="12" ry="30" fill="#2c3e50" stroke="#1a252f" stroke-width="2" transform="rotate(20 130 130)"/>
+  
+  <!-- Hands -->
+  <circle cx="60" cy="155" r="8" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  <circle cx="140" cy="155" r="8" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  
+  <!-- Legs -->
+  <ellipse cx="85" cy="180" rx="12" ry="25" fill="#2c3e50" stroke="#1a252f" stroke-width="2"/>
+  <ellipse cx="115" cy="180" rx="12" ry="25" fill="#2c3e50" stroke="#1a252f" stroke-width="2"/>
+  
+  <!-- Boots -->
+  <ellipse cx="85" cy="200" rx="15" ry="8" fill="#1a252f"/>
+  <ellipse cx="115" cy="200" rx="15" ry="8" fill="#1a252f"/>
+  
+  <!-- Badge on chest -->
+  <rect x="90" y="120" width="20" height="25" fill="#f39c12" stroke="#d68910" stroke-width="2" rx="2"/>
+  <text x="100" y="137" text-anchor="middle" font-family="Arial" font-size="12" fill="#fff">G</text>
+  
+  <!-- Belt -->
+  <rect x="65" y="155" width="70" height="8" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+  
+  <!-- Key ring on belt -->
+  <circle cx="100" cy="159" r="5" fill="#f39c12" stroke="#d68910" stroke-width="1"/>
+  <circle cx="105" cy="157" r="3" fill="#e74c3c"/>
+  
+  <!-- Animation: Subtle breathing -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="scale"
+    values="1;1.02;1"
+    dur="4s"
+    repeatCount="indefinite"
+    additive="sum"/>
+</svg>

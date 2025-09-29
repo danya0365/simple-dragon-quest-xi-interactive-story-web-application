@@ -1,0 +1,110 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#1a1a2e"/>
+  
+  <!-- Dungeon walls -->
+  <rect x="0" y="0" width="800" height="100" fill="#2c2c3e"/>
+  <rect x="0" y="500" width="800" height="100" fill="#2c2c3e"/>
+  <rect x="0" y="0" width="100" height="600" fill="#2c2c3e"/>
+  <rect x="700" y="0" width="100" height="600" fill="#2c2c3e"/>
+  
+  <!-- Stone texture pattern -->
+  <defs>
+    <pattern id="stonePattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#3a3a4e"/>
+      <rect x="2" y="2" width="36" height="36" fill="#2c2c3e"/>
+      <rect x="4" y="4" width="32" height="32" fill="#1a1a2e"/>
+    </pattern>
+  </defs>
+  
+  <!-- Apply stone texture to walls -->
+  <rect x="0" y="0" width="800" height="100" fill="url(#stonePattern)"/>
+  <rect x="0" y="500" width="800" height="100" fill="url(#stonePattern)"/>
+  <rect x="0" y="0" width="100" height="600" fill="url(#stonePattern)"/>
+  <rect x="700" y="0" width="100" height="600" fill="url(#stonePattern)"/>
+  
+  <!-- Dungeon floor -->
+  <rect x="100" y="100" width="600" height="400" fill="#0f0f1e"/>
+  
+  <!-- Prison cells -->
+  <g id="prisonCell">
+    <rect x="0" y="0" width="80" height="80" fill="none" stroke="#4a4a5e" stroke-width="3"/>
+    <line x1="0" y1="0" x2="80" y2="80" stroke="#4a4a5e" stroke-width="2"/>
+    <line x1="80" y1="0" x2="0" y2="80" stroke="#4a4a5e" stroke-width="2"/>
+    <rect x="10" y="10" width="60" height="60" fill="#1a1a2e" opacity="0.5"/>
+  </g>
+  
+  <!-- Place prison cells -->
+  <use href="#prisonCell" x="150" y="150"/>
+  <use href="#prisonCell" x="250" y="150"/>
+  <use href="#prisonCell" x="350" y="150"/>
+  <use href="#prisonCell" x="450" y="150"/>
+  <use href="#prisonCell" x="550" y="150"/>
+  
+  <use href="#prisonCell" x="150" y="350"/>
+  <use href="#prisonCell" x="250" y="350"/>
+  <use href="#prisonCell" x="350" y="350"/>
+  <use href="#prisonCell" x="450" y="350"/>
+  <use href="#prisonCell" x="550" y="350"/>
+  
+  <!-- Torches on walls -->
+  <g id="torch">
+    <rect x="0" y="0" width="4" height="20" fill="#8b4513"/>
+    <ellipse cx="2" cy="-5" rx="8" ry="12" fill="#ff6b35" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="2" cy="-5" rx="5" ry="8" fill="#ffa500" opacity="0.9">
+      <animate attributeName="opacity" values="0.9;0.5;0.9" dur="1.5s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Place torches -->
+  <use href="#torch" x="120" y="120"/>
+  <use href="#torch" x="320" y="120"/>
+  <use href="#torch" x="520" y="120"/>
+  <use href="#torch" x="680" y="120"/>
+  
+  <use href="#torch" x="120" y="480"/>
+  <use href="#torch" x="320" y="480"/>
+  <use href="#torch" x="520" y="480"/>
+  <use href="#torch" x="680" y="480"/>
+  
+  <!-- Dungeon entrance -->
+  <rect x="350" y="90" width="100" height="20" fill="#4a4a5e"/>
+  <rect x="360" y="70" width="80" height="20" fill="#3a3a4e"/>
+  <text x="400" y="85" text-anchor="middle" font-family="Arial" font-size="12" fill="#fff">ENTRANCE</text>
+  
+  <!-- Water puddle -->
+  <ellipse cx="200" cy="300" rx="40" ry="20" fill="#1e3a8a" opacity="0.6"/>
+  <ellipse cx="200" cy="295" rx="30" ry="15" fill="#2563eb" opacity="0.4"/>
+  
+  <!-- Chains on wall -->
+  <g id="chain">
+    <circle cx="0" cy="0" r="3" fill="#4a4a5e"/>
+    <circle cx="0" cy="8" r="3" fill="#4a4a5e"/>
+    <circle cx="0" cy="16" r="3" fill="#4a4a5e"/>
+    <circle cx="0" cy="24" r="3" fill="#4a4a5e"/>
+    <circle cx="0" cy="32" r="3" fill="#4a4a5e"/>
+  </g>
+  
+  <!-- Place chains -->
+  <use href="#chain" x="50" y="200"/>
+  <use href="#chain" x="750" y="200"/>
+  <use href="#chain" x="50" y="400"/>
+  <use href="#chain" x="750" y="400"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold" fill="#fff">Heliodor Dungeons</text>
+  
+  <!-- Atmospheric fog -->
+  <rect x="100" y="100" width="600" height="400" fill="#1a1a2e" opacity="0.3"/>
+  
+  <!-- Animation: Flickering torches -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="translate"
+    values="0,0; 1,0; 0,0; -1,0; 0,0"
+    dur="4s"
+    repeatCount="indefinite"/>
+</svg>

@@ -1,0 +1,44 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Erik's Dagger Item -->
+  
+  <!-- Blade -->
+  <path d="M100 40 L95 120 L100 125 L105 120 Z" fill="#c0c0c0" stroke="#808080" stroke-width="2"/>
+  
+  <!-- Blade edge highlight -->
+  <path d="M100 40 L98 120 L100 125" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- Cross guard -->
+  <rect x="85" y="115" width="30" height="8" fill="#8b4513" stroke="#654321" stroke-width="2" rx="2"/>
+  
+  <!-- Handle -->
+  <rect x="95" y="123" width="10" height="40" fill="#654321" stroke="#4a3018" stroke-width="2"/>
+  
+  <!-- Handle wrap -->
+  <rect x="95" y="125" width="10" height="5" fill="#8b4513"/>
+  <rect x="95" y="135" width="10" height="5" fill="#8b4513"/>
+  <rect x="95" y="145" width="10" height="5" fill="#8b4513"/>
+  <rect x="95" y="155" width="10" height="5" fill="#8b4513"/>
+  
+  <!-- Pommel -->
+  <circle cx="100" cy="168" r="8" fill="#8b4513" stroke="#654321" stroke-width="2"/>
+  <circle cx="100" cy="168" r="5" fill="#cd853f"/>
+  
+  <!-- Blood groove on blade -->
+  <path d="M100 50 L100 110" stroke="#808080" stroke-width="2" fill="none"/>
+  
+  <!-- Sharp point -->
+  <path d="M100 40 L98 42 L100 44 L102 42 Z" fill="#e0e0e0"/>
+  
+  <!-- Gem on cross guard -->
+  <circle cx="100" cy="119" r="3" fill="#4169e1" stroke="#1e3a8a" stroke-width="1"/>
+  
+  <!-- Animation: Subtle glow -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="scale"
+    values="1;1.05;1"
+    dur="3s"
+    repeatCount="indefinite"
+    additive="sum"/>
+</svg>
