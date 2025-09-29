@@ -1,0 +1,86 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Veronica Character -->
+  
+  <!-- Body - Magical girl outfit -->
+  <ellipse cx="100" cy="140" rx="30" ry="45" fill="#9370db" stroke="#663399" stroke-width="2"/>
+  
+  <!-- Magical skirt -->
+  <path d="M70 140 Q100 160 130 140 L125 170 Q100 180 75 170 Z" fill="#dda0dd" stroke="#9370db" stroke-width="2"/>
+  
+  <!-- Head -->
+  <circle cx="100" cy="70" r="22" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  
+  <!-- Hair - Twin tails style -->
+  <path d="M78 60 Q100 45 122 60 Q120 50 100 48 Q80 50 78 60" fill="#ff69b4"/>
+  
+  <!-- Left twin tail -->
+  <ellipse cx="70" cy="85" rx="15" ry="25" fill="#ff69b4" stroke="#c71585" stroke-width="2" transform="rotate(-20 70 85)"/>
+  <ellipse cx="65" cy="105" rx="12" ry="20" fill="#ff1493" stroke="#c71585" stroke-width="1" transform="rotate(-25 65 105)"/>
+  
+  <!-- Right twin tail -->
+  <ellipse cx="130" cy="85" rx="15" ry="25" fill="#ff69b4" stroke="#c71585" stroke-width="2" transform="rotate(20 130 85)"/>
+  <ellipse cx="135" cy="105" rx="12" ry="20" fill="#ff1493" stroke="#c71585" stroke-width="1" transform="rotate(25 135 105)"/>
+  
+  <!-- Hair accessories -->
+  <circle cx="75" cy="65" r="4" fill="#ffd700"/>
+  <circle cx="125" cy="65" r="4" fill="#ffd700"/>
+  
+  <!-- Eyes - Magical purple eyes -->
+  <circle cx="90" cy="70" r="3" fill="#9370db"/>
+  <circle cx="110" cy="70" r="3" fill="#9370db"/>
+  
+  <!-- Eyelashes -->
+  <path d="M87 67 L85 65 M90 67 L90 65 M93 67 L95 65" stroke="#333" stroke-width="1"/>
+  <path d="M107 67 L105 65 M110 67 L110 65 M113 67 L115 65" stroke="#333" stroke-width="1"/>
+  
+  <!-- Nose -->
+  <path d="M100 75 L98 78 L102 78 Z" fill="#e8a298"/>
+  
+  <!-- Mouth - Confident smirk -->
+  <path d="M92 85 Q100 88 108 85" stroke="#333" stroke-width="2" fill="none"/>
+  
+  <!-- Magic hat -->
+  <path d="M80 55 L85 40 L100 35 L115 40 L120 55 Q100 50 80 55" fill="#4169e1" stroke="#1e3a8a" stroke-width="2"/>
+  <circle cx="100" cy="35" r="5" fill="#ffd700"/>
+  <path d="M85 45 Q100 42 115 45" fill="#6495ed"/>
+  
+  <!-- Arms -->
+  <ellipse cx="70" cy="125" rx="10" ry="25" fill="#fdbcb4" stroke="#e8a298" stroke-width="2" transform="rotate(-15 70 125)"/>
+  <ellipse cx="130" cy="125" rx="10" ry="25" fill="#fdbcb4" stroke="#e8a298" stroke-width="2" transform="rotate(15 130 125)"/>
+  
+  <!-- Hands -->
+  <circle cx="60" cy="145" r="7" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  <circle cx="140" cy="145" r="7" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  
+  <!-- Legs -->
+  <ellipse cx="88" cy="175" rx="10" ry="20" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  <ellipse cx="112" cy="175" rx="10" ry="20" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  
+  <!-- Shoes -->
+  <ellipse cx="88" cy="190" rx="12" ry="6" fill="#9370db"/>
+  <ellipse cx="112" cy="190" rx="12" ry="6" fill="#9370db"/>
+  
+  <!-- Magic staff -->
+  <rect x="145" y="100" width="3" height="50" fill="#8b4513" stroke="#654321" stroke-width="1" transform="rotate(10 146 125)"/>
+  <circle cx="147" cy="95" r="8" fill="#9370db" stroke="#663399" stroke-width="2"/>
+  <circle cx="147" cy="95" r="5" fill="#dda0dd"/>
+  <circle cx="147" cy="95" r="2" fill="#fff"/>
+  
+  <!-- Magic aura around staff -->
+  <circle cx="147" cy="95" r="12" fill="none" stroke="#9370db" stroke-width="1" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.2;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Bow on chest -->
+  <path d="M100 120 L90 125 L100 130 L110 125 Z" fill="#ff69b4" stroke="#c71585" stroke-width="1"/>
+  <rect x="98" y="125" width="4" height="8" fill="#ff69b4" stroke="#c71585" stroke-width="1"/>
+  
+  <!-- Animation: Magical floating -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="translate"
+    values="0,0; 0,-3; 0,0"
+    dur="3s"
+    repeatCount="indefinite"/>
+</svg>

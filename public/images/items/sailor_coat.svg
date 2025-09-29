@@ -1,0 +1,87 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sailor Coat Item -->
+  
+  <!-- Coat body - Main garment -->
+  <path d="M60 70 Q60 50 80 50 L120 50 Q140 50 140 70 L140 160 Q140 180 120 180 L80 180 Q60 180 60 160 Z" fill="#4682b4" stroke="#1e3a8a" stroke-width="2"/>
+  
+  <!-- Coat collar -->
+  <path d="M80 50 Q100 40 120 50 L115 60 Q100 55 85 60 Z" fill="#87ceeb" stroke="#4682b4" stroke-width="2"/>
+  
+  <!-- Sailor collar points -->
+  <path d="M85 60 L75 70 L85 65" fill="#87ceeb" stroke="#4682b4" stroke-width="1"/>
+  <path d="M115 60 L125 70 L115 65" fill="#87ceeb" stroke="#4682b4" stroke-width="1"/>
+  
+  <!-- Coat sleeves -->
+  <ellipse cx="45" cy="90" rx="15" ry="45" fill="#4682b4" stroke="#1e3a8a" stroke-width="2"/>
+  <ellipse cx="155" cy="90" rx="15" ry="45" fill="#4682b4" stroke="#1e3a8a" stroke-width="2"/>
+  
+  <!-- Sleeve cuffs -->
+  <rect x="35" y="125" width="20" height="8" fill="#87ceeb" stroke="#4682b4" stroke-width="2"/>
+  <rect x="145" y="125" width="20" height="8" fill="#87ceeb" stroke="#4682b4" stroke-width="2"/>
+  
+  <!-- Coat buttons -->
+  <circle cx="100" cy="80" r="4" fill="#ffd700" stroke="#daa520" stroke-width="1"/>
+  <circle cx="100" cy="100" r="4" fill="#ffd700" stroke="#daa520" stroke-width="1"/>
+  <circle cx="100" cy="120" r="4" fill="#ffd700" stroke="#daa520" stroke-width="1"/>
+  <circle cx="100" cy="140" r="4" fill="#ffd700" stroke="#daa520" stroke-width="1"/>
+  
+  <!-- Anchor emblem on chest -->
+  <circle cx="100" cy="90" r="15" fill="#fff" stroke="#87ceeb" stroke-width="2"/>
+  <path d="M100 85 L100 95 M95 90 L105 90 M97 87 Q100 85 103 87 M97 93 Q100 95 103 93" stroke="#1e3a8a" stroke-width="2"/>
+  
+  <!-- Coat pockets -->
+  <rect x="70" y="130" width="20" height="15" fill="#1e3a8a" stroke="#0f172a" stroke-width="1" rx="2"/>
+  <rect x="110" y="130" width="20" height="15" fill="#1e3a8a" stroke="#0f172a" stroke-width="1" rx="2"/>
+  
+  <!-- Pocket flaps -->
+  <path d="M70 130 Q80 125 90 130" fill="#87ceeb" stroke="#4682b4" stroke-width="1"/>
+  <path d="M110 130 Q120 125 130 130" fill="#87ceeb" stroke="#4682b4" stroke-width="1"/>
+  
+  <!-- Coat trim -->
+  <rect x="60" y="65" width="80" height="3" fill="#87ceeb"/>
+  <rect x="60" y="155" width="80" height="3" fill="#87ceeb"/>
+  
+  <!-- Wind resistance aura -->
+  <circle cx="100" cy="120" r="60" fill="none" stroke="#87ceeb" stroke-width="1" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="120" r="70" fill="none" stroke="#4682b4" stroke-width="1" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.05;0.2" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Wind lines -->
+  <path d="M30 100 Q40 95 50 100" fill="none" stroke="#87ceeb" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M150 100 Q160 95 170 100" fill="none" stroke="#87ceeb" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Water droplets (water resistance) -->
+  <circle cx="70" cy="60" r="2" fill="#87ceeb" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="130" cy="60" r="2" fill="#87ceeb" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="55" r="2" fill="#87ceeb" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Coat folds and shadows -->
+  <path d="M80 70 Q85 110 80 150" fill="none" stroke="#1e3a8a" stroke-width="1" opacity="0.5"/>
+  <path d="M120 70 Q115 110 120 150" fill="none" stroke="#1e3a8a" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Rope belt detail -->
+  <rect x="60" y="110" width="80" height="6" fill="#8b4513" stroke="#654321" stroke-width="1"/>
+  <path d="M95 108 Q100 106 105 108" fill="#daa520" stroke="#cd853f" stroke-width="1"/>
+  
+  <!-- Animation: Gentle breeze effect -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="translate"
+    values="0,0; 3,0; 0,0; -3,0; 0,0"
+    dur="4s"
+    repeatCount="indefinite"/>
+</svg>
