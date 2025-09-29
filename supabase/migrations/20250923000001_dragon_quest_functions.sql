@@ -661,10 +661,14 @@ DECLARE
     v_current_unlocked_events JSONB;
     v_current_unlocked_locations JSONB;
     v_current_unlocked_regions JSONB;
+    v_current_unlocked_chapters JSONB;
     v_new_events_to_unlock JSONB;
     v_auto_unlock_locations JSONB DEFAULT '[]'::jsonb;
     v_auto_unlock_regions JSONB DEFAULT '[]'::jsonb;
+    v_auto_unlock_chapters JSONB DEFAULT '[]'::jsonb;
     v_event_record RECORD;
+    v_outcome_found BOOLEAN DEFAULT false;
+    v_experience_gain INTEGER DEFAULT 0;
 BEGIN
     -- Get user progress data
     SELECT * INTO v_user_progress 
@@ -695,70 +699,78 @@ BEGIN
         v_choice_key := 'default';
     END IF;
     
-    -- Get outcome for this choice
+    -- Try to get outcome for this choice (may not exist)
     SELECT * INTO v_outcome
     FROM public.event_outcomes
     WHERE interaction_id = p_interaction_uuid
     AND (choice_key = v_choice_key OR choice_key IS NULL);
     
-    IF v_outcome IS NULL THEN
-        v_success := false;
-        v_error_message := 'Outcome not found for choice: ' || v_choice_key;
-        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
-    END IF;
+    -- Check if outcome was found
+    v_outcome_found := (v_outcome IS NOT NULL);
     
-    -- Extract effects from the outcome
-    IF v_outcome.effects IS NOT NULL THEN
-        v_effects := v_outcome.effects;
-    ELSE
+    -- Initialize default values if outcome not found
+    IF NOT v_outcome_found THEN
         v_effects := '{}'::jsonb;
-    END IF;
-    
-    -- Get next event ID if available
-    IF v_outcome.next_event_id IS NOT NULL THEN
+        v_next_event_id := NULL;
+        RAISE NOTICE 'DEBUG: No outcome found for interaction %, continuing without outcome effects', p_interaction_uuid;
+    ELSE
+        -- Extract effects from the outcome
+        v_effects := COALESCE(v_outcome.effects, '{}'::jsonb);
+        
+        -- Get next event ID if available
         v_next_event_id := v_outcome.next_event_id;
+        
+        -- Get experience gain if available
+        IF v_effects->'experience' IS NOT NULL THEN
+            v_experience_gain := (v_effects->>'experience')::INTEGER;
+        END IF;
     END IF;
     
     -- DEBUG: Log effects and next_event_id
+    RAISE NOTICE 'DEBUG: Outcome found: %', v_outcome_found;
     RAISE NOTICE 'DEBUG: Effects: %', v_effects;
     RAISE NOTICE 'DEBUG: Next event ID: %', v_next_event_id;
+    RAISE NOTICE 'DEBUG: Experience gain: %', v_experience_gain;
     
     -- Check if all interactions in this event are completed
-    -- Get total number of interactions for this event
     SELECT COUNT(*) INTO v_total_interactions
     FROM public.event_interactions
     WHERE event_id = v_interaction.event_id;
     
-    -- Get number of completed interactions for this event
     SELECT COUNT(*) INTO v_completed_interactions
     FROM jsonb_array_elements(v_user_progress.completed_interactions) AS completed_interaction
     WHERE completed_interaction->>'event_id' = v_interaction.event_id::TEXT;
     
-    -- DEBUG: Log interaction counts
     RAISE NOTICE 'DEBUG: Event ID: %', v_interaction.event_id;
     RAISE NOTICE 'DEBUG: Total interactions: %', v_total_interactions;
     RAISE NOTICE 'DEBUG: Completed interactions (before current): %', v_completed_interactions;
     
-    -- Check if all interactions are completed (including the current one)
     v_all_interactions_completed := (v_completed_interactions + 1) >= v_total_interactions;
     
-    -- DEBUG: Log completion result
     RAISE NOTICE 'DEBUG: All interactions completed: %', v_all_interactions_completed;
     
     -- Store current unlocked content before update
     v_current_unlocked_events := COALESCE(v_user_progress.unlocked_events, '[]'::jsonb);
     v_current_unlocked_locations := COALESCE(v_user_progress.unlocked_locations, '[]'::jsonb);
     v_current_unlocked_regions := COALESCE(v_user_progress.unlocked_world_regions, '[]'::jsonb);
+    v_current_unlocked_chapters := COALESCE(v_user_progress.unlocked_chapters, '[]'::jsonb);
     
-    -- Get new events to unlock from effects
+    -- Prepare events to unlock: combine from effects AND next_event_id
     v_new_events_to_unlock := COALESCE(v_effects->'unlock_events', '[]'::jsonb);
     
-    -- AUTO-UNLOCK LOGIC: For each new event, find its location and world region
+    -- Add next_event_id to events to unlock if it exists
+    IF v_next_event_id IS NOT NULL THEN
+        v_new_events_to_unlock := v_new_events_to_unlock || to_jsonb(v_next_event_id::text);
+        RAISE NOTICE 'DEBUG: Adding next_event_id to unlock: %', v_next_event_id;
+    END IF;
+    
+    -- AUTO-UNLOCK LOGIC: For each new event, find its location, world region, and chapter
     IF jsonb_typeof(v_new_events_to_unlock) = 'array' AND jsonb_array_length(v_new_events_to_unlock) > 0 THEN
         FOR v_event_record IN 
             SELECT 
                 se.id as event_id,
                 se.location_id,
+                se.chapter_id,
                 l.world_region_id
             FROM jsonb_array_elements_text(v_new_events_to_unlock) AS event_uuid_text
             JOIN public.story_events se ON se.id = event_uuid_text::uuid
@@ -766,7 +778,6 @@ BEGIN
         LOOP
             -- Auto-unlock location if event has a location
             IF v_event_record.location_id IS NOT NULL THEN
-                -- Check if location is not already unlocked
                 IF NOT (v_current_unlocked_locations @> to_jsonb(v_event_record.location_id::text)) THEN
                     v_auto_unlock_locations := v_auto_unlock_locations || to_jsonb(v_event_record.location_id::text);
                     RAISE NOTICE 'DEBUG: Auto-unlocking location: %', v_event_record.location_id;
@@ -775,10 +786,17 @@ BEGIN
             
             -- Auto-unlock world region if location has a world region
             IF v_event_record.world_region_id IS NOT NULL THEN
-                -- Check if world region is not already unlocked
                 IF NOT (v_current_unlocked_regions @> to_jsonb(v_event_record.world_region_id::text)) THEN
                     v_auto_unlock_regions := v_auto_unlock_regions || to_jsonb(v_event_record.world_region_id::text);
                     RAISE NOTICE 'DEBUG: Auto-unlocking world region: %', v_event_record.world_region_id;
+                END IF;
+            END IF;
+            
+            -- Auto-unlock chapter if event has a chapter
+            IF v_event_record.chapter_id IS NOT NULL THEN
+                IF NOT (v_current_unlocked_chapters @> to_jsonb(v_event_record.chapter_id::text)) THEN
+                    v_auto_unlock_chapters := v_auto_unlock_chapters || to_jsonb(v_event_record.chapter_id::text);
+                    RAISE NOTICE 'DEBUG: Auto-unlocking chapter: %', v_event_record.chapter_id;
                 END IF;
             END IF;
         END LOOP;
@@ -797,9 +815,8 @@ BEGIN
                 )
             ),
         
-        -- Update unlocked content with proper null handling and array deduplication
+        -- Update unlocked world regions
         unlocked_world_regions = CASE 
-            -- Merge manual unlocks from effects AND auto-unlocks
             WHEN (v_effects->'unlock_regions' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_regions') = 'array' AND jsonb_array_length(v_effects->'unlock_regions') > 0)
                  OR jsonb_array_length(v_auto_unlock_regions) > 0
             THEN (
@@ -815,8 +832,8 @@ BEGIN
             ELSE unlocked_world_regions 
         END,
         
+        -- Update unlocked locations
         unlocked_locations = CASE 
-            -- Merge manual unlocks from effects AND auto-unlocks
             WHEN (v_effects->'unlock_locations' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_locations') = 'array' AND jsonb_array_length(v_effects->'unlock_locations') > 0)
                  OR jsonb_array_length(v_auto_unlock_locations) > 0
             THEN (
@@ -832,35 +849,39 @@ BEGIN
             ELSE unlocked_locations 
         END,
         
+        -- Update unlocked chapters
         unlocked_chapters = CASE 
-            WHEN v_effects->'unlock_chapters' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_chapters') = 'array' AND jsonb_array_length(v_effects->'unlock_chapters') > 0
+            WHEN (v_effects->'unlock_chapters' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_chapters') = 'array' AND jsonb_array_length(v_effects->'unlock_chapters') > 0)
+                 OR jsonb_array_length(v_auto_unlock_chapters) > 0
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
                 FROM (
                     SELECT value FROM jsonb_array_elements(COALESCE(unlocked_chapters, '[]'::jsonb))
                     UNION
-                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_chapters')
+                    SELECT value FROM jsonb_array_elements(COALESCE(v_effects->'unlock_chapters', '[]'::jsonb))
+                    UNION
+                    SELECT value FROM jsonb_array_elements(v_auto_unlock_chapters)
                 ) t
             )
             ELSE unlocked_chapters 
         END,
         
+        -- Update unlocked events (include both manual unlocks and next_event_id)
         unlocked_events = CASE 
-            WHEN v_effects->'unlock_events' IS NOT NULL AND jsonb_typeof(v_effects->'unlock_events') = 'array' AND jsonb_array_length(v_effects->'unlock_events') > 0
+            WHEN jsonb_array_length(v_new_events_to_unlock) > 0
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
                 FROM (
                     SELECT value FROM jsonb_array_elements(v_current_unlocked_events)
                     UNION
-                    SELECT value FROM jsonb_array_elements(v_effects->'unlock_events')
+                    SELECT value FROM jsonb_array_elements(v_new_events_to_unlock)
                 ) t
             )
-            ELSE unlocked_events -- Keep existing value if no new events to unlock
+            ELSE unlocked_events
         END,
         
         -- Update completed events ONLY when ALL interactions are completed
         completed_events = CASE 
-            -- Mark event as completed ONLY when ALL interactions in the event are completed
             WHEN v_all_interactions_completed
             THEN (
                 SELECT jsonb_agg(DISTINCT value) 
@@ -870,7 +891,14 @@ BEGIN
                     SELECT to_jsonb(v_interaction.event_id::text)
                 ) t
             )
-            ELSE completed_events -- Keep existing completed_events unchanged
+            ELSE completed_events
+        END,
+        
+        -- Update player experience if there's experience gain
+        player_experience = CASE
+            WHEN v_experience_gain > 0
+            THEN COALESCE(player_experience, 0) + v_experience_gain
+            ELSE player_experience
         END,
         
         -- Update character relationships with proper merging
@@ -936,21 +964,28 @@ BEGIN
     -- Return success response with auto-unlock information and event outcome
     RETURN jsonb_build_object(
         'success', v_success,
+        'outcome_found', v_outcome_found,
         'next_event_id', v_next_event_id,
         'effects', v_effects,
         'choice_key', v_choice_key,
+        'experience_gained', v_experience_gain,
         'auto_unlocked_locations', v_auto_unlock_locations,
         'auto_unlocked_regions', v_auto_unlock_regions,
-        'event_outcome', jsonb_build_object(
-            'id', v_outcome.id,
-            'interaction_id', v_outcome.interaction_id,
-            'choice_key', v_outcome.choice_key,
-            'title', v_outcome.title,
-            'description', v_outcome.description,
-            'outcome_type', v_outcome.outcome_type,
-            'effects', v_outcome.effects,
-            'next_event_id', v_outcome.next_event_id
-        )
+        'auto_unlocked_chapters', v_auto_unlock_chapters,
+        'unlocked_events', v_new_events_to_unlock,
+        'event_outcome', CASE 
+            WHEN v_outcome_found THEN jsonb_build_object(
+                'id', v_outcome.id,
+                'interaction_id', v_outcome.interaction_id,
+                'choice_key', v_outcome.choice_key,
+                'title', v_outcome.title,
+                'description', v_outcome.description,
+                'outcome_type', v_outcome.outcome_type,
+                'effects', v_outcome.effects,
+                'next_event_id', v_outcome.next_event_id
+            )
+            ELSE NULL
+        END
     );
     
 EXCEPTION
