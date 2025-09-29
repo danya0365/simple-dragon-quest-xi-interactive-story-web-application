@@ -8,6 +8,7 @@ import {
   EventOutcomeSchema,
   GameEffects,
   InitializeUserProgressSchema,
+  InventoryEntrySchema,
   ItemSchema,
   LocationSchema,
   PartyMemberSchema,
@@ -24,6 +25,7 @@ import {
   EventOutcomeDto,
   GameEffectsDto,
   InitializeUserProgressDto,
+  InventoryEntryDto,
   ItemDto,
   LocationDto,
   PartyMemberDto,
@@ -213,7 +215,7 @@ export const mapUserGameStateToDto = (
         completedAt: interaction.completed_at,
       })
     ),
-    inventory: schema.inventory,
+    inventory: schema.inventory.map(mapInventoryEntryToDto),
     partyMembers: schema.party_members.map(mapPartyMemberToDto),
     characterRelationships: schema.character_relationships,
     playerPosition: schema.player_position,
@@ -258,7 +260,7 @@ export const mapInitializeUserProgressToDto = (
         completedAt: interaction.completed_at,
       })
     ),
-    inventory: schema.inventory,
+    inventory: schema.inventory.map(mapInventoryEntryToDto),
     partyMembers: schema.party_members.map(mapPartyMemberToDto),
     characterRelationships: schema.character_relationships,
     playerPosition: schema.player_position,
@@ -317,8 +319,36 @@ export const mapItemToDto = (schema: ItemSchema): ItemDto => {
     id: schema.id,
     name: schema.name,
     description: schema.description,
+    effects: schema.effects,
+    imageUrl: schema.image_url,
+    isConsumable: schema.is_consumable,
+    isInitialUserProgress: schema.is_initial_user_progress,
+    isTradeable: schema.is_tradeable,
     itemType: schema.item_type,
     rarity: schema.rarity,
-    imageUrl: schema.image_url,
+    stats: schema.stats,
+    createdAt: schema.created_at,
+    updatedAt: schema.updated_at,
+  };
+};
+
+/**
+ * Map InventoryEntrySchema to InventoryEntryDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapInventoryEntryToDto = (
+  schema: InventoryEntrySchema
+): InventoryEntryDto => {
+  return {
+    slot: schema.slot,
+    itemId: schema.item_id,
+    equipped: schema.equipped,
+    quantity: schema.quantity,
+    obtainedAt: schema.obtained_at,
+    name: "",
+    description: "",
+    itemType: "",
+    rarity: "",
+    imageUrl: "",
   };
 };

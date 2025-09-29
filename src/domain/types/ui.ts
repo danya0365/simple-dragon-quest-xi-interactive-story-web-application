@@ -75,14 +75,16 @@ export interface PartyMemberUI {
 }
 
 export interface InventoryItemUI {
+  slot: string | null;
   itemId: string;
+  equipped: boolean;
+  quantity: number;
+  obtainedAt: string;
   name: string;
   description: string;
   itemType: string;
   rarity: string;
   imageUrl: string;
-  quantity: number;
-  obtainedAt: string;
 }
 
 export interface CharacterMasterDataUI {

@@ -714,29 +714,22 @@ export const useGameStore = create<GameStore>()(
           const { userGameState } = get();
           if (userGameState) {
             // Map items with userGameState inventory to get actual quantities and data
-            const userInventory =
-              (userGameState.inventory as unknown as Array<{
-                item_id: string;
-                quantity: number;
-                obtained_at: string;
-                equipped?: boolean;
-                slot?: string;
-              }>) || [];
+            const userInventory = userGameState.inventory;
 
             const inventoryItems = itemDtos
               .map((item) => {
                 const userItem = userInventory.find(
-                  (ui) => ui.item_id === item.id
+                  (ui) => ui.itemId === item.id
                 );
                 return {
                   itemId: item.id,
-                  name: item.name,
-                  description: item.description,
-                  itemType: item.itemType,
-                  rarity: item.rarity,
-                  imageUrl: item.imageUrl,
+                  name: item.name || "",
+                  description: item.description || "",
+                  itemType: item.itemType || "",
+                  rarity: item.rarity || "",
+                  imageUrl: item.imageUrl || "",
                   quantity: userItem?.quantity || 0,
-                  obtainedAt: userItem?.obtained_at || new Date().toISOString(),
+                  obtainedAt: userItem?.obtainedAt || new Date().toISOString(),
                   equipped: userItem?.equipped || false,
                   slot: userItem?.slot || null,
                 };

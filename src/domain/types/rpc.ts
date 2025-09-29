@@ -1,4 +1,5 @@
 // Database Schema Types (from RPC responses) - snake_case
+import { Json } from "./supabase";
 
 // Party Member Schema (snake_case from database)
 export interface PartyMemberSchema {
@@ -168,7 +169,7 @@ export interface UserGameStateSchema {
   completed_chapters: string[];
   completed_events: string[];
   completed_interactions: CompletedInteractionSchema[];
-  inventory: Record<string, unknown>[];
+  inventory: InventoryEntrySchema[];
   party_members: PartyMemberSchema[];
   character_relationships: Record<string, unknown>;
   player_position: Record<string, unknown>;
@@ -199,7 +200,7 @@ export interface InitializeUserProgressSchema {
   completed_chapters: string[];
   completed_events: string[];
   completed_interactions: CompletedInteractionSchema[];
-  inventory: Record<string, unknown>[];
+  inventory: InventoryEntrySchema[];
   party_members: PartyMemberSchema[];
   character_relationships: Record<string, unknown>;
   player_position: Record<string, unknown>;
@@ -318,7 +319,7 @@ export interface UserGameStateDto {
   completedChapters: string[];
   completedEvents: string[];
   completedInteractions: CompletedInteractionDto[];
-  inventory: Record<string, unknown>[];
+  inventory: InventoryEntryDto[];
   partyMembers: PartyMemberDto[];
   characterRelationships: Record<string, unknown>;
   playerPosition: Record<string, unknown>;
@@ -349,7 +350,7 @@ export interface InitializeUserProgressDto {
   completedChapters: string[];
   completedEvents: string[];
   completedInteractions: CompletedInteractionDto[];
-  inventory: Record<string, unknown>[];
+  inventory: InventoryEntryDto[];
   partyMembers: PartyMemberDto[];
   characterRelationships: Record<string, unknown>;
   playerPosition: Record<string, unknown>;
@@ -427,19 +428,56 @@ export interface CharacterDto {
   isJoinable: boolean;
 }
 
+// Inventory Entry Schema (snake_case from database)
+export interface InventoryEntrySchema {
+  slot: string | null;
+  item_id: string;
+  equipped: boolean;
+  quantity: number;
+  obtained_at: string;
+}
+
 // Item Schema (snake_case from database)
 export interface ItemSchema {
   id: string;
   name: string;
-  description: string;
-  item_type: string;
-  rarity: string;
-  image_url: string;
+  description: string | null;
+  effects: Json | null;
+  image_url: string | null;
+  is_consumable: boolean | null;
+  is_initial_user_progress: boolean | null;
+  is_tradeable: boolean | null;
+  item_type: string | null;
+  rarity: string | null;
+  stats: Json | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // Item DTO (camelCase for frontend use)
 export interface ItemDto {
   id: string;
+  name: string;
+  description: string | null;
+  effects: Json | null;
+  imageUrl: string | null;
+  isConsumable: boolean | null;
+  isInitialUserProgress: boolean | null;
+  isTradeable: boolean | null;
+  itemType: string | null;
+  rarity: string | null;
+  stats: Json | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+// Inventory Entry DTO (camelCase for frontend use)
+export interface InventoryEntryDto {
+  slot: string | null;
+  itemId: string;
+  equipped: boolean;
+  quantity: number;
+  obtainedAt: string;
   name: string;
   description: string;
   itemType: string;
