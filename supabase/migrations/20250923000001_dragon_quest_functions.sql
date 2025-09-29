@@ -448,6 +448,54 @@ AS $$
 $$;
 
 -- =============================================================================
+-- Function to get completed events for user progress
+-- Returns events that have been completed by the user
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_completed_events_for_user_progress(p_user_progress_uuid UUID)
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    WITH user_progress_data AS (
+        SELECT 
+            unlocked_events,
+            completed_events,
+            current_location_id
+        FROM public.user_progress 
+        WHERE id = p_user_progress_uuid
+    ),
+    completed_events AS (
+        SELECT 
+            se.id as event_id,
+            se.title as event_title,
+            se.description as event_description,
+            se.event_type,
+            sc.title as chapter_title,
+            sl.name as location_name,
+            COUNT(ei.id) as interactions_count
+        FROM public.story_events se
+        JOIN public.story_chapters sc ON se.chapter_id = sc.id
+        LEFT JOIN public.locations sl ON se.location_id = sl.id
+        LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
+        JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
+        ORDER BY se.display_order, se.title
+    )
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'event_id', ce.event_id,
+            'event_title', ce.event_title,
+            'event_description', ce.event_description,
+            'event_type', ce.event_type,
+            'chapter_title', ce.chapter_title,
+            'location_name', ce.location_name,
+            'interactions_count', ce.interactions_count
+        )
+    ), '[]'::jsonb)
+    FROM completed_events ce;
+$$;
+
+-- =============================================================================
 -- Function to get available events for a specific location
 -- Returns events that are unlocked but not completed for a specific location
 -- =============================================================================

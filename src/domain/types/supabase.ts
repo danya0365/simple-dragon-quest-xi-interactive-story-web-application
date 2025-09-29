@@ -689,6 +689,10 @@ export type Database = {
         Args: { p_user_progress_uuid: string }
         Returns: Json
       }
+      get_completed_events_for_user_progress: {
+        Args: { p_user_progress_uuid: string }
+        Returns: Json
+      }
       get_event_interactions_for_user_progress: {
         Args: { p_user_progress_uuid: string; p_event_uuid: string }
         Returns: Json
@@ -731,10 +735,6 @@ export type Database = {
       }
       get_world_regions: {
         Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_world_regions_for_user_progress: {
-        Args: { p_user_progress_uuid: string }
         Returns: Json
       }
       initialize_user_progress: {
