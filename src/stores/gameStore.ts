@@ -17,6 +17,7 @@ import {
 } from "@/src/domain/mappers/uiMappers";
 import {
   AvailableEventSchema,
+  CharacterDto,
   CharacterSchema,
   CompleteInteractionDto,
   CompleteInteractionSchema,
@@ -25,6 +26,7 @@ import {
   EventInteractionDto,
   EventInteractionSchema,
   InitializeUserProgressSchema,
+  ItemDto,
   ItemSchema,
   LocationDto,
   UserGameStateDto,
@@ -95,6 +97,11 @@ interface GameState {
   userGameState: UserGameStateUI | null;
   userProgressId: string | null;
 
+  // Master data cache
+  masterCharacters: CharacterDto[];
+  masterItems: ItemDto[];
+  masterDataLoaded: boolean;
+
   // UI state
   loading: boolean;
   error: string | null;
@@ -123,6 +130,10 @@ interface GameActions {
   deleteUserProgress: (userId: string) => Promise<DeleteUserProgressDto>;
   loadUserInventory: () => Promise<void>;
   loadCharacters: () => Promise<void>;
+
+  // Master data loading
+  loadMasterData: () => Promise<void>;
+  ensureMasterDataLoaded: () => Promise<void>;
 
   // Helper functions
   isLocationUnlocked: (locationId: string) => boolean;
@@ -154,6 +165,9 @@ export const useGameStore = create<GameStore>()(
       completedEvents: [],
       userGameState: null,
       userProgressId: null,
+      masterCharacters: [],
+      masterItems: [],
+      masterDataLoaded: false,
       loading: false,
       error: null,
       currentView: "world_map",
@@ -700,16 +714,16 @@ export const useGameStore = create<GameStore>()(
       },
 
       loadUserInventory: async () => {
-        const supabase = createClientSupabaseClient();
+        const { ensureMasterDataLoaded } = get();
         set({ loading: true, error: null });
 
         try {
-          const { data, error } = await supabase.rpc("get_all_items");
+          await ensureMasterDataLoaded();
 
-          if (error) throw error;
+          const { masterItems } = get();
 
-          const itemSchemas = data as unknown as ItemSchema[];
-          const itemDtos = itemSchemas.map(mapItemToDto);
+          // Use cached master data instead of making API call
+          const itemDtos = masterItems;
 
           // Update user game state with inventory
           const { userGameState } = get();
@@ -756,28 +770,16 @@ export const useGameStore = create<GameStore>()(
       },
 
       loadCharacters: async () => {
-        const supabase = createClientSupabaseClient();
+        const { ensureMasterDataLoaded } = get();
         set({ loading: true, error: null });
 
         try {
-          const { data: characterData, error: characterError } =
-            await supabase.rpc("get_all_characters");
+          await ensureMasterDataLoaded();
 
-          if (characterError) throw characterError;
-
-          // Cast to schema first, then map to DTO
-          const characterSchemas =
-            characterData as unknown as CharacterSchema[];
-          const characterDtos = characterSchemas.map(mapCharacterToDto);
-
-          const { data: itemData, error: itemError } = await supabase.rpc(
-            "get_all_items"
-          );
-
-          if (itemError) throw itemError;
-
-          const itemSchemas = itemData as unknown as ItemSchema[];
-          const itemDtos = itemSchemas.map(mapItemToDto);
+          const { masterCharacters, masterItems } = get();
+          // Use cached master data instead of making API calls
+          const characterDtos = masterCharacters;
+          const itemDtos = masterItems;
 
           // Update user game state with character master data
           const { userGameState } = get();
@@ -865,6 +867,55 @@ export const useGameStore = create<GameStore>()(
             error: "ไม่สามารถโหลดข้อมูลตัวละครได้",
             loading: false,
           });
+        }
+      },
+
+      // Master data loading functions
+      loadMasterData: async () => {
+        const supabase = createClientSupabaseClient();
+        set({ loading: true, error: null });
+
+        try {
+          // Load characters
+          const { data: characterData, error: characterError } =
+            await supabase.rpc("get_all_characters");
+
+          if (characterError) throw characterError;
+
+          const characterSchemas =
+            characterData as unknown as CharacterSchema[];
+          const characterDtos = characterSchemas.map(mapCharacterToDto);
+
+          // Load items
+          const { data: itemData, error: itemError } = await supabase.rpc(
+            "get_all_items"
+          );
+
+          if (itemError) throw itemError;
+
+          const itemSchemas = itemData as unknown as ItemSchema[];
+          const itemDtos = itemSchemas.map(mapItemToDto);
+
+          // Update store with master data
+          set({
+            masterCharacters: characterDtos,
+            masterItems: itemDtos,
+            masterDataLoaded: true,
+            loading: false,
+          });
+        } catch (err) {
+          console.error("Error loading master data:", err);
+          set({
+            error: "ไม่สามารถโหลดข้อมูลหลักได้",
+            loading: false,
+          });
+        }
+      },
+
+      ensureMasterDataLoaded: async () => {
+        const { masterDataLoaded, loadMasterData } = get();
+        if (!masterDataLoaded) {
+          await loadMasterData();
         }
       },
     }),
