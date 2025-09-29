@@ -67,6 +67,16 @@ export type PartyMember = PartyMemberUI;
 export type InventoryItem = InventoryItemUI;
 export type UserGameState = UserGameStateUI;
 
+// Game view types for better type safety and maintainability
+export type GameView =
+  | "world_map"
+  | "location"
+  | "event"
+  | "event_interaction"
+  | "available_event"
+  | "inventory"
+  | "party";
+
 interface GameState {
   // World and location data
   worldRegions: WorldRegionUI[];
@@ -82,13 +92,7 @@ interface GameState {
   // UI state
   loading: boolean;
   error: string | null;
-  currentView:
-    | "world_map"
-    | "location"
-    | "event"
-    | "event_interaction"
-    | "inventory"
-    | "party";
+  currentView: GameView;
   selectedRegionId: string | null;
   selectedLocationId: string | null;
   selectedEventId: string | null;
@@ -117,7 +121,7 @@ interface GameActions {
   isLocationUnlocked: (locationId: string) => boolean;
 
   // Navigation
-  setCurrentView: (view: GameState["currentView"]) => void;
+  setCurrentView: (view: GameView) => void;
   setSelectedRegion: (regionId: string | null) => void;
   setSelectedLocationId: (locationId: string | null) => void;
   setSelectedEventId: (eventId: string | null) => void;
@@ -535,15 +539,7 @@ export const useGameStore = create<GameStore>()(
         set({ selectedEventId: eventId });
       },
 
-      setCurrentView: (
-        view:
-          | "world_map"
-          | "location"
-          | "event"
-          | "event_interaction"
-          | "inventory"
-          | "party"
-      ) => {
+      setCurrentView: (view: GameView) => {
         set({ currentView: view });
       },
 

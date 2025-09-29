@@ -1,5 +1,6 @@
 "use client";
 
+import { AvailableEventsView } from "@/src/presentation/components/game/AvailableEventsView";
 import { EventInteractionView } from "@/src/presentation/components/game/EventInteractionView";
 import { EventView } from "@/src/presentation/components/game/EventView";
 import { InventoryView } from "@/src/presentation/components/game/InventoryView";
@@ -7,7 +8,7 @@ import { LocationView } from "@/src/presentation/components/game/LocationView";
 import { PartyView } from "@/src/presentation/components/game/PartyView";
 import { WorldMapView } from "@/src/presentation/components/game/WorldMapView";
 import { useAuthStore } from "@/src/stores/authStore";
-import { useGameStore } from "@/src/stores/gameStore";
+import { useGameStore, type GameView } from "@/src/stores/gameStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -21,6 +22,7 @@ export function StoryMapView() {
     loadUserGameState,
     initializeUserProgress,
     deleteUserProgress,
+    loadAvailableEventsForUserProgress,
     setCurrentView,
     reset: resetGameStore,
   } = useGameStore();
@@ -76,8 +78,13 @@ export function StoryMapView() {
     router.push("/");
   };
 
-  const handleViewChange = (view: typeof currentView) => {
+  const handleViewChange = (view: GameView) => {
     setCurrentView(view);
+
+    // Load available events for user progress when switching to available_event view
+    if (view === "available_event") {
+      loadAvailableEventsForUserProgress();
+    }
   };
 
   // Show loading while initializing or if not properly initialized
@@ -193,6 +200,17 @@ export function StoryMapView() {
                 title="แผนที่โลก"
               >
                 🗺️
+              </button>
+              <button
+                onClick={() => handleViewChange("available_event")}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  currentView === "available_event"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
+                    : "text-blue-200 hover:text-white hover:bg-white/10"
+                }`}
+                title="เหตุการณ์ทั้งหมด"
+              >
+                ⚡
               </button>
               <button
                 onClick={() => handleViewChange("inventory")}
@@ -315,9 +333,15 @@ export function StoryMapView() {
                   🗺️ ไปแผนที่โลก
                 </button>
                 <button
+                  onClick={() => handleViewChange("available_event")}
+                  className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  ⚡ เหตุการณ์ทั้งหมด (เหมือนโกงเกม)
+                </button>
+                <button
                   onClick={async () => {
                     if (!user?.id) return;
-                    
+
                     try {
                       setIsDeletingProgress(true);
                       await deleteUserProgress(user.id);
@@ -325,7 +349,9 @@ export function StoryMapView() {
                       setProgressInitialized(false);
                     } catch (error) {
                       console.error("Failed to delete user progress:", error);
-                      setProgressError("ไม่สามารถลบความคืบหน้าเกมได้ กรุณาลองใหม่อีกครั้ง");
+                      setProgressError(
+                        "ไม่สามารถลบความคืบหน้าเกมได้ กรุณาลองใหม่อีกครั้ง"
+                      );
                     } finally {
                       setIsDeletingProgress(false);
                     }
@@ -333,7 +359,9 @@ export function StoryMapView() {
                   disabled={isDeletingProgress}
                   className="w-full text-left px-3 py-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isDeletingProgress ? "⏳ กำลังลบความคืบหน้า..." : "🔄 ลองเริ่มต้นความคืบหน้าใหม่"}
+                  {isDeletingProgress
+                    ? "⏳ กำลังลบความคืบหน้า..."
+                    : "🔄 ลองเริ่มต้นความคืบหน้าใหม่"}
                 </button>
                 <button
                   onClick={() => userGameState?.id && loadUserGameState()}
@@ -353,6 +381,7 @@ export function StoryMapView() {
               {currentView === "location" && <LocationView />}
               {currentView === "event" && <EventView />}
               {currentView === "event_interaction" && <EventInteractionView />}
+              {currentView === "available_event" && <AvailableEventsView />}
               {currentView === "inventory" && <InventoryView />}
               {currentView === "party" && <PartyView />}
             </div>
