@@ -322,7 +322,7 @@ export function StoryMapView() {
                       <p className="text-white text-sm">
                         {new Date(
                           userGameState.lastPlayedAt
-                        ).toLocaleDateString("th-TH")}
+                        ).toLocaleString("th-TH")}
                       </p>
                     </div>
                   )}
