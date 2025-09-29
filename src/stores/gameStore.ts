@@ -1,9 +1,11 @@
 import {
   mapAvailableEventToDto,
+  mapCharacterToDto,
   mapCompleteInteractionToDto,
   mapDeleteUserProgressToDto,
   mapEventInteractionToDto,
   mapInitializeUserProgressToDto,
+  mapItemToDto,
   mapUserGameStateToDto,
   mapWorldMapToDto,
 } from "@/src/domain/mappers/rpcMappers";
@@ -14,7 +16,7 @@ import {
 } from "@/src/domain/mappers/uiMappers";
 import {
   AvailableEventSchema,
-  CharacterData,
+  CharacterSchema,
   CompleteInteractionDto,
   CompleteInteractionSchema,
   DeleteUserProgressDto,
@@ -22,6 +24,7 @@ import {
   EventInteractionDto,
   EventInteractionSchema,
   InitializeUserProgressSchema,
+  ItemSchema,
   LocationDto,
   UserGameStateDto,
   UserGameStateSchema,
@@ -356,7 +359,10 @@ export const useGameStore = create<GameStore>()(
             loading: false,
           });
         } catch (err) {
-          console.error("Error loading available events for user progress:", err);
+          console.error(
+            "Error loading available events for user progress:",
+            err
+          );
           set({
             error: "ไม่สามารถโหลดเหตุการณ์ที่มีได้",
             loading: false,
@@ -398,7 +404,10 @@ export const useGameStore = create<GameStore>()(
             loading: false,
           });
         } catch (err) {
-          console.error("Error loading completed events for user progress:", err);
+          console.error(
+            "Error loading completed events for user progress:",
+            err
+          );
           set({
             error: "ไม่สามารถโหลดเหตุการณ์ที่ทำเสร็จแล้ว",
             loading: false,
@@ -698,14 +707,8 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const items = data as unknown as Array<{
-            id: string;
-            name: string;
-            description: string;
-            item_type: string;
-            rarity: string;
-            image_url: string;
-          }>;
+          const itemSchemas = data as unknown as ItemSchema[];
+          const itemDtos = itemSchemas.map(mapItemToDto);
 
           // Update user game state with inventory
           const { userGameState } = get();
@@ -720,7 +723,7 @@ export const useGameStore = create<GameStore>()(
                 slot?: string;
               }>) || [];
 
-            const inventoryItems = items
+            const inventoryItems = itemDtos
               .map((item) => {
                 const userItem = userInventory.find(
                   (ui) => ui.item_id === item.id
@@ -729,9 +732,9 @@ export const useGameStore = create<GameStore>()(
                   itemId: item.id,
                   name: item.name,
                   description: item.description,
-                  itemType: item.item_type,
+                  itemType: item.itemType,
                   rarity: item.rarity,
-                  imageUrl: item.image_url,
+                  imageUrl: item.imageUrl,
                   quantity: userItem?.quantity || 0,
                   obtainedAt: userItem?.obtained_at || new Date().toISOString(),
                   equipped: userItem?.equipped || false,
@@ -767,33 +770,24 @@ export const useGameStore = create<GameStore>()(
 
           if (error) throw error;
 
-          const characters = data as unknown as CharacterData[];
+          // Cast to schema first, then map to DTO
+          const characterSchemas = data as unknown as CharacterSchema[];
+          const characterDtos = characterSchemas.map(mapCharacterToDto);
 
           // Update user game state with character master data
           const { userGameState } = get();
           if (userGameState) {
             // Get existing party members from user game state
-            const existingPartyMembers =
-              (userGameState.partyMembers as unknown as Array<{
-                character_id: string;
-                joined_at: string;
-                current_stats: Record<string, number | string>;
-                equipment: Record<string, string | null>;
-                is_active: boolean;
-                party_position: number;
-                name?: string;
-                description?: string;
-                avatar_url?: string;
-              }>) || [];
+            const existingPartyMembers = userGameState.partyMembers;
 
             // Enrich party members with character master data
             const enrichedPartyMembers = existingPartyMembers.map(
               (partyMember) => {
-                const masterCharacter = characters.find(
-                  (c) => c.id === partyMember.character_id
+                const masterCharacter = characterDtos.find(
+                  (c) => c.id === partyMember.characterId
                 );
                 return {
-                  characterId: partyMember.character_id,
+                  characterId: partyMember.characterId,
                   name:
                     masterCharacter?.name ||
                     partyMember.name ||
@@ -803,13 +797,13 @@ export const useGameStore = create<GameStore>()(
                     partyMember.description ||
                     "No description available",
                   avatarUrl:
-                    masterCharacter?.avatar_url ||
-                    partyMember.avatar_url ||
+                    masterCharacter?.avatarUrl ||
+                    partyMember.avatarUrl ||
                     "/placeholder-avatar.png",
-                  currentStats: partyMember.current_stats,
+                  currentStats: partyMember.currentStats,
                   equipment: partyMember.equipment,
-                  partyPosition: partyMember.party_position,
-                  joinedAt: partyMember.joined_at,
+                  partyPosition: partyMember.partyPosition,
+                  joinedAt: partyMember.joinedAt,
                 };
               }
             );

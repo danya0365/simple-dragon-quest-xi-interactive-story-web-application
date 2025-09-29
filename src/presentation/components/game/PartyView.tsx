@@ -9,6 +9,10 @@ export function PartyView() {
   const partyMembers = userGameState?.partyMembers || [];
   const [charactersLoaded, setCharactersLoaded] = useState(false);
 
+  useEffect(() => {
+    console.log("partyMembers", partyMembers);
+  }, [partyMembers]);
+
   // Load character data when component mounts
   useEffect(() => {
     const loadCharacterData = async () => {
@@ -158,8 +162,7 @@ export function PartyView() {
                       />
                     ) : (
                       <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center border-2 border-yellow-400">
-                        <span className="text-blue-900 font-bold text-xl">
-                        </span>
+                        <span className="text-blue-900 font-bold text-xl"></span>
                       </div>
                     )}
                     {/* Position Badge */}
@@ -177,7 +180,7 @@ export function PartyView() {
                       {member.description}
                     </p>
                     <div className="text-blue-300 text-xs">
-                      เข้าร่วม: {" "}
+                      เข้าร่วม:{" "}
                       {new Date(member.joinedAt).toLocaleDateString("th-TH")}
                     </div>
                   </div>

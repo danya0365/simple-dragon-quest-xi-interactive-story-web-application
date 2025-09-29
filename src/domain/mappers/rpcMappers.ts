@@ -1,5 +1,6 @@
 import {
   AvailableEventSchema,
+  CharacterSchema,
   CompletedInteractionSchema,
   CompleteInteractionSchema,
   DeleteUserProgressSchema,
@@ -7,20 +8,25 @@ import {
   EventOutcomeSchema,
   GameEffects,
   InitializeUserProgressSchema,
+  ItemSchema,
   LocationSchema,
+  PartyMemberSchema,
   UserGameStateSchema,
   WorldMapSchema,
 } from "@/src/domain/types/rpc";
 
 import {
   AvailableEventDto,
+  CharacterDto,
   CompleteInteractionDto,
   DeleteUserProgressDto,
   EventInteractionDto,
   EventOutcomeDto,
   GameEffectsDto,
   InitializeUserProgressDto,
+  ItemDto,
   LocationDto,
+  PartyMemberDto,
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
@@ -160,6 +166,23 @@ export const mapAvailableEventToDto = (
 };
 
 /**
+ * Map PartyMemberSchema to PartyMemberDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapPartyMemberToDto = (
+  schema: PartyMemberSchema
+): PartyMemberDto => {
+  return {
+    equipment: schema.equipment,
+    isActive: schema.is_active,
+    joinedAt: schema.joined_at,
+    characterId: schema.character_id,
+    currentStats: schema.current_stats,
+    partyPosition: schema.party_position,
+  };
+};
+
+/**
  * Map UserGameStateSchema to UserGameStateDto
  * Converts snake_case properties to camelCase
  */
@@ -191,7 +214,7 @@ export const mapUserGameStateToDto = (
       })
     ),
     inventory: schema.inventory,
-    partyMembers: schema.party_members,
+    partyMembers: schema.party_members.map(mapPartyMemberToDto),
     characterRelationships: schema.character_relationships,
     playerPosition: schema.player_position,
     achievements: schema.achievements,
@@ -236,7 +259,7 @@ export const mapInitializeUserProgressToDto = (
       })
     ),
     inventory: schema.inventory,
-    partyMembers: schema.party_members,
+    partyMembers: schema.party_members.map(mapPartyMemberToDto),
     characterRelationships: schema.character_relationships,
     playerPosition: schema.player_position,
     gameFlags: schema.game_flags,
@@ -244,6 +267,29 @@ export const mapInitializeUserProgressToDto = (
     lastPlayedAt: schema.last_played_at,
     createdAt: schema.created_at,
     updatedAt: schema.updated_at,
+  };
+};
+
+/**
+ * Map CharacterSchema to CharacterDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapCharacterToDto = (schema: CharacterSchema): CharacterDto => {
+  return {
+    id: schema.id,
+    name: schema.name,
+    description: schema.description,
+    characterType: schema.character_type,
+    avatarUrl: schema.avatar_url,
+    stats: schema.stats,
+    abilities: schema.abilities.map((ability) => ({
+      id: ability.id,
+      name: ability.name,
+      description: ability.description,
+      mpCost: ability.mp_cost,
+    })),
+    joinRequirements: schema.join_requirements,
+    isJoinable: schema.is_joinable,
   };
 };
 
@@ -259,5 +305,20 @@ export const mapDeleteUserProgressToDto = (
     deletedRecords: schema.deleted_records,
     message: schema.message,
     error: schema.error,
+  };
+};
+
+/**
+ * Map ItemSchema to ItemDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapItemToDto = (schema: ItemSchema): ItemDto => {
+  return {
+    id: schema.id,
+    name: schema.name,
+    description: schema.description,
+    itemType: schema.item_type,
+    rarity: schema.rarity,
+    imageUrl: schema.image_url,
   };
 };

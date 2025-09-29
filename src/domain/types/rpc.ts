@@ -1,5 +1,41 @@
 // Database Schema Types (from RPC responses) - snake_case
 
+// Party Member Schema (snake_case from database)
+export interface PartyMemberSchema {
+  equipment: {
+    weapon: string;
+  };
+  is_active: boolean;
+  joined_at: string;
+  character_id: string;
+  current_stats: {
+    hp: number;
+    mp: number;
+    level: number;
+    attack: number;
+    defense: number;
+  };
+  party_position: number;
+}
+
+// Party Member DTO (camelCase for frontend use)
+export interface PartyMemberDto {
+  equipment: {
+    weapon: string;
+  };
+  isActive: boolean;
+  joinedAt: string;
+  characterId: string;
+  currentStats: {
+    hp: number;
+    mp: number;
+    level: number;
+    attack: number;
+    defense: number;
+  };
+  partyPosition: number;
+}
+
 // Game Effects Types - matches database schema
 export type GameEffects = {
   relationship?: Record<string, number>; // {character_name: integer}
@@ -133,7 +169,7 @@ export interface UserGameStateSchema {
   completed_events: string[];
   completed_interactions: CompletedInteractionSchema[];
   inventory: Record<string, unknown>[];
-  party_members: Record<string, unknown>[];
+  party_members: PartyMemberSchema[];
   character_relationships: Record<string, unknown>;
   player_position: Record<string, unknown>;
   achievements: Record<string, unknown>[];
@@ -164,7 +200,7 @@ export interface InitializeUserProgressSchema {
   completed_events: string[];
   completed_interactions: CompletedInteractionSchema[];
   inventory: Record<string, unknown>[];
-  party_members: Record<string, unknown>[];
+  party_members: PartyMemberSchema[];
   character_relationships: Record<string, unknown>;
   player_position: Record<string, unknown>;
   game_flags: Record<string, unknown>;
@@ -283,7 +319,7 @@ export interface UserGameStateDto {
   completedEvents: string[];
   completedInteractions: CompletedInteractionDto[];
   inventory: Record<string, unknown>[];
-  partyMembers: Record<string, unknown>[];
+  partyMembers: PartyMemberDto[];
   characterRelationships: Record<string, unknown>;
   playerPosition: Record<string, unknown>;
   achievements: Record<string, unknown>[];
@@ -314,7 +350,7 @@ export interface InitializeUserProgressDto {
   completedEvents: string[];
   completedInteractions: CompletedInteractionDto[];
   inventory: Record<string, unknown>[];
-  partyMembers: Record<string, unknown>[];
+  partyMembers: PartyMemberDto[];
   characterRelationships: Record<string, unknown>;
   playerPosition: Record<string, unknown>;
   gameFlags: Record<string, unknown>;
@@ -353,6 +389,62 @@ export interface CharacterData {
   }>;
   join_requirements: Record<string, unknown>;
   is_joinable: boolean;
+}
+
+// Character Schema (snake_case from database)
+export interface CharacterSchema {
+  id: string;
+  name: string;
+  description: string;
+  character_type: string;
+  avatar_url: string;
+  stats: Record<string, number | string>;
+  abilities: Array<{
+    id: string;
+    name: string;
+    description: string;
+    mp_cost: number;
+  }>;
+  join_requirements: Record<string, unknown>;
+  is_joinable: boolean;
+}
+
+// Character DTO (camelCase for frontend use)
+export interface CharacterDto {
+  id: string;
+  name: string;
+  description: string;
+  characterType: string;
+  avatarUrl: string;
+  stats: Record<string, number | string>;
+  abilities: Array<{
+    id: string;
+    name: string;
+    description: string;
+    mpCost: number;
+  }>;
+  joinRequirements: Record<string, unknown>;
+  isJoinable: boolean;
+}
+
+// Item Schema (snake_case from database)
+export interface ItemSchema {
+  id: string;
+  name: string;
+  description: string;
+  item_type: string;
+  rarity: string;
+  image_url: string;
+}
+
+// Item DTO (camelCase for frontend use)
+export interface ItemDto {
+  id: string;
+  name: string;
+  description: string;
+  itemType: string;
+  rarity: string;
+  imageUrl: string;
 }
 
 export type RpcUserGameStateResponse = UserGameStateSchema;
