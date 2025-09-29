@@ -74,6 +74,7 @@ export type GameView =
   | "event"
   | "event_interaction"
   | "available_event"
+  | "completed_event"
   | "inventory"
   | "party";
 
@@ -84,6 +85,7 @@ interface GameState {
   allLocations: LocationUI[];
   availableLocations: LocationUI[];
   availableEvents: StoryEventUI[];
+  completedEvents: StoryEventUI[];
 
   // User progress
   userGameState: UserGameStateUI | null;
@@ -104,6 +106,7 @@ interface GameActions {
   loadLocationsForRegion: (regionId: string) => Promise<void>;
   loadAvailableEvents: (locationId: string) => Promise<void>;
   loadAvailableEventsForUserProgress: () => Promise<void>;
+  loadCompletedEventsForUserProgress: () => Promise<void>;
   loadUserGameState: (userProgressId?: string) => Promise<void>;
   loadEventInteractions: (
     eventId: string
@@ -144,6 +147,7 @@ export const useGameStore = create<GameStore>()(
       allLocations: [],
       availableLocations: [],
       availableEvents: [],
+      completedEvents: [],
       userGameState: null,
       userProgressId: null,
       loading: false,
@@ -360,6 +364,48 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      loadCompletedEventsForUserProgress: async () => {
+        const { userGameState } = get();
+        if (!userGameState) {
+          set({ error: "ไม่พบข้อมูลผู้เล่น" });
+          return;
+        }
+        const userProgressId = userGameState.id;
+        set({ loading: true, error: null });
+        const supabase = createClientSupabaseClient();
+
+        try {
+          const { data, error } = await supabase.rpc(
+            "get_completed_events_for_user_progress",
+            {
+              p_user_progress_uuid: userProgressId,
+            }
+          );
+
+          if (error) throw error;
+
+          const completedEventsSchemas =
+            data as unknown as AvailableEventSchema[];
+          const newCompletedEvents = completedEventsSchemas.map(
+            mapAvailableEventToDto
+          );
+
+          // Map AvailableEventDto to StoryEventUI using UI mapper
+          const mappedEvents = newCompletedEvents.map(mapAvailableEventDtoToUI);
+
+          set({
+            completedEvents: mappedEvents,
+            loading: false,
+          });
+        } catch (err) {
+          console.error("Error loading completed events for user progress:", err);
+          set({
+            error: "ไม่สามารถโหลดเหตุการณ์ที่ทำเสร็จแล้ว",
+            loading: false,
+          });
+        }
+      },
+
       loadUserGameState: async (userProgressId?: string) => {
         // If no userProgressId provided, try to get it from userGameState
         const { userGameState } = get();
@@ -566,6 +612,7 @@ export const useGameStore = create<GameStore>()(
           allLocations: [],
           availableLocations: [],
           availableEvents: [],
+          completedEvents: [],
           userGameState: null,
           userProgressId: null,
           loading: false,

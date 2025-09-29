@@ -1,6 +1,7 @@
 "use client";
 
 import { AvailableEventsView } from "@/src/presentation/components/game/AvailableEventsView";
+import { CompletedEventsView } from "@/src/presentation/components/game/CompletedEventsView";
 import { EventInteractionView } from "@/src/presentation/components/game/EventInteractionView";
 import { EventView } from "@/src/presentation/components/game/EventView";
 import { InventoryView } from "@/src/presentation/components/game/InventoryView";
@@ -284,30 +285,39 @@ export function StoryMapView() {
                 </div>
               ) : userGameState ? (
                 <div className="space-y-3">
-                  <div>
+                  <div className="flex flex-col items-start justify-start gap-2">
                     <span className="text-blue-300 text-sm">
                       เหตุการณ์ที่เสร็จแล้ว:
                     </span>
-                    <p className="text-white font-medium">
+                    <button
+                      className="text-white font-medium"
+                      onClick={() => handleViewChange("completed_event")}
+                    >
                       {userGameState.completedEvents?.length || 0}
-                    </p>
+                    </button>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-start justify-start gap-2">
                     <span className="text-blue-300 text-sm">
                       สมาชิกปาร์ตี้:
                     </span>
-                    <p className="text-white font-medium">
+                    <button
+                      className="text-white font-medium"
+                      onClick={() => handleViewChange("party")}
+                    >
                       {userGameState.partyMembers?.length || 0}
-                    </p>
+                    </button>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-start justify-start gap-2">
                     <span className="text-blue-300 text-sm">ไอเทม:</span>
-                    <p className="text-white font-medium">
+                    <button
+                      className="text-white font-medium"
+                      onClick={() => handleViewChange("inventory")}
+                    >
                       {userGameState.inventory?.length || 0}
-                    </p>
+                    </button>
                   </div>
                   {userGameState.lastPlayedAt && (
-                    <div>
+                    <div className="flex flex-col items-start justify-start gap-2">
                       <span className="text-blue-300 text-sm">เล่นล่าสุด:</span>
                       <p className="text-white text-sm">
                         {new Date(
@@ -382,6 +392,7 @@ export function StoryMapView() {
               {currentView === "event" && <EventView />}
               {currentView === "event_interaction" && <EventInteractionView />}
               {currentView === "available_event" && <AvailableEventsView />}
+              {currentView === "completed_event" && <CompletedEventsView />}
               {currentView === "inventory" && <InventoryView />}
               {currentView === "party" && <PartyView />}
             </div>
