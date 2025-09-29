@@ -29,10 +29,6 @@ export function WorldMapView() {
     }
   }, [userGameState?.id, loadWorldMap]);
 
-  useEffect(() => {
-    console.log(worldRegions);
-  }, [worldRegions]);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">

@@ -353,7 +353,6 @@ export const useGameStore = create<GameStore>()(
             !state.userGameState &&
             !state.error?.includes("กำลังสร้างข้อมูลผู้เล่นใหม่")
           ) {
-            console.log("Attempting to initialize user progress...");
             try {
               // Get current user ID from auth
               const {
@@ -562,7 +561,6 @@ export const useGameStore = create<GameStore>()(
               data as unknown as InitializeUserProgressSchema;
             const responseDto = mapInitializeUserProgressToDto(responseSchema);
             if (responseDto.id) {
-              console.log("User progress initialized with ID:", responseDto.id);
               // Load the complete user game state after initialization
               await get().loadUserGameState(responseDto.id);
             }
@@ -595,10 +593,6 @@ export const useGameStore = create<GameStore>()(
             // Reset the game state in the store
             get().reset();
 
-            console.log(
-              "User progress deleted successfully:",
-              responseDto.message
-            );
             return responseDto;
           }
 
