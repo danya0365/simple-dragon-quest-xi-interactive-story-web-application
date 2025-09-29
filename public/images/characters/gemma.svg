@@ -1,36 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Gemma - Friend -->
-  <circle cx="50" cy="30" r="15" fill="#fdbcb4" stroke="#333" stroke-width="2"/>
-  <!-- Long hair -->
-  <path d="M35 20 Q50 10 65 20 Q65 35 50 40 Q35 35 35 20" fill="#8B4513" stroke="#333" stroke-width="1.5"/>
-  <path d="M35 25 Q30 30 32 40" fill="none" stroke="#8B4513" stroke-width="8"/>
-  <path d="M65 25 Q70 30 68 40" fill="none" stroke="#8B4513" stroke-width="8"/>
+<svg width="175" height="235" viewBox="0 0 175 235" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gemma - Companion character with pink/red outfit -->
   
-  <!-- Face -->
-  <circle cx="42" cy="28" r="2" fill="#333"/>
-  <circle cx="58" cy="28" r="2" fill="#333"/>
-  <path d="M45 35 Q50 38 55 35" fill="none" stroke="#333" stroke-width="1.5"/>
-  
-  <!-- Body - Dress -->
-  <path d="M35 45 L40 75 L60 75 L65 45 Z" fill="#FF69B4" stroke="#333" stroke-width="2"/>
-  <!-- Dress pattern -->
-  <rect x="45" y="55" width="10" height="3" fill="#FF1493"/>
-  <rect x="45" y="65" width="10" height="3" fill="#FF1493"/>
+  <!-- Body -->
+  <ellipse cx="87" cy="165" rx="30" ry="40" fill="#FF69B4"/>
   
   <!-- Arms -->
-  <rect x="25" y="48" width="15" height="20" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
-  <rect x="60" y="48" width="15" height="20" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  <ellipse cx="60" cy="148" rx="10" ry="26" fill="#FDBCB4" transform="rotate(-12 60 148)"/>
+  <ellipse cx="114" cy="148" rx="10" ry="26" fill="#FDBCB4" transform="rotate(12 114 148)"/>
+  
+  <!-- Head -->
+  <circle cx="87" cy="72" r="26" fill="#FDBCB4"/>
+  
+  <!-- Hair -->
+  <path d="M 61 62 Q 87 42 113 62 Q 108 52 87 47 Q 66 52 61 62" fill="#FF1493"/>
+  <path d="M 61 67 Q 75 57 87 62 Q 99 57 113 67" fill="#FF1493"/>
+  
+  <!-- Eyes -->
+  <circle cx="79" cy="72" r="3" fill="#000000"/>
+  <circle cx="95" cy="72" r="3" fill="#000000"/>
+  
+  <!-- Mouth -->
+  <path d="M 82 82 Q 87 87 92 82" stroke="#000000" stroke-width="2" fill="none"/>
+  
+  <!-- Bow in hair -->
+  <polygon points="87,50 95,45 103,50 95,55" fill="#FFB6C1"/>
+  
+  <!-- Dagger -->
+  <rect x="105" y="125" width="5" height="40" fill="#C0C0C0"/>
+  <rect x="103" y="120" width="9" height="6" fill="#8B4513"/>
+  <polygon points="107.5,115 104,120 111,120" fill="#C0C0C0"/>
+  
+  <!-- Belt -->
+  <rect x="57" y="160" width="60" height="6" fill="#DC143C"/>
   
   <!-- Legs -->
-  <rect x="38" y="75" width="10" height="20" rx="5" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
-  <rect x="52" y="75" width="10" height="20" rx="5" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  <rect x="72" y="203" width="13" height="22" fill="#FF69B4"/>
+  <rect x="87" y="203" width="13" height="22" fill="#FF69B4"/>
   
-  <!-- Shoes -->
-  <ellipse cx="43" cy="95" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
-  <ellipse cx="57" cy="95" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
+  <!-- Boots -->
+  <ellipse cx="78" cy="228" rx="10" ry="6" fill="#DC143C"/>
+  <ellipse cx="93" cy="228" rx="10" ry="6" fill="#DC143C"/>
   
-  <!-- Holding cake -->
-  <rect x="72" y="55" width="15" height="10" rx="2" fill="#FFE4B5" stroke="#333" stroke-width="1"/>
-  <rect x="74" y="52" width="11" height="6" rx="3" fill="#FFB6C1" stroke="#333" stroke-width="1"/>
-  <circle cx="79.5" cy="55" r="1" fill="#FF69B4"/>
+  <!-- Cheerful sparkles -->
+  <g opacity="0.7">
+    <circle cx="50" cy="60" r="2" fill="#FFD700">
+      <animate attributeName="opacity" values="0.7;0.3;0.7" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="125" cy="80" r="1.5" fill="#FFD700">
+      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="140" cy="120" r="2" fill="#FFD700">
+      <animate attributeName="opacity" values="0.7;0.3;0.7" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
 </svg>

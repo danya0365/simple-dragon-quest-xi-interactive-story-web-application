@@ -1,38 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Sacred Mark - Luminary's divine symbol -->
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sacred Mark - Key story item with mystical significance -->
+  
   <!-- Outer circle -->
-  <circle cx="50" cy="50" r="35" fill="none" stroke="#FFD700" stroke-width="3"/>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#FFD700" stroke-width="3"/>
   
   <!-- Inner circle -->
-  <circle cx="50" cy="50" r="25" fill="none" stroke="#FFA500" stroke-width="2"/>
+  <circle cx="50" cy="50" r="30" fill="none" stroke="#FFA500" stroke-width="2"/>
   
-  <!-- Central star -->
-  <path d="M50 20 L55 35 L70 35 L58 45 L63 60 L50 50 L37 60 L42 45 L30 35 L45 35 Z" 
-        fill="#FFD700" stroke="#FF8C00" stroke-width="1.5"/>
-  
-  <!-- Sacred rays -->
-  <path d="M50 10 L50 25" stroke="#FFD700" stroke-width="2"/>
-  <path d="M50 75 L50 90" stroke="#FFD700" stroke-width="2"/>
-  <path d="M10 50 L25 50" stroke="#FFD700" stroke-width="2"/>
-  <path d="M75 50 L90 50" stroke="#FFD700" stroke-width="2"/>
-  <path d="M22 22 L32 32" stroke="#FFD700" stroke-width="2"/>
-  <path d="M68 68 L78 78" stroke="#FFD700" stroke-width="2"/>
-  <path d="M78 22 L68 32" stroke="#FFD700" stroke-width="2"/>
-  <path d="M32 68 L22 78" stroke="#FFD700" stroke-width="2"/>
-  
-  <!-- Sacred symbols in corners -->
-  <circle cx="25" cy="25" r="3" fill="#FFA500"/>
-  <circle cx="75" cy="25" r="3" fill="#FFA500"/>
-  <circle cx="25" cy="75" r="3" fill="#FFA500"/>
-  <circle cx="75" cy="75" r="3" fill="#FFA500"/>
-  
-  <!-- Divine glow effect -->
-  <circle cx="50" cy="50" r="40" fill="none" stroke="#FFFFE0" stroke-width="1" opacity="0.5"/>
-  <circle cx="50" cy="50" r="45" fill="none" stroke="#FFFFE0" stroke-width="0.5" opacity="0.3"/>
+  <!-- Sacred symbol - Star-like pattern -->
+  <g stroke="#FFD700" stroke-width="2" fill="none">
+    <line x1="50" y1="15" x2="50" y2="85"/>
+    <line x1="15" y1="50" x2="85" y2="50"/>
+    <line x1="25" y1="25" x2="75" y2="75"/>
+    <line x1="75" y1="25" x2="25" y2="75"/>
+  </g>
   
   <!-- Center gem -->
-  <circle cx="50" cy="50" r="5" fill="#FF6347" stroke="#8B0000" stroke-width="1"/>
+  <circle cx="50" cy="50" r="8" fill="#FF1493"/>
   
-  <!-- Mystical text around -->
-  <text x="50" y="15" text-anchor="middle" font-size="6" fill="#FFD700">LUMINARY</text>
+  <!-- Sacred runes around the edge -->
+  <g fill="#FFD700" font-size="8" text-anchor="middle" font-family="serif">
+    <text x="50" y="12">✦</text>
+    <text x="88" y="53">✧</text>
+    <text x="50" y="94">✦</text>
+    <text x="12" y="53">✧</text>
+    <text x="75" y="25">✦</text>
+    <text x="75" y="78">✧</text>
+    <text x="25" y="78">✦</text>
+    <text x="25" y="25">✧</text>
+  </g>
+  
+  <!-- Mystical glow -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.4">
+    <animate attributeName="r" values="45;50;45" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Pulsing center gem -->
+  <circle cx="50" cy="50" r="8" fill="#FF1493">
+    <animate attributeName="r" values="8;10;8" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="fill" values="#FF1493;#FF69B4;#FF1493" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Floating mystical particles -->
+  <g opacity="0.6">
+    <circle cx="30" cy="30" r="1.5" fill="#FFD700">
+      <animate attributeName="cx" values="30;35;30" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="30;25;30" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.2;0.6" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="70" cy="70" r="1.5" fill="#FFA500">
+      <animate attributeName="cx" values="70;65;70" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="70;75;70" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="70" cy="30" r="1" fill="#FFD700">
+      <animate attributeName="cx" values="70;75;70" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="30;35;30" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="30" cy="70" r="1" fill="#FFA500">
+      <animate attributeName="cx" values="30;25;30" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="70;65;70" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
 </svg>

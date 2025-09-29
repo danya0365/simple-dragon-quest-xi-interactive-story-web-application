@@ -1,31 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Village Clothes - Simple peasant outfit -->
+<svg width="150" height="180" viewBox="0 0 150 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- Village Clothes - Starting armor -->
+  
   <!-- Shirt -->
-  <path d="M30 30 L35 60 L65 60 L70 30 Z" fill="#87CEEB" stroke="#333" stroke-width="2"/>
-  <!-- Shirt collar -->
-  <path d="M40 30 L45 35 L55 35 L60 30" fill="none" stroke="#333" stroke-width="1.5"/>
+  <path d="M 50 60 Q 75 40 100 60 L 100 120 Q 75 130 50 120 Z" fill="#4169E1"/>
+  
+  <!-- Collar -->
+  <path d="M 60 60 Q 75 50 90 60" stroke="#FFFFFF" stroke-width="3" fill="none"/>
   
   <!-- Sleeves -->
-  <rect x="20" y="35" width="15" height="20" rx="7" fill="#87CEEB" stroke="#333" stroke-width="1.5"/>
-  <rect x="65" y="35" width="15" height="20" rx="7" fill="#87CEEB" stroke="#333" stroke-width="1.5"/>
-  
-  <!-- Pants -->
-  <rect x="35" y="60" width="12" height="30" rx="2" fill="#4682B4" stroke="#333" stroke-width="1.5"/>
-  <rect x="53" y="60" width="12" height="30" rx="2" fill="#4682B4" stroke="#333" stroke-width="1.5"/>
+  <ellipse cx="40" cy="80" rx="15" ry="25" fill="#4169E1" transform="rotate(-30 40 80)"/>
+  <ellipse cx="110" cy="80" rx="15" ry="25" fill="#4169E1" transform="rotate(30 110 80)"/>
   
   <!-- Belt -->
-  <rect x="32" y="58" width="36" height="4" rx="1" fill="#8B4513" stroke="#333" stroke-width="1"/>
-  <!-- Belt buckle -->
-  <rect x="47" y="57" width="6" height="6" rx="1" fill="#C0C0C0" stroke="#333" stroke-width="0.5"/>
+  <rect x="45" y="110" width="60" height="8" fill="#8B4513"/>
   
-  <!-- Shoes -->
-  <ellipse cx="41" cy="92" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
-  <ellipse cx="59" cy="92" rx="6" ry="3" fill="#333" stroke="#333" stroke-width="1"/>
+  <!-- Pants -->
+  <rect x="60" y="118" width="15" height="40" fill="#000080"/>
+  <rect x="75" y="118" width="15" height="40" fill="#000080"/>
+  
+  <!-- Boots -->
+  <ellipse cx="67" cy="162" rx="10" ry="8" fill="#8B4513"/>
+  <ellipse cx="82" cy="162" rx="10" ry="8" fill="#8B4513"/>
   
   <!-- Simple pattern on shirt -->
-  <rect x="45" y="40" width="10" height="2" fill="#4682B4"/>
-  <rect x="45" y="48" width="10" height="2" fill="#4682B4"/>
+  <g opacity="0.3">
+    <circle cx="65" cy="80" r="3" fill="#FFFFFF"/>
+    <circle cx="85" cy="80" r="3" fill="#FFFFFF"/>
+    <circle cx="75" cy="95" r="3" fill="#FFFFFF"/>
+  </g>
   
-  <!-- Patch on elbow -->
-  <rect x="22" y="45" width="8" height="6" rx="1" fill="#CD853F" stroke="#333" stroke-width="0.5"/>
+  <!-- Protective aura -->
+  <ellipse cx="75" cy="90" rx="45" ry="55" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.5;0.3" dur="4s" repeatCount="indefinite"/>
+  </ellipse>
 </svg>

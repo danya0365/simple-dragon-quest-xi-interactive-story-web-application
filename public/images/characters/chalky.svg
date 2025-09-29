@@ -1,35 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Chalky - Grandpa -->
-  <circle cx="50" cy="35" r="18" fill="#fdbcb4" stroke="#333" stroke-width="2"/>
-  <!-- White hair -->
-  <path d="M32 25 Q50 15 68 25 Q65 20 50 18 Q35 20 32 25" fill="#F5F5F5" stroke="#333" stroke-width="1"/>
-  <path d="M30 30 Q35 25 40 30" fill="none" stroke="#F5F5F5" stroke-width="3"/>
-  <path d="M60 30 Q65 25 70 30" fill="none" stroke="#F5F5F5" stroke-width="3"/>
+<svg width="180" height="240" viewBox="0 0 180 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Chalky - Companion character with white/gray outfit -->
   
-  <!-- Face -->
-  <circle cx="42" cy="33" r="2" fill="#333"/>
-  <circle cx="58" cy="33" r="2" fill="#333"/>
-  <path d="M45 40 Q50 43 55 40" fill="none" stroke="#333" stroke-width="1.5"/>
-  <!-- Wrinkles -->
-  <path d="M35 30 Q40 28 45 30" fill="none" stroke="#666" stroke-width="0.5"/>
-  <path d="M55 30 Q60 28 65 30" fill="none" stroke="#666" stroke-width="0.5"/>
-  
-  <!-- Body - Elder clothes -->
-  <rect x="32" y="50" width="36" height="40" rx="5" fill="#8B4513" stroke="#333" stroke-width="2"/>
-  <!-- Pattern on clothes -->
-  <rect x="40" y="60" width="20" height="3" fill="#654321"/>
-  <rect x="40" y="70" width="20" height="3" fill="#654321"/>
-  <rect x="40" y="80" width="20" height="3" fill="#654321"/>
+  <!-- Body -->
+  <ellipse cx="90" cy="170" rx="32" ry="42" fill="#D3D3D3"/>
   
   <!-- Arms -->
-  <rect x="22" y="55" width="15" height="25" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
-  <rect x="63" y="55" width="15" height="25" rx="7" fill="#fdbcb4" stroke="#333" stroke-width="1.5"/>
+  <ellipse cx="62" cy="152" rx="11" ry="28" fill="#FDBCB4" transform="rotate(-15 62 152)"/>
+  <ellipse cx="118" cy="152" rx="11" ry="28" fill="#FDBCB4" transform="rotate(15 118 152)"/>
+  
+  <!-- Head -->
+  <circle cx="90" cy="75" r="28" fill="#FDBCB4"/>
+  
+  <!-- Hair -->
+  <path d="M 62 65 Q 90 45 118 65 Q 113 55 90 50 Q 67 55 62 65" fill="#F5F5F5"/>
+  <path d="M 62 70 Q 77 60 90 65 Q 103 60 118 70" fill="#F5F5F5"/>
+  
+  <!-- Eyes -->
+  <circle cx="82" cy="75" r="3" fill="#000000"/>
+  <circle cx="98" cy="75" r="3" fill="#000000"/>
+  
+  <!-- Mouth -->
+  <path d="M 85 85 Q 90 90 95 85" stroke="#000000" stroke-width="2" fill="none"/>
+  
+  <!-- Staff -->
+  <rect x="108" y="130" width="6" height="70" fill="#8B4513"/>
+  <circle cx="111" cy="125" r="8" fill="#9370DB"/>
+  
+  <!-- Belt -->
+  <rect x="58" y="165" width="64" height="7" fill="#696969"/>
   
   <!-- Legs -->
-  <rect x="35" y="90" width="12" height="8" rx="4" fill="#333" stroke="#333" stroke-width="1.5"/>
-  <rect x="53" y="90" width="12" height="8" rx="4" fill="#333" stroke="#333" stroke-width="1.5"/>
+  <rect x="76" y="210" width="14" height="23" fill="#D3D3D3"/>
+  <rect x="90" y="210" width="14" height="23" fill="#D3D3D3"/>
   
-  <!-- Walking stick -->
-  <rect x="15" y="45" width="3" height="50" fill="#8B4513" stroke="#333" stroke-width="1"/>
-  <circle cx="16.5" cy="95" r="4" fill="#654321" stroke="#333" stroke-width="1"/>
+  <!-- Boots -->
+  <ellipse cx="83" cy="236" rx="11" ry="7" fill="#696969"/>
+  <ellipse cx="97" cy="236" rx="11" ry="7" fill="#696969"/>
+  
+  <!-- Magical aura -->
+  <circle cx="111" cy="125" r="15" fill="none" stroke="#9370DB" stroke-width="1" opacity="0.5">
+    <animate attributeName="r" values="15;20;15" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.2;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
 </svg>
