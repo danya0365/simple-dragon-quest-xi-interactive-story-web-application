@@ -1,48 +1,71 @@
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Desert Robes - Heat-resistant desert robes -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Desert Robes Item -->
   
-  <!-- Robe body (main) -->
-  <path d="M 20 20 L 20 50 Q 20 55 25 55 L 39 55 Q 44 55 44 50 L 44 20 Q 44 15 39 15 L 25 15 Q 20 15 20 20" fill="#F4A460" stroke="#D2691E" stroke-width="1"/>
+  <!-- Robe body - Main garment -->
+  <path d="M60 80 Q60 60 80 60 L120 60 Q140 60 140 80 L140 160 Q140 180 120 180 L80 180 Q60 180 60 160 Z" fill="#f4a460" stroke="#cd853f" stroke-width="2"/>
   
-  <!-- Robe hood -->
-  <path d="M 25 15 Q 25 8 32 8 Q 39 8 39 15" fill="#DEB887" stroke="#D2691E" stroke-width="1"/>
-  
-  <!-- Hood opening -->
-  <ellipse cx="32" cy="15" rx="8" ry="4" fill="#FDBCB4" stroke="#D2691E" stroke-width="1"/>
-  
-  <!-- Face opening -->
-  <ellipse cx="32" cy="20" rx="6" ry="3" fill="#FDBCB4"/>
+  <!-- Robe collar -->
+  <path d="M80 60 Q100 50 120 60 L115 70 Q100 65 85 70 Z" fill="#daa520" stroke="#cd853f" stroke-width="2"/>
   
   <!-- Robe sleeves -->
-  <rect x="12" y="25" width="8" height="20" fill="#F4A460" stroke="#D2691E" stroke-width="1"/>
-  <rect x="44" y="25" width="8" height="20" fill="#F4A460" stroke="#D2691E" stroke-width="1"/>
+  <ellipse cx="45" cy="100" rx="15" ry="40" fill="#f4a460" stroke="#cd853f" stroke-width="2"/>
+  <ellipse cx="155" cy="100" rx="15" ry="40" fill="#f4a460" stroke="#cd853f" stroke-width="2"/>
   
   <!-- Sleeve openings -->
-  <ellipse cx="16" cy="45" rx="4" ry="2" fill="#DEB887"/>
-  <ellipse cx="48" cy="45" rx="4" ry="2" fill="#DEB887"/>
+  <ellipse cx="45" cy="135" rx="12" ry="8" fill="#daa520" stroke="#cd853f" stroke-width="1"/>
+  <ellipse cx="155" cy="135" rx="12" ry="8" fill="#daa520" stroke="#cd853f" stroke-width="1"/>
   
   <!-- Robe belt -->
-  <rect x="20" y="35" width="24" height="3" fill="#8B4513"/>
-  <circle cx="32" cy="36.5" r="2" fill="#DAA520"/>
+  <rect x="60" y="110" width="80" height="8" fill="#8b4513" stroke="#654321" stroke-width="2"/>
+  <rect x="95" y="108" width="10" height="12" fill="#daa520" stroke="#cd853f" stroke-width="1"/>
   
-  <!-- Desert pattern on robe -->
-  <path d="M 25 25 Q 27 23 29 25 T 33 25 T 37 25 T 39 25" stroke="#D2691E" stroke-width="0.5" fill="none" opacity="0.6"/>
-  <path d="M 25 30 Q 27 28 29 30 T 33 30 T 37 30 T 39 30" stroke="#D2691E" stroke-width="0.5" fill="none" opacity="0.6"/>
-  <path d="M 25 45 Q 27 43 29 45 T 33 45 T 37 45 T 39 45" stroke="#D2691E" stroke-width="0.5" fill="none" opacity="0.6"/>
+  <!-- Robe patterns - Desert motifs -->
+  <path d="M70 90 Q80 85 90 90" fill="none" stroke="#daa520" stroke-width="2"/>
+  <path d="M110 90 Q120 85 130 90" fill="none" stroke="#daa520" stroke-width="2"/>
+  <path d="M70 130 Q80 125 90 130" fill="none" stroke="#daa520" stroke-width="2"/>
+  <path d="M110 130 Q120 125 130 130" fill="none" stroke="#daa520" stroke-width="2"/>
   
-  <!-- Heat resistance symbols -->
-  <text x="32" y="42" text-anchor="middle" font-family="serif" font-size="4" fill="#8B4513">☀</text>
+  <!-- Robe trim -->
+  <rect x="60" y="75" width="80" height="3" fill="#daa520"/>
+  <rect x="60" y="155" width="80" height="3" fill="#daa520"/>
   
-  <!-- Sand particles on robe -->
-  <circle cx="28" cy="28" r="0.5" fill="#DEB887" opacity="0.7"/>
-  <circle cx="36" cy="32" r="0.5" fill="#DEB887" opacity="0.7"/>
-  <circle cx="30" cy="48" r="0.5" fill="#DEB887" opacity="0.7"/>
-  <circle cx="38" cy="50" r="0.5" fill="#DEB887" opacity="0.7"/>
+  <!-- Hood -->
+  <path d="M80 60 Q100 40 120 60 Q115 45 100 35 Q85 45 80 60" fill="#f4a460" stroke="#cd853f" stroke-width="2"/>
+  <path d="M85 55 Q100 45 115 55" fill="#daa520" stroke="#cd853f" stroke-width="1"/>
   
-  <!-- Robe folds -->
-  <line x1="25" y1="20" x2="25" y2="50" stroke="#D2691E" stroke-width="0.5" opacity="0.4"/>
-  <line x1="39" y1="20" x2="39" y2="50" stroke="#D2691E" stroke-width="0.5" opacity="0.4"/>
+  <!-- Desert sun symbol on chest -->
+  <circle cx="100" cy="95" r="12" fill="#ffd700" stroke="#daa520" stroke-width="2"/>
+  <path d="M100 83 L100 107 M88 95 L112 95 M92 87 L108 103 M108 87 L92 103" stroke="#ff6347" stroke-width="2"/>
   
-  <!-- Wind protection effect -->
-  <path d="M 15 35 Q 20 33 25 35 T 35 35 T 45 35 T 50 35" stroke="#87CEEB" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <!-- Heat resistance aura -->
+  <circle cx="100" cy="120" r="60" fill="none" stroke="#ff6347" stroke-width="1" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="120" r="70" fill="none" stroke="#ff6347" stroke-width="1" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.05;0.2" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Sand particles -->
+  <circle cx="70" cy="150" r="2" fill="#f4a460" opacity="0.4">
+    <animate attributeName="cy" values="150;140;150" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="130" cy="160" r="2" fill="#f4a460" opacity="0.3">
+    <animate attributeName="cy" values="160;150;160" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="170" r="2" fill="#f4a460" opacity="0.5">
+    <animate attributeName="cy" values="170;160;170" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Robe folds and shadows -->
+  <path d="M80 80 Q85 120 80 160" fill="none" stroke="#cd853f" stroke-width="1" opacity="0.5"/>
+  <path d="M120 80 Q115 120 120 160" fill="none" stroke="#cd853f" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Animation: Gentle breeze effect -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="translate"
+    values="0,0; 2,0; 0,0; -2,0; 0,0"
+    dur="4s"
+    repeatCount="indefinite"/>
 </svg>

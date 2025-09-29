@@ -1,0 +1,44 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Prince Faris - Prince of Gallopolis -->
+  
+  <!-- Head -->
+  <circle cx="32" cy="20" r="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Royal crown -->
+  <polygon points="20,12 32,5 44,12 42,8 32,2 22,8" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+  <circle cx="32" cy="8" r="2" fill="#FF0000"/>
+  
+  <!-- Face features -->
+  <circle cx="28" cy="18" r="1" fill="#000000"/>
+  <circle cx="36" cy="18" r="1" fill="#000000"/>
+  <path d="M 28 24 Q 32 26 36 24" stroke="#8B4513" stroke-width="1" fill="none"/>
+  
+  <!-- Hair -->
+  <path d="M 20 15 Q 15 10 20 8 Q 25 5 32 6 Q 39 5 44 8 Q 49 10 44 15" fill="#8B4513"/>
+  
+  <!-- Body (royal outfit) -->
+  <rect x="24" y="32" width="16" height="20" fill="#4169E1" stroke="#000080" stroke-width="1"/>
+  
+  <!-- Royal insignia on chest -->
+  <circle cx="32" cy="40" r="3" fill="#FFD700"/>
+  <polygon points="32,37 34,40 32,43 30,40" fill="#FF0000"/>
+  
+  <!-- Arms -->
+  <rect x="18" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  <rect x="40" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Hands holding riding crop -->
+  <rect x="22" y="44" width="2" height="8" fill="#8B4513"/>
+  <rect x="40" y="44" width="2" height="8" fill="#8B4513"/>
+  
+  <!-- Legs -->
+  <rect x="26" y="52" width="5" height="10" fill="#4169E1" stroke="#000080" stroke-width="1"/>
+  <rect x="33" y="52" width="5" height="10" fill="#4169E1" stroke="#000080" stroke-width="1"/>
+  
+  <!-- Boots -->
+  <ellipse cx="28.5" cy="62" rx="3" ry="2" fill="#8B4513"/>
+  <ellipse cx="35.5" cy="62" rx="3" ry="2" fill="#8B4513"/>
+  
+  <!-- Royal sash -->
+  <rect x="24" y="36" width="16" height="3" fill="#FFD700"/>
+</svg>

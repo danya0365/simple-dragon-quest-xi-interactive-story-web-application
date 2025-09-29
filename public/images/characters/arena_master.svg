@@ -1,51 +1,83 @@
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Arena Master - Gallopolis Arena Overseer -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Arena Master Character -->
+  
+  <!-- Body - Strong muscular build -->
+  <ellipse cx="100" cy="140" rx="40" ry="50" fill="#8b4513" stroke="#654321" stroke-width="3"/>
+  
+  <!-- Armor plates -->
+  <rect x="70" y="110" width="60" height="40" fill="#cd853f" stroke="#8b4513" stroke-width="2" rx="5"/>
+  <rect x="75" y="115" width="50" height="30" fill="#daa520" stroke="#b8860b" stroke-width="1" rx="3"/>
   
   <!-- Head -->
-  <circle cx="32" cy="20" r="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  <circle cx="100" cy="70" r="28" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
   
-  <!-- Face features (stern) -->
-  <circle cx="28" cy="18" r="1" fill="#000000"/>
-  <circle cx="36" cy="18" r="1" fill="#000000"/>
-  <path d="M 28 24 Q 32 25 36 24" stroke="#8B4513" stroke-width="1" fill="none"/>
+  <!-- Beard - Thick beard -->
+  <path d="M75 85 Q100 95 125 85 Q120 90 100 92 Q80 90 75 85" fill="#654321"/>
+  <path d="M80 80 Q100 88 120 80" fill="#8b4513"/>
   
-  <!-- Mustache -->
-  <path d="M 26 22 Q 32 24 38 22" stroke="#8B4513" stroke-width="1.5" fill="none"/>
+  <!-- Hair - Short dark hair -->
+  <path d="M72 60 Q100 48 128 60 Q125 55 100 50 Q75 55 72 60" fill="#2c3e50"/>
   
-  <!-- Short hair -->
-  <path d="M 20 15 Q 20 10 25 8 Q 32 7 39 8 Q 44 10 44 15" fill="#696969"/>
+  <!-- Eyes - Sharp eyes -->
+  <circle cx="88" cy="70" r="3" fill="#333"/>
+  <circle cx="112" cy="70" r="3" fill="#333"/>
   
-  <!-- Body (arena master outfit) -->
-  <rect x="24" y="32" width="16" height="20" fill="#8B0000" stroke="#4B0000" stroke-width="1"/>
+  <!-- Scar on face -->
+  <path d="M95 75 L105 78" stroke="#8b0000" stroke-width="2"/>
   
-  <!-- Arena emblem on chest -->
-  <circle cx="32" cy="40" r="4" fill="none" stroke="#FFD700" stroke-width="1"/>
-  <polygon points="32,37 34,40 32,43 30,40" fill="#FFD700"/>
+  <!-- Nose -->
+  <path d="M100 78 L98 83 L102 83 Z" fill="#e8a298"/>
   
-  <!-- Shoulders (epaulets) -->
-  <rect x="22" y="32" width="4" height="3" fill="#FFD700"/>
-  <rect x="38" y="32" width="4" height="3" fill="#FFD700"/>
+  <!-- Mouth - Stern expression -->
+  <path d="M92 90 Q100 93 108 90" stroke="#333" stroke-width="2" fill="none"/>
   
-  <!-- Arms -->
-  <rect x="18" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
-  <rect x="40" y="34" width="6" height="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  <!-- Helmet/Arena master hat -->
+  <ellipse cx="100" cy="50" rx="32" ry="15" fill="#2c3e50" stroke="#1a252f" stroke-width="2"/>
+  <rect x="95" y="35" width="10" height="15" fill="#dc143c"/>
+  <circle cx="100" cy="42" r="3" fill="#ffd700"/>
+  
+  <!-- Arms - Muscular arms -->
+  <ellipse cx="60" cy="130" rx="15" ry="35" fill="#8b4513" stroke="#654321" stroke-width="2" transform="rotate(-25 60 130)"/>
+  <ellipse cx="140" cy="130" rx="15" ry="35" fill="#8b4513" stroke="#654321" stroke-width="2" transform="rotate(25 140 130)"/>
+  
+  <!-- Arm bands -->
+  <rect x="50" y="125" width="20" height="8" fill="#cd853f" stroke="#8b4513" stroke-width="2" transform="rotate(-25 60 129)"/>
+  <rect x="130" y="125" width="20" height="8" fill="#cd853f" stroke="#8b4513" stroke-width="2" transform="rotate(25 140 129)"/>
   
   <!-- Hands -->
-  <circle cx="18" cy="46" r="2" fill="#FDBCB4"/>
-  <circle cx="46" cy="46" r="2" fill="#FDBCB4"/>
+  <circle cx="45" cy="160" r="10" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  <circle cx="155" cy="160" r="10" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
   
-  <!-- Legs -->
-  <rect x="26" y="52" width="5" height="10" fill="#8B0000" stroke="#4B0000" stroke-width="1"/>
-  <rect x="33" y="52" width="5" height="10" fill="#8B0000" stroke="#4B0000" stroke-width="1"/>
+  <!-- Legs - Strong legs -->
+  <ellipse cx="82" cy="185" rx="15" ry="30" fill="#8b4513" stroke="#654321" stroke-width="2"/>
+  <ellipse cx="118" cy="185" rx="15" ry="30" fill="#8b4513" stroke="#654321" stroke-width="2"/>
   
-  <!-- Boots -->
-  <ellipse cx="28.5" cy="62" rx="3" ry="2" fill="#4B0000"/>
-  <ellipse cx="35.5" cy="62" rx="3" ry="2" fill="#4B0000"/>
+  <!-- Boots - Heavy boots -->
+  <ellipse cx="82" cy="210" rx="18" ry="10" fill="#2c3e50"/>
+  <ellipse cx="118" cy="210" rx="18" ry="10" fill="#2c3e50"/>
   
-  <!-- Whistle -->
-  <rect x="46" y="44" width="3" height="2" fill="#C0C0C0"/>
-  <circle cx="49" cy="45" r="1" fill="#C0C0C0"/>
+  <!-- Arena master emblem on chest -->
+  <circle cx="100" cy="130" r="15" fill="#dc143c" stroke="#8b0000" stroke-width="2"/>
+  <text x="100" y="135" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#fff">A</text>
   
-  <!-- Authority belt -->
-  <rect x="24" y="44" width="16" height="2" fill="#FFD700"/>
+  <!-- Belt -->
+  <rect x="60" y="160" width="80" height="10" fill="#654321" stroke="#4a3018" stroke-width="2"/>
+  
+  <!-- Whip at side -->
+  <path d="M145 150 Q155 160 160 170 Q165 180 170 190" stroke="#8b4513" stroke-width="3" fill="none"/>
+  <circle cx="145" cy="150" r="4" fill="#654321"/>
+  
+  <!-- Shoulder pads -->
+  <ellipse cx="65" cy="115" rx="12" ry="8" fill="#cd853f" stroke="#8b4513" stroke-width="2" transform="rotate(-30 65 115)"/>
+  <ellipse cx="135" cy="115" rx="12" ry="8" fill="#cd853f" stroke="#8b4513" stroke-width="2" transform="rotate(30 135 115)"/>
+  
+  <!-- Animation: Intimidating presence -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="scale"
+    values="1;1.03;1"
+    dur="4s"
+    repeatCount="indefinite"
+    additive="sum"/>
 </svg>

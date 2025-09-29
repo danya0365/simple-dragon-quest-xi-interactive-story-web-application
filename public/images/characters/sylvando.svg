@@ -1,48 +1,79 @@
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Sylvando - The Handsome Entertainer -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sylvando Character -->
+  
+  <!-- Body - Colorful performer outfit -->
+  <ellipse cx="100" cy="140" rx="35" ry="45" fill="#ff69b4" stroke="#c71585" stroke-width="2"/>
+  
+  <!-- Frilly collar -->
+  <ellipse cx="100" cy="105" rx="25" ry="8" fill="#fff" stroke="#ddd" stroke-width="1"/>
+  <path d="M75 105 Q85 100 95 105 Q105 100 115 105 Q125 100 135 105" fill="none" stroke="#ddd" stroke-width="1"/>
   
   <!-- Head -->
-  <circle cx="32" cy="20" r="12" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  <circle cx="100" cy="70" r="25" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
   
-  <!-- Flamboyant hair -->
-  <path d="M 20 15 Q 15 8 20 5 Q 25 2 32 3 Q 39 2 44 5 Q 49 8 44 15 Q 46 12 48 15 Q 50 18 48 20 Q 46 22 44 20" fill="#FF69B4"/>
+  <!-- Hair - Stylish pink hair -->
+  <path d="M75 60 Q100 40 125 60 Q120 45 100 40 Q80 45 75 60" fill="#ff1493"/>
+  <path d="M70 65 Q75 55 85 60" fill="#ff69b4"/>
+  <path d="M130 65 Q125 55 115 60" fill="#ff69b4"/>
   
-  <!-- Face features (handsome) -->
-  <circle cx="28" cy="18" r="1" fill="#000000"/>
-  <circle cx="36" cy="18" r="1" fill="#000000"/>
-  <path d="M 28 24 Q 32 26 36 24" stroke="#8B4513" stroke-width="1" fill="none"/>
+  <!-- Eyes - Expressive eyes -->
+  <circle cx="90" cy="70" r="3" fill="#4169e1"/>
+  <circle cx="110" cy="70" r="3" fill="#4169e1"/>
   
-  <!-- Sparkle near eye -->
-  <polygon points="40,16 42,14 44,16 42,18" fill="#FFD700"/>
+  <!-- Eyelashes -->
+  <path d="M87 67 L85 65 M90 67 L90 65 M93 67 L95 65" stroke="#333" stroke-width="1"/>
+  <path d="M107 67 L105 65 M110 67 L110 65 M113 67 L115 65" stroke="#333" stroke-width="1"/>
   
-  <!-- Body (performer outfit) -->
-  <rect x="24" y="32" width="16" height="20" fill="#FF1493" stroke="#8B008B" stroke-width="1"/>
+  <!-- Nose -->
+  <path d="M100 75 L98 80 L102 80 Z" fill="#e8a298"/>
   
-  <!-- Fringe on outfit -->
-  <path d="M 24 36 L 26 38 L 28 36 L 30 38 L 32 36 L 34 38 L 36 36 L 38 38 L 40 36" stroke="#FFD700" stroke-width="1" fill="none"/>
+  <!-- Mouth - Cheerful smile -->
+  <path d="M90 88 Q100 94 110 88" stroke="#333" stroke-width="2" fill="none"/>
   
-  <!-- Arms (dramatic pose) -->
-  <rect x="16" y="30" width="6" height="14" fill="#FDBCB4" stroke="#8B4513" stroke-width="1" transform="rotate(-15 19 37)"/>
-  <rect x="42" y="30" width="6" height="14" fill="#FDBCB4" stroke="#8B4513" stroke-width="1" transform="rotate(15 45 37)"/>
+  <!-- Cheek blush -->
+  <circle cx="80" cy="80" r="4" fill="#ff69b4" opacity="0.3"/>
+  <circle cx="120" cy="80" r="4" fill="#ff69b4" opacity="0.3"/>
+  
+  <!-- Hat - Performer's hat -->
+  <ellipse cx="100" cy="50" rx="30" ry="8" fill="#9370db" stroke="#663399" stroke-width="2"/>
+  <ellipse cx="100" cy="45" rx="20" ry="12" fill="#9370db" stroke="#663399" stroke-width="2"/>
+  <circle cx="100" cy="40" r="5" fill="#ffd700"/>
+  
+  <!-- Arms - Dramatic pose -->
+  <ellipse cx="65" cy="125" rx="12" ry="35" fill="#ff69b4" stroke="#c71585" stroke-width="2" transform="rotate(-45 65 125)"/>
+  <ellipse cx="135" cy="125" rx="12" ry="35" fill="#ff69b4" stroke="#c71585" stroke-width="2" transform="rotate(45 135 125)"/>
   
   <!-- Hands -->
-  <circle cx="16" cy="42" r="3" fill="#FDBCB4"/>
-  <circle cx="48" cy="42" r="3" fill="#FDBCB4"/>
+  <circle cx="45" cy="145" r="8" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
+  <circle cx="155" cy="145" r="8" fill="#fdbcb4" stroke="#e8a298" stroke-width="2"/>
   
   <!-- Legs -->
-  <rect x="26" y="52" width="5" height="10" fill="#FF1493" stroke="#8B008B" stroke-width="1"/>
-  <rect x="33" y="52" width="5" height="10" fill="#FF1493" stroke="#8B008B" stroke-width="1"/>
+  <ellipse cx="85" cy="180" rx="12" ry="25" fill="#ff69b4" stroke="#c71585" stroke-width="2"/>
+  <ellipse cx="115" cy="180" rx="12" ry="25" fill="#ff69b4" stroke="#c71585" stroke-width="2"/>
   
-  <!-- Boots (stylish) -->
-  <ellipse cx="28.5" cy="62" rx="3" ry="2" fill="#8B008B"/>
-  <ellipse cx="35.5" cy="62" rx="3" ry="2" fill="#8B008B"/>
+  <!-- Boots - Stylish boots -->
+  <ellipse cx="85" cy="200" rx="15" ry="8" fill="#9370db"/>
+  <ellipse cx="115" cy="200" rx="15" ry="8" fill="#9370db"/>
   
-  <!-- Rose in hand -->
-  <circle cx="16" cy="40" r="2" fill="#FF0000"/>
-  <line x1="16" y1="42" x2="16" y2="45" stroke="#228B22" stroke-width="1"/>
+  <!-- Rose on chest -->
+  <circle cx="100" cy="125" r="8" fill="#ff1493" stroke="#c71585" stroke-width="1"/>
+  <circle cx="100" cy="125" r="5" fill="#ff69b4"/>
+  <circle cx="100" cy="125" r="2" fill="#fff"/>
   
-  <!-- Performance sparkles -->
-  <polygon points="10,10 12,8 14,10 12,12" fill="#FFD700" opacity="0.8"/>
-  <polygon points="50,15 52,13 54,15 52,17" fill="#FFD700" opacity="0.8"/>
-  <polygon points="45,25 47,23 49,25 47,27" fill="#FF69B4" opacity="0.8"/>
+  <!-- Belt -->
+  <rect x="65" y="155" width="70" height="8" fill="#ffd700" stroke="#daa520" stroke-width="2"/>
+  
+  <!-- Ribbon on arm -->
+  <rect x="40" y="140" width="15" height="4" fill="#ffd700" stroke="#daa520" stroke-width="1" transform="rotate(-30 47 142)"/>
+  <rect x="145" y="140" width="15" height="4" fill="#ffd700" stroke="#daa520" stroke-width="1" transform="rotate(30 152 142)"/>
+  
+  <!-- Animation: Performer's flourish -->
+  <animateTransform
+    attributeName="transform"
+    attributeType="XML"
+    type="rotate"
+    values="0 100 100; 5 100 100; 0 100 100; -5 100 100; 0 100 100"
+    dur="3s"
+    repeatCount="indefinite"
+    additive="sum"/>
 </svg>
