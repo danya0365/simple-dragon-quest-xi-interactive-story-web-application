@@ -69,7 +69,35 @@ export interface PartyMemberUI {
   description: string;
   avatarUrl: string;
   currentStats: Record<string, number | string>;
-  equipment: Record<string, string | null>;
+  equipment: {
+    weapon: {
+      id: string;
+      name: string;
+      description: string;
+      itemType: string;
+      rarity: string;
+      stats: Record<string, number | string>;
+      imageUrl: string;
+    };
+    armor: {
+      id: string;
+      name: string;
+      description: string;
+      itemType: string;
+      rarity: string;
+      stats: Record<string, number | string>;
+      imageUrl: string;
+    };
+    accessory: {
+      id: string;
+      name: string;
+      description: string;
+      itemType: string;
+      rarity: string;
+      stats: Record<string, number | string>;
+      imageUrl: string;
+    };
+  };
   partyPosition: number;
   joinedAt: string;
 }

@@ -10,6 +10,7 @@ import {
   mapWorldMapToDto,
 } from "@/src/domain/mappers/rpcMappers";
 import {
+  convertJsonStatsToRecord,
   mapAvailableEventDtoToUI,
   mapEventInteractionDtoToUI,
   mapUserGameStateDtoToUI,
@@ -759,13 +760,24 @@ export const useGameStore = create<GameStore>()(
         set({ loading: true, error: null });
 
         try {
-          const { data, error } = await supabase.rpc("get_all_characters");
+          const { data: characterData, error: characterError } =
+            await supabase.rpc("get_all_characters");
 
-          if (error) throw error;
+          if (characterError) throw characterError;
 
           // Cast to schema first, then map to DTO
-          const characterSchemas = data as unknown as CharacterSchema[];
+          const characterSchemas =
+            characterData as unknown as CharacterSchema[];
           const characterDtos = characterSchemas.map(mapCharacterToDto);
+
+          const { data: itemData, error: itemError } = await supabase.rpc(
+            "get_all_items"
+          );
+
+          if (itemError) throw itemError;
+
+          const itemSchemas = itemData as unknown as ItemSchema[];
+          const itemDtos = itemSchemas.map(mapItemToDto);
 
           // Update user game state with character master data
           const { userGameState } = get();
@@ -778,6 +790,15 @@ export const useGameStore = create<GameStore>()(
               (partyMember) => {
                 const masterCharacter = characterDtos.find(
                   (c) => c.id === partyMember.characterId
+                );
+                const masterWeapon = itemDtos.find(
+                  (c) => c.id === partyMember.equipment.weapon.id
+                );
+                const masterArmor = itemDtos.find(
+                  (c) => c.id === partyMember.equipment.armor.id
+                );
+                const masterAccessory = itemDtos.find(
+                  (c) => c.id === partyMember.equipment.accessory.id
                 );
                 return {
                   characterId: partyMember.characterId,
@@ -794,7 +815,35 @@ export const useGameStore = create<GameStore>()(
                     partyMember.avatarUrl ||
                     "/placeholder-avatar.png",
                   currentStats: partyMember.currentStats,
-                  equipment: partyMember.equipment,
+                  equipment: {
+                    weapon: {
+                      id: masterWeapon?.id || "",
+                      name: masterWeapon?.name || "",
+                      description: masterWeapon?.description || "",
+                      itemType: masterWeapon?.itemType || "",
+                      rarity: masterWeapon?.rarity || "",
+                      stats: convertJsonStatsToRecord(masterWeapon?.stats),
+                      imageUrl: masterWeapon?.imageUrl || "",
+                    },
+                    armor: {
+                      id: masterArmor?.id || "",
+                      name: masterArmor?.name || "",
+                      description: masterArmor?.description || "",
+                      itemType: masterArmor?.itemType || "",
+                      rarity: masterArmor?.rarity || "",
+                      stats: convertJsonStatsToRecord(masterArmor?.stats),
+                      imageUrl: masterArmor?.imageUrl || "",
+                    },
+                    accessory: {
+                      id: masterAccessory?.id || "",
+                      name: masterAccessory?.name || "",
+                      description: masterAccessory?.description || "",
+                      itemType: masterAccessory?.itemType || "",
+                      rarity: masterAccessory?.rarity || "",
+                      stats: convertJsonStatsToRecord(masterAccessory?.stats),
+                      imageUrl: masterAccessory?.imageUrl || "",
+                    },
+                  },
                   partyPosition: partyMember.partyPosition,
                   joinedAt: partyMember.joinedAt,
                 };

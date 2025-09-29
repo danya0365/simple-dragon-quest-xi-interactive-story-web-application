@@ -5,6 +5,8 @@ import { Json } from "./supabase";
 export interface PartyMemberSchema {
   equipment: {
     weapon: string;
+    armor: string;
+    accessory: string;
   };
   is_active: boolean;
   joined_at: string;
@@ -23,6 +25,8 @@ export interface PartyMemberSchema {
 export interface PartyMemberDto {
   equipment: {
     weapon: string;
+    armor: string;
+    accessory: string;
   };
   isActive: boolean;
   joinedAt: string;

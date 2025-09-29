@@ -233,7 +233,7 @@ export function PartyView() {
                               {slot}
                             </div>
                             <div className="text-white text-xs truncate">
-                              {item || "ไม่มี"}
+                              {item?.name || "ไม่มี"}
                             </div>
                           </div>
                         </div>

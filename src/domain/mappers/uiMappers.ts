@@ -3,6 +3,7 @@ import {
   EventType,
   InteractionType,
 } from "@/src/domain/types/enums";
+import { Json } from "@/src/domain/types/supabase";
 import {
   AvailableEventDto,
   EventInteractionDto,
@@ -18,11 +19,32 @@ import {
   GameEffectsUI,
   InventoryItemUI,
   LocationUI,
-  PartyMemberUI,
   StoryEventUI,
   UserGameStateUI,
   WorldRegionUI,
 } from "@/src/domain/types/ui";
+
+/**
+ * Convert Json stats to Record<string, number | string> format
+ * Handles the conversion from Json type to UI-compatible stats format
+ */
+export const convertJsonStatsToRecord = (stats: Json | null | undefined): Record<string, number | string> => {
+  if (!stats) return {};
+  
+  // If stats is already an object with string keys and number/string values, return it directly
+  if (typeof stats === 'object' && stats !== null && !Array.isArray(stats)) {
+    const result: Record<string, number | string> = {};
+    for (const [key, value] of Object.entries(stats)) {
+      if (typeof value === 'number' || typeof value === 'string') {
+        result[key] = value;
+      }
+    }
+    return result;
+  }
+  
+  // For other cases (string, number, boolean, array), return empty object
+  return {};
+};
 
 /**
  * Map EventInteractionDto to EventInteractionUI
@@ -165,7 +187,45 @@ export const mapUserGameStateDtoToUI = (
     gameStats: dto.gameStats as unknown as Record<string, string | number>,
     playerLevel: dto.playerLevel,
     playerExperience: dto.playerExperience,
-    partyMembers: (dto.partyMembers as unknown as PartyMemberUI[]) || [],
+    partyMembers: dto.partyMembers.map((member) => ({
+      name: "",
+      description: "",
+      avatarUrl: "",
+      isActive: member.isActive,
+      joinedAt: member.joinedAt,
+      characterId: member.characterId,
+      currentStats: member.currentStats,
+      partyPosition: member.partyPosition,
+      equipment: {
+        weapon: {
+          id: member.equipment.weapon,
+          name: "",
+          description: "",
+          itemType: "",
+          rarity: "",
+          stats: {},
+          imageUrl: "",
+        },
+        armor: {
+          id: member.equipment.armor,
+          name: "",
+          description: "",
+          itemType: "",
+          rarity: "",
+          stats: {},
+          imageUrl: "",
+        },
+        accessory: {
+          id: member.equipment.accessory,
+          name: "",
+          description: "",
+          itemType: "",
+          rarity: "",
+          stats: {},
+          imageUrl: "",
+        },
+      },
+    })),
     characterRelationships: dto.characterRelationships as unknown as Record<
       string,
       string | number
@@ -223,4 +283,3 @@ export const mapEventOutcomeDtoToUI = (
     nextEventId: dto.nextEventId,
   };
 };
-
