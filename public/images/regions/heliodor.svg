@@ -1,0 +1,149 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heliodor - The magnificent capital city of the Heliodor Kingdom -->
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="#87CEEB"/>
+  
+  <!-- Sky gradient -->
+  <defs>
+    <linearGradient id="heliodorSkyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#98D8E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B0E0E6;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="castleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#D3D3D3;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#C0C0C0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A9A9A9;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="buildingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F5DC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DEB887;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="royalGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="400" height="180" fill="url(#heliodorSkyGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="320" cy="60" r="22" fill="#FFD700" filter="url(#royalGlow)">
+    <animate attributeName="r" values="22;24;22" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Castle in the background -->
+  <g id="heliodorCastle">
+    <!-- Main castle tower -->
+    <rect x="250" y="80" width="80" height="120" fill="url(#castleGradient)"/>
+    <polygon points="240,80 290,50 340,80" fill="#C0C0C0"/>
+    
+    <!-- Castle towers -->
+    <rect x="235" y="90" width="25" height="80" fill="url(#castleGradient)"/>
+    <polygon points="230,90 247.5,70 265,90" fill="#C0C0C0"/>
+    
+    <rect x="320" y="90" width="25" height="80" fill="url(#castleGradient)"/>
+    <polygon points="315,90 332.5,70 350,90" fill="#C0C0C0"/>
+    
+    <!-- Castle windows -->
+    <rect x="265" y="100" width="12" height="15" fill="#4169E1"/>
+    <rect x="285" y="100" width="12" height="15" fill="#4169E1"/>
+    <rect x="305" y="100" width="12" height="15" fill="#4169E1"/>
+    
+    <!-- Castle flag -->
+    <rect x="288" y="45" width="4" height="25" fill="#8B4513"/>
+    <rect x="292" y="45" width="20" height="12" fill="#8B0000"/>
+  </g>
+  
+  <!-- City buildings -->
+  <!-- Building 1 -->
+  <g id="building1">
+    <rect x="50" y="140" width="45" height="60" fill="url(#buildingGradient)"/>
+    <polygon points="45,140 72.5,120 100,140" fill="#DEB887"/>
+    <rect x="60" y="150" width="8" height="10" fill="#87CEEB"/>
+    <rect x="77" y="150" width="8" height="10" fill="#87CEEB"/>
+    <rect x="60" y="170" width="8" height="10" fill="#87CEEB"/>
+    <rect x="77" y="170" width="8" height="10" fill="#87CEEB"/>
+  </g>
+  
+  <!-- Building 2 -->
+  <g id="building2">
+    <rect x="110" y="130" width="50" height="70" fill="url(#buildingGradient)"/>
+    <polygon points="105,130 135,105 165,130" fill="#DEB887"/>
+    <rect x="120" y="140" width="10" height="12" fill="#87CEEB"/>
+    <rect x="140" y="140" width="10" height="12" fill="#87CEEB"/>
+    <rect x="120" y="165" width="10" height="12" fill="#87CEEB"/>
+    <rect x="140" y="165" width="10" height="12" fill="#87CEEB"/>
+  </g>
+  
+  <!-- Building 3 -->
+  <g id="building3">
+    <rect x="170" y="135" width="40" height="65" fill="url(#buildingGradient)"/>
+    <polygon points="165,135 190,115 215,135" fill="#DEB887"/>
+    <rect x="180" y="145" width="8" height="10" fill="#87CEEB"/>
+    <rect x="192" y="145" width="8" height="10" fill="#87CEEB"/>
+    <rect x="180" y="170" width="8" height="10" fill="#87CEEB"/>
+    <rect x="192" y="170" width="8" height="10" fill="#87CEEB"/>
+  </g>
+  
+  <!-- Ground -->
+  <rect x="0" y="200" width="400" height="100" fill="#90EE90"/>
+  
+  <!-- City streets -->
+  <rect x="0" y="210" width="400" height="8" fill="#696969"/>
+  <rect x="150" y="200" width="8" height="100" fill="#696969"/>
+  
+  <!-- Royal banners -->
+  <g id="banners">
+    <rect x="30" y="100" width="3" height="40" fill="#8B4513"/>
+    <rect x="33" y="100" width="15" height="10" fill="#8B0000"/>
+    
+    <rect x="200" y="95" width="3" height="45" fill="#8B4513"/>
+    <rect x="203" y="95" width="15" height="10" fill="#8B0000"/>
+    
+    <rect x="370" y="105" width="3" height="35" fill="#8B4513"/>
+    <rect x="373" y="105" width="15" height="10" fill="#8B0000"/>
+  </g>
+  
+  <!-- City decorations -->
+  <g id="decorations">
+    <!-- Fountain -->
+    <ellipse cx="300" cy="220" rx="15" ry="8" fill="#4682B4"/>
+    <circle cx="300" cy="215" r="3" fill="#87CEEB">
+      <animate attributeName="cy" values="215;210;215" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Trees -->
+    <circle cx="80" cy="190" r="12" fill="#228B22"/>
+    <rect x="77" y="190" width="6" height="15" fill="#8B4513"/>
+    
+    <circle cx="350" cy="195" r="10" fill="#228B22"/>
+    <rect x="347" y="195" width="6" height="12" fill="#8B4513"/>
+  </g>
+  
+  <!-- Royal atmosphere particles -->
+  <g id="royalParticles" opacity="0.6">
+    <circle cx="100" cy="50" r="1" fill="#FFD700">
+      <animate attributeName="cy" values="50;40;50" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="200" cy="30" r="1.5" fill="#FFD700">
+      <animate attributeName="cy" values="30;20;30" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="300" cy="40" r="1" fill="#FFD700">
+      <animate attributeName="cy" values="40;30;40" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Magnificent city glow -->
+  <ellipse cx="200" cy="150" rx="180" ry="80" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.4;0.2" dur="6s" repeatCount="indefinite"/>
+  </ellipse>
+</svg>
