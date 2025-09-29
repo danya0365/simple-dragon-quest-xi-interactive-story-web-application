@@ -1,0 +1,106 @@
+<svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="seedCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#90EE90;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#32CD32;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#228B22;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006400;stop-opacity:1" />
+    </radialGradient>
+    <linearGradient id="hopeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ADFF2F;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#7FFF00;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#32CD32;stop-opacity:0.4" />
+    </linearGradient>
+    <radialGradient id="lifeAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#98FB98;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#228B22;stop-opacity:0.1" />
+    </radialGradient>
+    <filter id="lifeGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="seedShimmer">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="turbulence"/>
+      <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  
+  <!-- Life aura -->
+  <circle cx="75" cy="75" r="65" fill="url(#lifeAura)"/>
+  
+  <!-- Main seed body -->
+  <ellipse cx="75" cy="75" rx="25" ry="30" fill="url(#seedCore)" stroke="#228B22" stroke-width="2" filter="url(#lifeGlow)"/>
+  
+  <!-- Seed texture lines -->
+  <g stroke="#228B22" stroke-width="1" opacity="0.6">
+    <path d="M 60 65 Q 75 70 90 65"/>
+    <path d="M 58 75 Q 75 80 92 75"/>
+    <path d="M 60 85 Q 75 90 90 85"/>
+  </g>
+  
+  <!-- Sprout emerging from seed -->
+  <g transform="translate(75, 55)">
+    <!-- Stem -->
+    <path d="M 0 0 Q -2 -8 -1 -15 Q 0 -20 1 -15 Q 2 -8 0 0" fill="#32CD32" stroke="#228B22" stroke-width="1" filter="url(#lifeGlow)">
+      <animate attributeName="d" values="M 0 0 Q -2 -8 -1 -15 Q 0 -20 1 -15 Q 2 -8 0 0;M 0 0 Q -3 -10 -2 -18 Q 0 -23 2 -18 Q 3 -10 0 0;M 0 0 Q -2 -8 -1 -15 Q 0 -20 1 -15 Q 2 -8 0 0" dur="4s" repeatCount="indefinite"/>
+    </path>
+    
+    <!-- Leaves -->
+    <ellipse cx="-8" cy="-18" rx="6" ry="3" fill="#90EE90" stroke="#32CD32" stroke-width="1" transform="rotate(-30 -8 -18)" filter="url(#lifeGlow)">
+      <animate attributeName="rx" values="6;8;6" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="8" cy="-18" rx="6" ry="3" fill="#90EE90" stroke="#32CD32" stroke-width="1" transform="rotate(30 8 -18)" filter="url(#lifeGlow)">
+      <animate attributeName="rx" values="6;8;6" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- Root system -->
+  <g stroke="#8B4513" stroke-width="1.5" fill="none" opacity="0.7">
+    <path d="M 65 95 Q 60 105 55 110">
+      <animate attributeName="d" values="M 65 95 Q 60 105 55 110;M 65 95 Q 58 108 52 115;M 65 95 Q 60 105 55 110" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 75 100 Q 75 110 75 115">
+      <animate attributeName="d" values="M 75 100 Q 75 110 75 115;M 75 100 Q 75 112 75 118;M 75 100 Q 75 110 75 115" dur="5s" begin="1s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 85 95 Q 90 105 95 110">
+      <animate attributeName="d" values="M 85 95 Q 90 105 95 110;M 85 95 Q 92 108 98 115;M 85 95 Q 90 105 95 110" dur="5s" begin="2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Floating hope particles -->
+  <g opacity="0.6">
+    <circle cx="30" cy="30" r="2" fill="#ADFF2F" filter="url(#lifeGlow)">
+      <animate attributeName="cy" values="30;20;30" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="120" cy="35" r="2" fill="#7FFF00" filter="url(#lifeGlow)">
+      <animate attributeName="cy" values="35;25;35" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="125" cy="110" r="2" fill="#90EE90" filter="url(#lifeGlow)">
+      <animate attributeName="cy" values="110;100;110" dur="4.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="25" cy="115" r="2" fill="#32CD32" filter="url(#lifeGlow)">
+      <animate attributeName="cy" values="115;105;115" dur="3.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Hope symbol on seed -->
+  <g transform="translate(75, 75)">
+    <path d="M 0 -8 C -4 -4, -4 4, 0 8 C 4 4, 4 -4, 0 -8 Z" fill="#ADFF2F" stroke="#32CD32" stroke-width="1" filter="url(#seedShimmer)" opacity="0.8">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="rotate" values="0;360;0" dur="8s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Growth pulse -->
+  <circle cx="75" cy="75" r="35" fill="none" stroke="url(#hopeGlow)" stroke-width="2" opacity="0.4" filter="url(#lifeGlow)">
+    <animate attributeName="r" values="35;45;35" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+</svg>

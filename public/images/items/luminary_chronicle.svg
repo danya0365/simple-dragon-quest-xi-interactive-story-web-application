@@ -1,0 +1,95 @@
+<svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bookCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A0522D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pageGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFACD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5DEB3;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="legendaryAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.1" />
+    </radialGradient>
+    <filter id="ancientGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="pageShadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="1" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Legendary aura -->
+  <circle cx="75" cy="75" r="70" fill="url(#legendaryAura)"/>
+  
+  <!-- Book cover (back) -->
+  <rect x="25" y="30" width="80" height="90" rx="3" fill="url(#bookCover)" stroke="#4B0082" stroke-width="1" filter="url(#pageShadow)"/>
+  
+  <!-- Book spine -->
+  <rect x="25" y="30" width="8" height="90" fill="#654321" stroke="#4B0082" stroke-width="1"/>
+  
+  <!-- Book pages -->
+  <rect x="33" y="35" width="70" height="80" rx="2" fill="url(#pageGlow)" stroke="#D2691E" stroke-width="1"/>
+  
+  <!-- Page lines -->
+  <g stroke="#8B4513" stroke-width="0.5" opacity="0.7">
+    <line x1="40" y1="45" x2="95" y2="45"/>
+    <line x1="40" y1="50" x2="90" y2="50"/>
+    <line x1="40" y1="55" x2="92" y2="55"/>
+    <line x1="40" y1="60" x2="88" y2="60"/>
+    <line x1="40" y1="65" x2="94" y2="65"/>
+    <line x1="40" y1="70" x2="85" y2="70"/>
+    <line x1="40" y1="75" x2="91" y2="75"/>
+    <line x1="40" y1="80" x2="87" y2="80"/>
+    <line x1="40" y1="85" x2="93" y2="85"/>
+    <line x1="40" y1="90" x2="89" y2="90"/>
+    <line x1="40" y1="95" x2="86" y2="95"/>
+    <line x1="40" y1="100" x2="92" y2="100"/>
+    <line x1="40" y1="105" x2="88" y2="105"/>
+  </g>
+  
+  <!-- Book cover (front) -->
+  <rect x="105" y="30" width="20" height="90" rx="2" fill="url(#bookCover)" stroke="#4B0082" stroke-width="1" filter="url(#pageShadow)"/>
+  
+  <!-- Title emblem on front cover -->
+  <circle cx="115" cy="75" r="8" fill="#FFD700" stroke="#FFA500" stroke-width="1" filter="url(#ancientGlow)"/>
+  <path d="M 115 70 L 113 73 L 115 76 L 117 73 Z" fill="#8B4513" stroke="#654321" stroke-width="0.5"/>
+  
+  <!-- Luminary symbol on spine -->
+  <g transform="translate(29, 75)">
+    <path d="M 0 -5 L -2 -2 L -2 2 L 0 5 L 2 2 L 2 -2 Z" fill="#FFD700" stroke="#FFA500" stroke-width="0.5" filter="url(#ancientGlow)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Floating knowledge particles -->
+  <g opacity="0.6">
+    <circle cx="20" cy="20" r="1.5" fill="#FFD700" filter="url(#ancientGlow)">
+      <animate attributeName="cy" values="20;15;20" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="130" cy="25" r="1.5" fill="#FFD700" filter="url(#ancientGlow)">
+      <animate attributeName="cy" values="25;20;25" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="135" cy="120" r="1.5" fill="#FFD700" filter="url(#ancientGlow)">
+      <animate attributeName="cy" values="120;115;120" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="15" cy="125" r="1.5" fill="#FFD700" filter="url(#ancientGlow)">
+      <animate attributeName="cy" values="125;120;125" dur="3.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Page turning effect -->
+  <path d="M 95 35 Q 100 40 95 45" fill="none" stroke="#D2691E" stroke-width="1" opacity="0.5">
+    <animate attributeName="d" values="M 95 35 Q 100 40 95 45;M 95 35 Q 102 42 95 50;M 95 35 Q 100 40 95 45" dur="4s" repeatCount="indefinite"/>
+  </path>
+</svg>

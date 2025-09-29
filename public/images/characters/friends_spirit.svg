@@ -1,0 +1,111 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="spiritCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
+      <stop offset="30%" style="stop-color:#E6E6FA;stop-opacity:0.7" />
+      <stop offset="60%" style="stop-color:#DDA0DD;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#9370DB;stop-opacity:0.2" />
+    </radialGradient>
+    <linearGradient id="friendshipGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB6C1;stop-opacity:0.8" />
+      <stop offset="33%" style="stop-color:#FFC0CB;stop-opacity:0.6" />
+      <stop offset="66%" style="stop-color:#DDA0DD;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#9370DB;stop-opacity:0.2" />
+    </linearGradient>
+    <filter id="etherealBlur">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="spiritShimmer">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="turbulence"/>
+      <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  
+  <!-- Main spirit form -->
+  <circle cx="100" cy="100" r="70" fill="url(#spiritCore)" filter="url(#etherealBlur)" opacity="0.8"/>
+  
+  <!-- Friendship bonds connecting spirits -->
+  <g opacity="0.6">
+    <!-- Central bond -->
+    <path d="M 100 100 Q 80 80 60 100 Q 80 120 100 100" fill="none" stroke="url(#friendshipGlow)" stroke-width="3" filter="url(#etherealBlur)">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 100 100 Q 120 80 140 100 Q 120 120 100 100" fill="none" stroke="url(#friendshipGlow)" stroke-width="3" filter="url(#etherealBlur)">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 100 100 Q 100 70 100 50 Q 100 80 100 100" fill="none" stroke="url(#friendshipGlow)" stroke-width="3" filter="url(#etherealBlur)">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" begin="2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Individual spirit forms -->
+  <g opacity="0.7">
+    <!-- Spirit 1 -->
+    <circle cx="60" cy="80" r="15" fill="url(#spiritCore)" filter="url(#spiritShimmer)">
+      <animate attributeName="r" values="15;18;15" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Spirit 2 -->
+    <circle cx="140" cy="80" r="15" fill="url(#spiritCore)" filter="url(#spiritShimmer)">
+      <animate attributeName="r" values="15;18;15" dur="4s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Spirit 3 -->
+    <circle cx="100" cy="50" r="15" fill="url(#spiritCore)" filter="url(#spiritShimmer)">
+      <animate attributeName="r" values="15;18;15" dur="4s" begin="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" begin="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Spirit 4 -->
+    <circle cx="70" cy="130" r="15" fill="url(#spiritCore)" filter="url(#spiritShimmer)">
+      <animate attributeName="r" values="15;18;15" dur="4s" begin="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" begin="1.5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Spirit 5 -->
+    <circle cx="130" cy="130" r="15" fill="url(#spiritCore)" filter="url(#spiritShimmer)">
+      <animate attributeName="r" values="15;18;15" dur="4s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Heart symbol representing eternal friendship -->
+  <g transform="translate(100, 100)">
+    <path d="M 0 -8 C -5 -15, -15 -15, -15 -8 C -15 -3, -10 3, 0 12 C 10 3, 15 -3, 15 -8 C 15 -15, 5 -15, 0 -8 Z" 
+          fill="#FF69B4" stroke="#FF1493" stroke-width="1" filter="url(#etherealBlur)" opacity="0.8">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="scale" values="1;1.2;1" dur="2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Floating friendship particles -->
+  <g opacity="0.6">
+    <circle cx="40" cy="60" r="2" fill="#FFB6C1" filter="url(#etherealBlur)">
+      <animate attributeName="cy" values="60;40;60" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="160" cy="70" r="2" fill="#DDA0DD" filter="url(#etherealBlur)">
+      <animate attributeName="cy" values="70;50;70" dur="4.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="170" cy="140" r="2" fill="#E6E6FA" filter="url(#etherealBlur)">
+      <animate attributeName="cy" values="140;120;140" dur="5.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="5.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="30" cy="130" r="2" fill="#FFC0CB" filter="url(#etherealBlur)">
+      <animate attributeName="cy" values="130;110;130" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Eternal bond ring -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#friendshipGlow)" stroke-width="2" opacity="0.4" filter="url(#etherealBlur)">
+    <animate attributeName="stroke-opacity" values="0.2;0.6;0.2" dur="6s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,81 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="chroniclerRobe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4B0082;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#6A0DAD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B008B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="scrollGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5DEB3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DEB887;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="wisdomAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#E6E6FA;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#9370DB;stop-opacity:0.1" />
+    </radialGradient>
+    <filter id="ancientGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Wisdom aura -->
+  <circle cx="100" cy="100" r="85" fill="url(#wisdomAura)"/>
+  
+  <!-- Body (robe) -->
+  <ellipse cx="100" cy="140" rx="40" ry="50" fill="url(#chroniclerRobe)" stroke="#4B0082" stroke-width="2"/>
+  
+  <!-- Head -->
+  <circle cx="100" cy="65" r="20" fill="#FDBCB4" stroke="#8B4513" stroke-width="1"/>
+  
+  <!-- Beard -->
+  <path d="M 85 75 Q 100 85 115 75 Q 110 90 100 92 Q 90 90 85 75" fill="#D3D3D3" stroke="#A9A9A9" stroke-width="1"/>
+  
+  <!-- Hair -->
+  <path d="M 80 55 Q 100 45 120 55 Q 115 50 100 48 Q 85 50 80 55" fill="#D3D3D3" stroke="#A9A9A9" stroke-width="1"/>
+  
+  <!-- Eyes (wise and knowing) -->
+  <ellipse cx="92" cy="63" rx="2" ry="3" fill="#4B0082"/>
+  <ellipse cx="108" cy="63" rx="2" ry="3" fill="#4B0082"/>
+  
+  <!-- Eyebrows -->
+  <path d="M 88 58 L 96 59" stroke="#D3D3D3" stroke-width="2"/>
+  <path d="M 104 59 L 112 58" stroke="#D3D3D3" stroke-width="2"/>
+  
+  <!-- Arms holding scroll -->
+  <ellipse cx="65" cy="115" rx="10" ry="25" fill="url(#chroniclerRobe)" stroke="#4B0082" stroke-width="1" transform="rotate(-30 65 115)"/>
+  <ellipse cx="135" cy="115" rx="10" ry="25" fill="url(#chroniclerRobe)" stroke="#4B0082" stroke-width="1" transform="rotate(30 135 115)"/>
+  
+  <!-- Scroll in hands -->
+  <rect x="75" y="105" width="50" height="30" rx="3" fill="url(#scrollGlow)" stroke="#8B4513" stroke-width="1" filter="url(#ancientGlow)"/>
+  
+  <!-- Scroll text lines -->
+  <line x1="80" y1="112" x2="120" y2="112" stroke="#4B0082" stroke-width="1"/>
+  <line x1="80" y1="117" x2="115" y2="117" stroke="#4B0082" stroke-width="1"/>
+  <line x1="80" y1="122" x2="118" y2="122" stroke="#4B0082" stroke-width="1"/>
+  <line x1="80" y1="127" x2="110" y2="127" stroke="#4B0082" stroke-width="1"/>
+  
+  <!-- Staff -->
+  <rect x="145" y="80" width="4" height="80" fill="#8B4513" stroke="#654321" stroke-width="1"/>
+  <circle cx="147" cy="75" r="6" fill="#9370DB" stroke="#4B0082" stroke-width="1" filter="url(#ancientGlow)"/>
+  
+  <!-- Floating knowledge particles -->
+  <circle cx="40" cy="40" r="1.5" fill="#E6E6FA" filter="url(#ancientGlow)">
+    <animate attributeName="cy" values="40;30;40" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="160" cy="50" r="1.5" fill="#E6E6FA" filter="url(#ancientGlow)">
+    <animate attributeName="cy" values="50;40;50" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="170" cy="120" r="1.5" fill="#E6E6FA" filter="url(#ancientGlow)">
+    <animate attributeName="cy" values="120;110;120" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="4.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Wisdom symbol on forehead -->
+  <path d="M 100 55 L 98 57 L 100 59 L 102 57 Z" fill="#9370DB" stroke="#4B0082" stroke-width="0.5"/>
+</svg>

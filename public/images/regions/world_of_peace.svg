@@ -1,0 +1,192 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Sky gradient -->
+    <linearGradient id="peacefulSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#98D8E8;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#B0E0E6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Sun gradient -->
+    <radialGradient id="peaceSun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFACD;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.8" />
+    </radialGradient>
+    
+    <!-- Land gradient -->
+    <linearGradient id="peacefulLand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#90EE90;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#7CFC00;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#32CD32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Water gradient -->
+    <linearGradient id="peacefulWater" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E0F6FF;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#87CEEB;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#4682B4;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Mountain gradient -->
+    <linearGradient id="peacefulMountain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0F8FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#E6E6FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D3D3D3;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Peace aura -->
+    <radialGradient id="peaceAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFE0;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#98FB98;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#87CEEB;stop-opacity:0.1" />
+    </radialGradient>
+    
+    <filter id="peaceGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#peacefulSky)"/>
+  
+  <!-- Peace aura overlay -->
+  <rect width="400" height="300" fill="url(#peaceAura)"/>
+  
+  <!-- Sun -->
+  <circle cx="320" cy="60" r="35" fill="url(#peaceSun)" filter="url(#peaceGlow)">
+    <animate attributeName="r" values="35;38;35" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Sun rays -->
+  <g opacity="0.6">
+    <path d="M 320 20 L 318 35 L 322 35 Z" fill="#FFD700"/>
+    <path d="M 355 45 L 340 47 L 341 51 Z" fill="#FFD700"/>
+    <path d="M 355 75 L 340 73 L 341 69 Z" fill="#FFD700"/>
+    <path d="M 320 100 L 318 85 L 322 85 Z" fill="#FFD700"/>
+    <path d="M 285 75 L 300 73 L 299 69 Z" fill="#FFD700"/>
+    <path d="M 285 45 L 300 47 L 299 51 Z" fill="#FFD700"/>
+  </g>
+  
+  <!-- Mountains in background -->
+  <path d="M 0 180 L 80 120 L 140 140 L 200 100 L 260 130 L 320 110 L 400 150 L 400 300 L 0 300 Z" 
+        fill="url(#peacefulMountain)" opacity="0.7"/>
+  
+  <!-- Peaceful land -->
+  <path d="M 0 200 L 100 180 L 180 190 L 250 170 L 320 185 L 400 175 L 400 300 L 0 300 Z" 
+        fill="url(#peacefulLand)"/>
+  
+  <!-- Peaceful river -->
+  <path d="M 50 220 Q 120 210 180 215 T 280 220 Q 340 225 380 230 L 380 300 L 50 300 Z" 
+        fill="url(#peacefulWater)" opacity="0.8"/>
+  
+  <!-- Trees -->
+  <g opacity="0.8">
+    <!-- Tree 1 -->
+    <rect x="45" y="190" width="8" height="20" fill="#8B4513"/>
+    <circle cx="49" cy="185" r="12" fill="#228B22"/>
+    
+    <!-- Tree 2 -->
+    <rect x="125" y="185" width="10" height="25" fill="#8B4513"/>
+    <circle cx="130" cy="180" r="15" fill="#32CD32"/>
+    
+    <!-- Tree 3 -->
+    <rect x="195" y="175" width="12" height="30" fill="#8B4513"/>
+    <circle cx="201" cy="170" r="18" fill="#228B22"/>
+    
+    <!-- Tree 4 -->
+    <rect x="275" y="180" width="9" height="22" fill="#8B4513"/>
+    <circle cx="279" cy="175" r="14" fill="#32CD32"/>
+    
+    <!-- Tree 5 -->
+    <rect x="345" y="188" width="7" height="18" fill="#8B4513"/>
+    <circle cx="348" cy="183" r="11" fill="#228B22"/>
+  </g>
+  
+  <!-- Flowers symbolizing peace -->
+  <g opacity="0.7">
+    <!-- Flower 1 -->
+    <g transform="translate(80, 210)">
+      <circle cx="0" cy="0" r="3" fill="#FFB6C1"/>
+      <circle cx="-4" cy="-2" r="2" fill="#FFC0CB"/>
+      <circle cx="4" cy="-2" r="2" fill="#FFC0CB"/>
+      <circle cx="-2" cy="3" r="2" fill="#FFC0CB"/>
+      <circle cx="2" cy="3" r="2" fill="#FFC0CB"/>
+    </g>
+    
+    <!-- Flower 2 -->
+    <g transform="translate(150, 205)">
+      <circle cx="0" cy="0" r="3" fill="#DDA0DD"/>
+      <circle cx="-4" cy="-2" r="2" fill="#E6E6FA"/>
+      <circle cx="4" cy="-2" r="2" fill="#E6E6FA"/>
+      <circle cx="-2" cy="3" r="2" fill="#E6E6FA"/>
+      <circle cx="2" cy="3" r="2" fill="#E6E6FA"/>
+    </g>
+    
+    <!-- Flower 3 -->
+    <g transform="translate(220, 200)">
+      <circle cx="0" cy="0" r="3" fill="#FFB6C1"/>
+      <circle cx="-4" cy="-2" r="2" fill="#FFC0CB"/>
+      <circle cx="4" cy="-2" r="2" fill="#FFC0CB"/>
+      <circle cx="-2" cy="3" r="2" fill="#FFC0CB"/>
+      <circle cx="2" cy="3" r="2" fill="#FFC0CB"/>
+    </g>
+    
+    <!-- Flower 4 -->
+    <g transform="translate(300, 208)">
+      <circle cx="0" cy="0" r="3" fill="#DDA0DD"/>
+      <circle cx="-4" cy="-2" r="2" fill="#E6E6FA"/>
+      <circle cx="4" cy="-2" r="2" fill="#E6E6FA"/>
+      <circle cx="-2" cy="3" r="2" fill="#E6E6FA"/>
+      <circle cx="2" cy="3" r="2" fill="#E6E6FA"/>
+    </g>
+  </g>
+  
+  <!-- Peace doves -->
+  <g opacity="0.8">
+    <!-- Dove 1 -->
+    <g transform="translate(100, 80)">
+      <path d="M 0 0 Q -8 -3 -12 0 Q -8 2 0 0" fill="#FFFFFF" stroke="#D3D3D3" stroke-width="0.5"/>
+      <path d="M 0 0 Q 8 -3 12 0 Q 8 2 0 0" fill="#FFFFFF" stroke="#D3D3D3" stroke-width="0.5"/>
+      <circle cx="0" cy="0" r="2" fill="#FFFFFF"/>
+      <path d="M 0 2 Q -2 4 0 6 Q 2 4 0 2" fill="#FFFFFF"/>
+    </g>
+    
+    <!-- Dove 2 -->
+    <g transform="translate(250, 60)">
+      <path d="M 0 0 Q -8 -3 -12 0 Q -8 2 0 0" fill="#FFFFFF" stroke="#D3D3D3" stroke-width="0.5"/>
+      <path d="M 0 0 Q 8 -3 12 0 Q 8 2 0 0" fill="#FFFFFF" stroke="#D3D3D3" stroke-width="0.5"/>
+      <circle cx="0" cy="0" r="2" fill="#FFFFFF"/>
+      <path d="M 0 2 Q -2 4 0 6 Q 2 4 0 2" fill="#FFFFFF"/>
+    </g>
+  </g>
+  
+  <!-- Peace symbol in the sky -->
+  <g transform="translate(200, 50)" opacity="0.3">
+    <path d="M 0 -15 L 0 15 M -13 -7 L 13 7 M -13 7 L 13 -7" stroke="#FFD700" stroke-width="3" stroke-linecap="round" filter="url(#peaceGlow)">
+      <animate attributeName="opacity" values="0.2;0.5;0.2" dur="6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Floating peace particles -->
+  <g opacity="0.5">
+    <circle cx="60" cy="40" r="1.5" fill="#FFD700">
+      <animate attributeName="cy" values="40;30;40" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="180" cy="35" r="1.5" fill="#98FB98">
+      <animate attributeName="cy" values="35;25;35" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="300" cy="45" r="1.5" fill="#87CEEB">
+      <animate attributeName="cy" values="45;35;45" dur="7s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="7s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
