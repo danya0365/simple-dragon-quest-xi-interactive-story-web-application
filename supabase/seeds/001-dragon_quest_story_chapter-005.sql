@@ -155,8 +155,8 @@ CROSS JOIN (
   VALUES 
     ('88888888-8888-8888-8888-888888888050', 'Enter Casino', 'play_cards', 'reward', 'Lucky Win', 'Luminary โชคดี! ชนะเงินจำนวนมากจากการเล่นไพ่', '{"gold": 500, "experience": 25}', 'Beach Encounter'),
     ('88888888-8888-8888-8888-888888888051', 'Enter Casino', 'just_look', 'story', 'Cautious Observer', 'Luminary เลือกที่จะสังเกตการณ์แทนการเสี่ยง', '{"experience": 10}', 'Beach Encounter'),
-    ('88888888-8888-8888-8888-888888888052', 'Meet the Sisters', 'introduce', 'party_join', 'New Companions', 'Veronica และ Serena ตัดสินใจเข้าร่วมการเดินทางกับ Luminary', '{"party_join": "44444444-4444-4444-4444-444444444013", "relationship": {"veronica": 15, "serena": 15}, "experience": 100}', null),
-    ('88888888-8888-8888-8888-888888888053', 'Meet the Sisters', 'surprised', 'story', 'Mysterious Knowledge', 'Veronica ยิ้มลึกลับ "เราได้ยินเรื่องราวของนายมาแล้ว Luminary ผู้นำแสงสว่าง"', '{"party_join": "44444444-4444-4444-4444-444444444013", "relationship": {"veronica": 12, "serena": 12}, "experience": 80}', null)
+    ('88888888-8888-8888-8888-888888888052', 'Meet the Sisters', 'introduce', 'party_join', 'New Companions', 'Veronica และ Serena ตัดสินใจเข้าร่วมการเดินทางกับ Luminary', '{"party_joins": ["44444444-4444-4444-4444-444444444013", "44444444-4444-4444-4444-444444444014"], "relationship": {"veronica": 15, "serena": 15}, "experience": 100}', null),
+    ('88888888-8888-8888-8888-888888888053', 'Meet the Sisters', 'surprised', 'story', 'Mysterious Knowledge', 'Veronica ยิ้มลึกลับ "เราได้ยินเรื่องราวของนายมาแล้ว Luminary ผู้นำแสงสว่าง"', '{"party_joins": ["44444444-4444-4444-4444-444444444013", "44444444-4444-4444-4444-444444444014"], "relationship": {"veronica": 12, "serena": 12}, "experience": 80}', null)
 ) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title
 WHERE ei.title = outcome_info.interaction_title;

@@ -402,17 +402,23 @@ BEGIN
     
     -- Calculate new party_members
     v_new_party_members := CASE 
-        WHEN v_effects->'party_join' IS NOT NULL 
+        WHEN v_effects->'party_joins' IS NOT NULL AND jsonb_typeof(v_effects->'party_joins') = 'array' AND jsonb_array_length(v_effects->'party_joins') > 0
         THEN (
-            v_user_progress.party_members || jsonb_build_array(
-                jsonb_build_object(
-                    'character_id', (v_effects->>'party_join')::UUID,
-                    'joined_at', NOW(),
-                    'current_stats', (SELECT stats FROM public.characters WHERE id = (v_effects->>'party_join')::UUID),
-                    'equipment', '{}'::jsonb,
-                    'is_active', true,
-                    'party_position', COALESCE(jsonb_array_length(v_user_progress.party_members), 0) + 1
+            v_user_progress.party_members || (
+                SELECT jsonb_agg(
+                    jsonb_build_object(
+                        'character_id', character_uuid_text::UUID,
+                        'joined_at', NOW(),
+                        'current_stats', (SELECT stats FROM public.characters WHERE id = character_uuid_text::UUID),
+                        'equipment', '{}'::jsonb,
+                        'is_active', true,
+                        'party_position', COALESCE(jsonb_array_length(v_user_progress.party_members), 0) + row_number
+                    )
                 )
+                FROM (
+                    SELECT character_uuid_text, ROW_NUMBER() OVER () as row_number
+                    FROM jsonb_array_elements_text(v_effects->'party_joins') character_uuid_text
+                ) numbered_characters
             )
         )
         ELSE v_user_progress.party_members 

@@ -48,7 +48,7 @@ export type GameEffects = {
   unlock_chapters?: string[]; // [uuid]
   unlock_locations?: string[]; // [uuid]
   unlock_regions?: string[]; // [uuid]
-  party_join?: string; // uuid
+  party_joins?: string[]; // [uuid]
   items?: Array<{
     id: string; // uuid
     quantity?: number; // integer, defaults to 1
@@ -64,7 +64,7 @@ export type GameEffectsDto = {
   unlockChapters?: string[]; // [uuid]
   unlockLocations?: string[]; // [uuid]
   unlockRegions?: string[]; // [uuid]
-  partyJoin?: string; // uuid
+  partyJoins?: string[]; // [uuid]
   items?: Array<{
     id: string; // uuid
     quantity?: number; // integer, defaults to 1

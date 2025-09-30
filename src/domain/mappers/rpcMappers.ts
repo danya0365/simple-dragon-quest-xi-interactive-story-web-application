@@ -44,7 +44,7 @@ export const mapGameEffectsToDto = (effects: GameEffects): GameEffectsDto => {
     unlockChapters: effects.unlock_chapters,
     unlockLocations: effects.unlock_locations,
     unlockRegions: effects.unlock_regions,
-    partyJoin: effects.party_join,
+    partyJoins: effects.party_joins,
     items: effects.items,
     experience: effects.experience,
     gold: effects.gold,

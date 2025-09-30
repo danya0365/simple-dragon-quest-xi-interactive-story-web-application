@@ -124,11 +124,11 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
     );
   }
 
-  // Handle party join
-  if (effects.partyJoin) {
+  // Handle party joins
+  if (effects.partyJoins && effects.partyJoins.length > 0) {
     displayElements.push(
       <div
-        key="party_join"
+        key="party_joins"
         className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-blue-500/20 rounded-xl border border-blue-400/40 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300"
       >
         <div className="flex-shrink-0">
@@ -139,7 +139,7 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
             ตัวละครเข้าร่วมปาร์ตี้!
           </span>
           <div className="text-blue-100 text-sm font-medium">
-            {effects.partyJoin}
+            {effects.partyJoins.length} ตัวละครเข้าร่วมปาร์ตี้
           </div>
         </div>
         <div className="flex-shrink-0">
@@ -198,7 +198,7 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
         "relationship",
         "experience",
         "gold",
-        "partyJoin",
+        "partyJoins",
         "unlockEvents",
         "unlockChapters",
         "unlockLocations",

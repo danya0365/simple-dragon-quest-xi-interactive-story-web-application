@@ -155,7 +155,7 @@ CROSS JOIN (
   VALUES 
     ('88888888-8888-8888-8888-888888888040', 'Talk to Stable Master', 'interested', 'story', 'Horse Knowledge', 'ผู้ดูแลโรงม้ายิ้ม "ม้าเหล่านี้ได้รับการฝึกมาอย่างดี"', '{"experience": 15}', 'Arena Challenge'),
     ('88888888-8888-8888-8888-888888888041', 'Talk to Stable Master', 'racing', 'story', 'Racing Interest', 'ผู้ดูแลโรงม้าตื่นเต้น "ถ้าอยากแข่ง ไปที่สนามประลองสิ!"', '{"experience": 20}', 'Arena Challenge'),
-    ('88888888-8888-8888-8888-888888888042', 'Enter Arena', 'accept', 'reward', 'Arena Victory', 'Luminary ชนะการต่อสู้ในสนามประลอง! ได้รับการยอมรับจากผู้คน', '{"experience": 100, "items": [{"id": "55555555-5555-5555-5555-555555555015", "quantity": 1}], "party_join": "44444444-4444-4444-4444-444444444011", "unlock_regions": ["11111111-1111-1111-1111-111111111005"]}', null),
+    ('88888888-8888-8888-8888-888888888042', 'Enter Arena', 'accept', 'reward', 'Arena Victory', 'Luminary ชนะการต่อสู้ในสนามประลอง! ได้รับการยอมรับจากผู้คน', '{"experience": 100, "items": [{"id": "55555555-5555-5555-5555-555555555015", "quantity": 1}], "party_joins": ["44444444-4444-4444-4444-444444444011"], "unlock_regions": ["11111111-1111-1111-1111-111111111005"]}', null),
     ('88888888-8888-8888-8888-888888888043', 'Enter Arena', 'hesitate', 'story', 'Preparation Time', 'Arena Master พยักหน้า "ไม่เป็นไร เตรียมตัวให้ดีแล้วค่อยมา"', '{"experience": 30}', null)
 ) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title

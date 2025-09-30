@@ -155,8 +155,8 @@ CROSS JOIN (
   VALUES 
     ('88888888-8888-8888-8888-888888888060', 'Face the Trial', 'accept', 'reward', 'Trial Completed', 'Luminary ผ่านการทดสอบด้วยความกล้าหาญ! ได้รับการยอมรับจากป่าศักดิ์สิทธิ์', '{"experience": 200, "items": [{"id": "55555555-5555-5555-5555-555555555021", "quantity": 1}]}', 'Meeting the Sage'),
     ('88888888-8888-8888-8888-888888888061', 'Face the Trial', 'prepare', 'story', 'Preparation Time', 'Forest Guardian พยักหน้า "ความระมัดระวังก็เป็นสิ่งดี เตรียมตัวให้ดี"', '{"experience": 50}', 'Meeting the Sage'),
-    ('88888888-8888-8888-8888-888888888062', 'Speak with Sage', 'truth', 'story', 'The Truth Revealed', 'Sage เล่าความจริงเกี่ยวกับ Luminary และภัยคุกคามที่จะมา', '{"experience": 150, "party_join": "44444444-4444-4444-4444-444444444017", "unlock_regions": ["11111111-1111-1111-1111-111111111007"]}', null),
-    ('88888888-8888-8888-8888-888888888063', 'Speak with Sage', 'destiny', 'story', 'Destiny Unveiled', 'Sage อธิบายชะตากรรมของ Luminary และภารกิจที่รออยู่', '{"experience": 150, "party_join": "44444444-4444-4444-4444-444444444017", "unlock_regions": ["11111111-1111-1111-1111-111111111007"]}', null)
+    ('88888888-8888-8888-8888-888888888062', 'Speak with Sage', 'truth', 'story', 'The Truth Revealed', 'Sage เล่าความจริงเกี่ยวกับ Luminary และภัยคุกคามที่จะมา', '{"experience": 150, "party_joins": ["44444444-4444-4444-4444-444444444017"], "unlock_regions": ["11111111-1111-1111-1111-111111111007"]}', null),
+    ('88888888-8888-8888-8888-888888888063', 'Speak with Sage', 'destiny', 'story', 'Destiny Unveiled', 'Sage อธิบายชะตากรรมของ Luminary และภารกิจที่รออยู่', '{"experience": 150, "party_joins": ["44444444-4444-4444-4444-444444444017"], "unlock_regions": ["11111111-1111-1111-1111-111111111007"]}', null)
 ) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title
 WHERE ei.title = outcome_info.interaction_title;

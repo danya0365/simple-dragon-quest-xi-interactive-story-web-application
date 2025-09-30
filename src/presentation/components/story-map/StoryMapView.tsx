@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 
 export function StoryMapView() {
   const router = useRouter();
-  const { user, signOut, loading: authLoading, isInitialized } = useAuthStore();
+  const { user, signOut, loading: authLoading } = useAuthStore();
   const {
     currentView,
     userGameState,
@@ -30,6 +30,7 @@ export function StoryMapView() {
     reset: resetGameStore,
   } = useGameStore();
 
+  const [isInitialized, setIsInitialized] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [progressInitialized, setProgressInitialized] = useState(false);
   const [progressError, setProgressError] = useState<string | null>(null);
@@ -44,6 +45,7 @@ export function StoryMapView() {
           await initializeUserProgress(user.id);
           setProgressInitialized(true);
           setProgressError(null);
+          setIsInitialized(true);
         } catch (error) {
           console.error("Failed to initialize user progress:", error);
           setProgressError(
@@ -91,7 +93,7 @@ export function StoryMapView() {
   };
 
   // Show loading while initializing or if not properly initialized
-  if (authLoading || !isInitialized) {
+  if (authLoading && !isInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -280,7 +282,7 @@ export function StoryMapView() {
             <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6">
               <h3 className="text-yellow-400 font-bold mb-4">ความคืบหน้า</h3>
 
-              {gameLoading ? (
+              {gameLoading && !userGameState ? (
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-2"></div>
                   <p className="text-blue-200 text-sm">กำลังโหลด...</p>
@@ -322,9 +324,9 @@ export function StoryMapView() {
                     <div className="flex flex-col items-start justify-start gap-2">
                       <span className="text-blue-300 text-sm">เล่นล่าสุด:</span>
                       <p className="text-white text-sm">
-                        {new Date(
-                          userGameState.lastPlayedAt
-                        ).toLocaleString("th-TH")}
+                        {new Date(userGameState.lastPlayedAt).toLocaleString(
+                          "th-TH"
+                        )}
                       </p>
                     </div>
                   )}
@@ -396,9 +398,9 @@ export function StoryMapView() {
               {currentView === "available_event" && <AvailableEventsView />}
               {currentView === "completed_event" && <CompletedEventsView />}
               {currentView === "completed_event_detail" && (
-                <CompletedEventDetailView 
-                  eventId={selectedEventId || ""} 
-                  onBack={() => setCurrentView("completed_event")} 
+                <CompletedEventDetailView
+                  eventId={selectedEventId || ""}
+                  onBack={() => setCurrentView("completed_event")}
                 />
               )}
               {currentView === "inventory" && <InventoryView />}

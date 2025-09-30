@@ -8,7 +8,7 @@ export interface GameEffectsUI {
   unlockChapters?: string[]; // [uuid]
   unlockLocations?: string[]; // [uuid]
   unlockRegions?: string[]; // [uuid]
-  partyJoin?: string; // uuid
+  partyJoins?: string[]; // [uuid]
   items?: Array<{
     id: string; // uuid
     quantity?: number; // integer, defaults to 1

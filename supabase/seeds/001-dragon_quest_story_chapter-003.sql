@@ -154,7 +154,7 @@ CROSS JOIN (
   VALUES 
     ('88888888-8888-8888-8888-888888888030', 'Talk to Erik', 'darkspawn', 'story', 'Erik''s Understanding', 'Erik พยักหน้า "Darkspawn? นั่นมันเรื่องไร้สาระ! เราต้องหนีจากที่นี่"', '{"relationship": {"erik": 10}, "experience": 20}', 'The Escape'),
     ('88888888-8888-8888-8888-888888888031', 'Talk to Erik', 'confused', 'story', 'Erik''s Sympathy', 'Erik ยิ้มเศร้า "ฉันเข้าใจ ที่นี่ทำให้คนสับสน แต่เราต้องออกไป"', '{"relationship": {"erik": 8}, "experience": 15}', 'The Escape'),
-    ('88888888-8888-8888-8888-888888888032', 'Escape Plan', 'default', 'unlock', 'Freedom Achieved', 'Erik และ Luminary หลบหนีสำเร็จ! การเดินทางที่แท้จริงเริ่มต้นขึ้น', '{"party_join": "44444444-4444-4444-4444-444444444008", "items": [{"id": "55555555-5555-5555-5555-555555555012", "quantity": 1}], "experience": 100, "unlock_regions": ["11111111-1111-1111-1111-111111111004"]}', null)
+    ('88888888-8888-8888-8888-888888888032', 'Escape Plan', 'default', 'unlock', 'Freedom Achieved', 'Erik และ Luminary หลบหนีสำเร็จ! การเดินทางที่แท้จริงเริ่มต้นขึ้น', '{"party_joins": ["44444444-4444-4444-4444-444444444008"], "items": [{"id": "55555555-5555-5555-5555-555555555012", "quantity": 1}], "experience": 100, "unlock_regions": ["11111111-1111-1111-1111-111111111004"]}', null)
 ) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title
 WHERE ei.title = outcome_info.interaction_title;

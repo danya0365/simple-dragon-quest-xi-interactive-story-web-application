@@ -570,6 +570,10 @@ export const useGameStore = create<GameStore>()(
           if (error) throw error;
 
           const resultSchema = data as unknown as CompleteInteractionSchema;
+          console.log(
+            "CompleteInteractionSchema check game effect for party joins",
+            resultSchema
+          );
           const result = mapCompleteInteractionToDto(resultSchema);
 
           if (result.success && !result.error) {
