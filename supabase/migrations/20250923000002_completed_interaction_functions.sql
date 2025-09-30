@@ -91,8 +91,8 @@ BEGIN
     WHERE interaction_id = p_interaction_uuid
     AND choice_key = v_choice_key;
 
-    -- Check if outcome was found
-    v_outcome_found := (v_outcome IS NOT NULL);
+    -- Check if outcome was found using FOUND variable (more reliable)
+    v_outcome_found := FOUND;
     
     -- Initialize default values if outcome not found
     IF NOT v_outcome_found THEN
@@ -540,7 +540,19 @@ DECLARE
     v_success BOOLEAN DEFAULT true;
     v_error_message TEXT;
     v_outcome_found BOOLEAN DEFAULT false;
+    -- DEBUG variables
+    v_debug_info JSONB;
+    v_all_outcomes INTEGER;
+    v_available_choice_keys TEXT[];
+    v_specific_outcome_exists BOOLEAN;
+    v_specific_outcome_id UUID;
 BEGIN
+    -- DEBUG: Initialize debug information
+    v_debug_info := jsonb_build_object(
+        'input_interaction_uuid', p_interaction_uuid,
+        'input_choice_data', p_choice_data
+    );
+    
     -- Get interaction data to validate it exists
     SELECT * INTO v_interaction
     FROM public.event_interactions
@@ -549,8 +561,18 @@ BEGIN
     IF v_interaction IS NULL THEN
         v_success := false;
         v_error_message := 'Interaction not found';
-        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+        v_debug_info := v_debug_info || jsonb_build_object(
+            'interaction_found', false,
+            'error', v_error_message
+        );
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message, 'debug_info', v_debug_info);
     END IF;
+    
+    -- DEBUG: Store interaction found info
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'interaction_found', true,
+        'interaction_id', v_interaction.id
+    );
     
     -- Determine choice key (either from choice_data or default)
     IF p_choice_data IS NOT NULL AND p_choice_data->>'choice_key' IS NOT NULL THEN
@@ -559,14 +581,97 @@ BEGIN
         v_choice_key := 'default';
     END IF;
     
+    -- DEBUG: Store choice key info
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'determined_choice_key', v_choice_key
+    );
+    
+    -- DEBUG: Check what outcomes exist for this interaction
+    SELECT COUNT(*) INTO v_all_outcomes
+    FROM public.event_outcomes
+    WHERE interaction_id = p_interaction_uuid;
+    
+    -- DEBUG: Get all available choice_keys for this interaction
+    SELECT ARRAY_AGG(DISTINCT choice_key) INTO v_available_choice_keys
+    FROM public.event_outcomes
+    WHERE interaction_id = p_interaction_uuid;
+    
+    -- DEBUG: Check if the specific outcome we're looking for actually exists
+    SELECT EXISTS(
+        SELECT 1 FROM public.event_outcomes
+        WHERE interaction_id = p_interaction_uuid
+        AND choice_key = v_choice_key
+    ) INTO v_specific_outcome_exists;
+    
+    SELECT id INTO v_specific_outcome_id
+    FROM public.event_outcomes
+    WHERE interaction_id = p_interaction_uuid
+    AND choice_key = v_choice_key
+    LIMIT 1;
+    
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'specific_outcome_exists_in_table', v_specific_outcome_exists,
+        'specific_outcome_id_from_direct_query', v_specific_outcome_id
+    );
+    
+    -- DEBUG: Store outcomes info
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'total_outcomes_for_interaction', v_all_outcomes,
+        'available_choice_keys', v_available_choice_keys
+    );
+    
     -- Get outcome for this interaction and choice
     SELECT * INTO v_outcome
     FROM public.event_outcomes
     WHERE interaction_id = p_interaction_uuid
     AND choice_key = v_choice_key;
     
-    -- Check if outcome was found
-    v_outcome_found := (v_outcome IS NOT NULL);
+    -- DEBUG: Check v_outcome IMMEDIATELY after query
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'v_outcome_immediately_after_query', CASE 
+            WHEN v_outcome IS NULL THEN 'NULL'
+            ELSE 'NOT_NULL'
+        END
+    );
+    
+    -- Check if outcome was found using FOUND variable (more reliable)
+    v_outcome_found := FOUND;
+    
+    -- DEBUG: Store v_outcome_found immediately after check
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'v_outcome_found_immediately_after_check', v_outcome_found,
+        'found_variable_value', FOUND
+    );
+    
+    -- DEBUG: Store query result info
+    IF v_outcome IS NULL THEN
+        v_debug_info := v_debug_info || jsonb_build_object(
+            'outcome_found_by_query', false,
+            'query_details', jsonb_build_object(
+                'interaction_id', p_interaction_uuid,
+                'choice_key_used', v_choice_key
+            )
+        );
+    ELSE
+        v_debug_info := v_debug_info || jsonb_build_object(
+            'outcome_found_by_query', true,
+            'found_outcome_id', v_outcome.id,
+            'found_outcome_choice_key', v_outcome.choice_key
+        );
+    END IF;
+    
+    -- DEBUG: Check v_outcome AGAIN before final return
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'v_outcome_before_final_return', CASE 
+            WHEN v_outcome IS NULL THEN 'NULL'
+            ELSE 'NOT_NULL'
+        END
+    );
+    
+    -- DEBUG: Also store the final v_outcome_found value
+    v_debug_info := v_debug_info || jsonb_build_object(
+        'final_outcome_found_value', v_outcome_found
+    );
     
     -- Return the outcome data or null if not found
     RETURN jsonb_build_object(
@@ -586,7 +691,8 @@ BEGIN
                 'next_event_id', v_outcome.next_event_id
             )
             ELSE NULL
-        END
+        END,
+        'debug_info', v_debug_info
     );
     
 EXCEPTION
