@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { EventType } from "../../../domain/types/enums";
+import { EventTypeBadge } from "./EventTypeBadge";
 import { useGameStore } from "../../../stores/gameStore";
 
 export function AvailableEventsView() {
@@ -89,30 +89,7 @@ export function AvailableEventsView() {
           >
             {/* Event Type Badge */}
             <div className="flex items-center justify-between mb-4">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  event.eventType === EventType.STORY
-                    ? "bg-blue-500/20 text-blue-300 border border-blue-500/50"
-                    : event.eventType === EventType.DIALOGUE
-                    ? "bg-green-500/20 text-green-300 border border-green-500/50"
-                    : event.eventType === EventType.CHOICE
-                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/50"
-                    : event.eventType === EventType.BATTLE ||
-                      event.eventType === EventType.BOSS_BATTLE
-                    ? "bg-red-500/20 text-red-300 border border-red-500/50"
-                    : event.eventType === EventType.QUEST
-                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
-                    : "bg-gray-500/20 text-gray-300 border border-gray-500/50"
-                }`}
-              >
-                {event.eventType === EventType.STORY && "📖 เรื่องราว"}
-                {event.eventType === EventType.DIALOGUE && "💬 บทสนทนา"}
-                {event.eventType === EventType.CHOICE && "🤔 ตัวเลือก"}
-                {(event.eventType === EventType.BATTLE ||
-                  event.eventType === EventType.BOSS_BATTLE) &&
-                  "⚔️ การต่อสู้"}
-                {event.eventType === EventType.QUEST && "📜 ภารกิจ"}
-              </span>
+              <EventTypeBadge eventType={event.eventType} />
 
               <span className="text-blue-300 text-sm">
                 {event.interactionsCount} การโต้ตอบ
