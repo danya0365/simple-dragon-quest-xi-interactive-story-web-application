@@ -277,8 +277,8 @@ export function EventInteractionView() {
     setCurrentView("event");
   };
 
-  // Loading state
-  if (loading || interactionState === "loading") {
+  // Loading state - only show on initial load, not during state transitions
+  if (loading && !currentEvent) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
