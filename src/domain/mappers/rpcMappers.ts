@@ -212,6 +212,7 @@ export const mapUserGameStateToDto = (
       (interaction: CompletedInteractionSchema) => ({
         eventId: interaction.event_id,
         interactionId: interaction.interaction_id,
+        choiceKey: interaction.choice_key,
         completedAt: interaction.completed_at,
       })
     ),
@@ -257,6 +258,7 @@ export const mapInitializeUserProgressToDto = (
       (interaction: CompletedInteractionSchema) => ({
         eventId: interaction.event_id,
         interactionId: interaction.interaction_id,
+        choiceKey: interaction.choice_key,
         completedAt: interaction.completed_at,
       })
     ),

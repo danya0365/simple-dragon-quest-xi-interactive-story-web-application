@@ -142,6 +142,7 @@ export interface LocationSchema {
 export interface CompletedInteractionSchema {
   event_id: string;
   interaction_id: string;
+  choice_key: string;
   completed_at: string;
 }
 
@@ -302,6 +303,7 @@ export interface AvailableEventDto {
 export interface CompletedInteractionDto {
   eventId: string;
   interactionId: string;
+  choiceKey: string;
   completedAt: string;
 }
 

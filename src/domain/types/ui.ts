@@ -175,5 +175,6 @@ export interface EventOutcomeUI {
 export interface CompletedInteractionUI {
   eventId: string;
   interactionId: string;
+  choiceKey: string;
   completedAt: string;
 }

@@ -3,7 +3,6 @@ import {
   EventType,
   InteractionType,
 } from "@/src/domain/types/enums";
-import { Json } from "@/src/domain/types/supabase";
 import {
   AvailableEventDto,
   EventInteractionDto,
@@ -13,6 +12,7 @@ import {
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
+import { Json } from "@/src/domain/types/supabase";
 import {
   EventInteractionUI,
   EventOutcomeUI,
@@ -28,20 +28,22 @@ import {
  * Convert Json stats to Record<string, number | string> format
  * Handles the conversion from Json type to UI-compatible stats format
  */
-export const convertJsonStatsToRecord = (stats: Json | null | undefined): Record<string, number | string> => {
+export const convertJsonStatsToRecord = (
+  stats: Json | null | undefined
+): Record<string, number | string> => {
   if (!stats) return {};
-  
+
   // If stats is already an object with string keys and number/string values, return it directly
-  if (typeof stats === 'object' && stats !== null && !Array.isArray(stats)) {
+  if (typeof stats === "object" && stats !== null && !Array.isArray(stats)) {
     const result: Record<string, number | string> = {};
     for (const [key, value] of Object.entries(stats)) {
-      if (typeof value === 'number' || typeof value === 'string') {
+      if (typeof value === "number" || typeof value === "string") {
         result[key] = value;
       }
     }
     return result;
   }
-  
+
   // For other cases (string, number, boolean, array), return empty object
   return {};
 };
@@ -169,6 +171,7 @@ export const mapUserGameStateDtoToUI = (
     completedInteractions: dto.completedInteractions.map((item) => ({
       eventId: item.eventId,
       interactionId: item.interactionId,
+      choiceKey: item.choiceKey,
       completedAt: item.completedAt,
     })),
     unlockedWorldRegions: dto.unlockedWorldRegions,

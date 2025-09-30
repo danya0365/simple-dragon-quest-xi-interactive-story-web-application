@@ -296,6 +296,7 @@ BEGIN
             jsonb_build_object(
                 'interaction_id', p_interaction_uuid,
                 'event_id', v_interaction.event_id,
+                'choice_key', v_choice_key,
                 'completed_at', NOW()
             )
         );
