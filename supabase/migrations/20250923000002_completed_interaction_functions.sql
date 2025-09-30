@@ -520,3 +520,79 @@ EXCEPTION
         RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
 END;
 $$;
+
+-- =============================================================================
+-- Function to get event outcome for a specific interaction and choice
+-- Returns the event outcome data from public.event_outcomes table
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_event_outcome(
+    p_interaction_uuid UUID,
+    p_choice_data JSONB DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_interaction RECORD;
+    v_outcome RECORD;
+    v_choice_key TEXT;
+    v_success BOOLEAN DEFAULT true;
+    v_error_message TEXT;
+    v_outcome_found BOOLEAN DEFAULT false;
+BEGIN
+    -- Get interaction data to validate it exists
+    SELECT * INTO v_interaction
+    FROM public.event_interactions
+    WHERE id = p_interaction_uuid;
+    
+    IF v_interaction IS NULL THEN
+        v_success := false;
+        v_error_message := 'Interaction not found';
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+    END IF;
+    
+    -- Determine choice key (either from choice_data or default)
+    IF p_choice_data IS NOT NULL AND p_choice_data->>'choice_key' IS NOT NULL THEN
+        v_choice_key := p_choice_data->>'choice_key';
+    ELSE
+        v_choice_key := 'default';
+    END IF;
+    
+    -- Get outcome for this interaction and choice
+    SELECT * INTO v_outcome
+    FROM public.event_outcomes
+    WHERE interaction_id = p_interaction_uuid
+    AND choice_key = v_choice_key;
+    
+    -- Check if outcome was found
+    v_outcome_found := (v_outcome IS NOT NULL);
+    
+    -- Return the outcome data or null if not found
+    RETURN jsonb_build_object(
+        'success', v_success,
+        'outcome_found', v_outcome_found,
+        'interaction_id', p_interaction_uuid,
+        'choice_key', v_choice_key,
+        'event_outcome', CASE 
+            WHEN v_outcome_found THEN jsonb_build_object(
+                'id', v_outcome.id,
+                'interaction_id', v_outcome.interaction_id,
+                'choice_key', v_outcome.choice_key,
+                'title', v_outcome.title,
+                'description', v_outcome.description,
+                'outcome_type', v_outcome.outcome_type,
+                'effects', v_outcome.effects,
+                'next_event_id', v_outcome.next_event_id
+            )
+            ELSE NULL
+        END
+    );
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        v_success := false;
+        v_error_message := 'Failed to get event outcome: ' || SQLERRM;
+        RETURN jsonb_build_object('success', v_success, 'error', v_error_message);
+END;
+$$;

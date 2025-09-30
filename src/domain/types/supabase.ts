@@ -697,6 +697,10 @@ export type Database = {
         Args: { p_user_progress_uuid: string; p_event_uuid: string }
         Returns: Json
       }
+      get_event_outcome: {
+        Args: { p_interaction_uuid: string; p_choice_data?: Json }
+        Returns: Json
+      }
       get_paginated_users: {
         Args: { p_page?: number; p_limit?: number }
         Returns: Json
