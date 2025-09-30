@@ -154,6 +154,8 @@ export interface AvailableEventSchema {
   chapter_title: string;
   location_name: string;
   interactions_count: number;
+  chapter_display_order: number;
+  event_display_order: number;
 }
 
 export interface UserGameStateSchema {

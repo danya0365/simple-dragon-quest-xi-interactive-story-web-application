@@ -164,6 +164,8 @@ export const mapAvailableEventToDto = (
     chapterTitle: schema.chapter_title,
     locationName: schema.location_name,
     interactionsCount: schema.interactions_count,
+    chapterDisplayOrder: schema.chapter_display_order,
+    eventDisplayOrder: schema.event_display_order,
   };
 };
 
