@@ -29,7 +29,9 @@ export function CompletedEventsView() {
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-400 mx-auto mb-4"></div>
-          <p className="text-blue-200 text-lg">กำลังโหลดเหตุการณ์ที่ทำเสร็จแล้ว...</p>
+          <p className="text-blue-200 text-lg">
+            กำลังโหลดเหตุการณ์ที่ทำเสร็จแล้ว...
+          </p>
         </div>
       </div>
     );
@@ -91,7 +93,7 @@ export function CompletedEventsView() {
                     : event.eventType === EventType.CHOICE
                     ? "bg-purple-500/20 text-purple-300 border border-purple-500/50"
                     : event.eventType === EventType.BATTLE ||
-                      event.eventType === EventType.COMBAT
+                      event.eventType === EventType.BOSS_BATTLE
                     ? "bg-red-500/20 text-red-300 border border-red-500/50"
                     : event.eventType === EventType.QUEST
                     ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
@@ -102,7 +104,7 @@ export function CompletedEventsView() {
                 {event.eventType === EventType.DIALOGUE && "💬 บทสนทนา"}
                 {event.eventType === EventType.CHOICE && "🤔 ตัวเลือก"}
                 {(event.eventType === EventType.BATTLE ||
-                  event.eventType === EventType.COMBAT) &&
+                  event.eventType === EventType.BOSS_BATTLE) &&
                   "⚔️ การต่อสู้"}
                 {event.eventType === EventType.QUEST && "📜 ภารกิจ"}
               </span>
@@ -136,7 +138,9 @@ export function CompletedEventsView() {
 
             {/* Completed Status */}
             <div className="flex items-center justify-between mt-4">
-              <span className="text-green-400 text-sm font-medium">ทำเสร็จแล้ว</span>
+              <span className="text-green-400 text-sm font-medium">
+                ทำเสร็จแล้ว
+              </span>
               <span className="text-green-400 text-lg">🏆</span>
             </div>
 
@@ -182,7 +186,8 @@ export function CompletedEventsView() {
                     เหตุการณ์ที่ทำเสร็จแล้ว
                   </p>
                   <p className="text-blue-300 text-sm">
-                    คุณได้ทำเหตุการณ์ทั้งหมด {completedEvents.length} เหตุการณ์สำเร็จแล้ว
+                    คุณได้ทำเหตุการณ์ทั้งหมด {completedEvents.length}{" "}
+                    เหตุการณ์สำเร็จแล้ว
                   </p>
                 </div>
               </div>
@@ -218,9 +223,7 @@ export function CompletedEventsView() {
 
       {/* Tips */}
       <div className="bg-blue-900/30 rounded-lg border border-blue-500/30 p-4 mt-6">
-        <h4 className="text-green-400 font-medium mb-2">
-          เคล็ดลับ:
-        </h4>
+        <h4 className="text-green-400 font-medium mb-2">เคล็ดลับ:</h4>
         <ul className="text-blue-200 text-sm space-y-1">
           <li>• หน้านี้แสดงเหตุการณ์ทั้งหมดที่คุณได้ทำเสร็จแล้ว</li>
           <li>• คุณสามารถย้อนดูความสำเร็จและความก้าวหน้าของคุณได้ที่นี่</li>

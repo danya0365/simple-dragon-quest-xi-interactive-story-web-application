@@ -98,7 +98,7 @@ export function AvailableEventsView() {
                     : event.eventType === EventType.CHOICE
                     ? "bg-purple-500/20 text-purple-300 border border-purple-500/50"
                     : event.eventType === EventType.BATTLE ||
-                      event.eventType === EventType.COMBAT
+                      event.eventType === EventType.BOSS_BATTLE
                     ? "bg-red-500/20 text-red-300 border border-red-500/50"
                     : event.eventType === EventType.QUEST
                     ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
@@ -109,7 +109,7 @@ export function AvailableEventsView() {
                 {event.eventType === EventType.DIALOGUE && "💬 บทสนทนา"}
                 {event.eventType === EventType.CHOICE && "🤔 ตัวเลือก"}
                 {(event.eventType === EventType.BATTLE ||
-                  event.eventType === EventType.COMBAT) &&
+                  event.eventType === EventType.BOSS_BATTLE) &&
                   "⚔️ การต่อสู้"}
                 {event.eventType === EventType.QUEST && "📜 ภารกิจ"}
               </span>

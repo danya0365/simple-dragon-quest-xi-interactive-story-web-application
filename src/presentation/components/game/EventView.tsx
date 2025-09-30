@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { EventType } from "../../../domain/types/enums";
 import { useAuthStore } from "../../../stores/authStore";
 import { useGameStore } from "../../../stores/gameStore";
-import { EventType } from "../../../domain/types/enums";
 
 export function EventView() {
   const { user } = useAuthStore();
@@ -99,7 +99,8 @@ export function EventView() {
                     ? "bg-green-500/20 text-green-300 border border-green-500/50"
                     : event.eventType === EventType.CHOICE
                     ? "bg-purple-500/20 text-purple-300 border border-purple-500/50"
-                    : event.eventType === EventType.BATTLE || event.eventType === EventType.COMBAT
+                    : event.eventType === EventType.BATTLE ||
+                      event.eventType === EventType.BOSS_BATTLE
                     ? "bg-red-500/20 text-red-300 border border-red-500/50"
                     : event.eventType === EventType.QUEST
                     ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/50"
@@ -109,7 +110,9 @@ export function EventView() {
                 {event.eventType === EventType.STORY && "📖 เรื่องราว"}
                 {event.eventType === EventType.DIALOGUE && "💬 บทสนทนา"}
                 {event.eventType === EventType.CHOICE && "🤔 ตัวเลือก"}
-                {(event.eventType === EventType.BATTLE || event.eventType === EventType.COMBAT) && "⚔️ การต่อสู้"}
+                {(event.eventType === EventType.BATTLE ||
+                  event.eventType === EventType.BOSS_BATTLE) &&
+                  "⚔️ การต่อสู้"}
                 {event.eventType === EventType.QUEST && "📜 ภารกิจ"}
               </span>
 
@@ -139,9 +142,7 @@ export function EventView() {
 
             {/* Play Button */}
             <div className="flex items-center justify-between">
-              <span className="text-blue-300 text-sm">
-                คลิกเพื่อเริ่มเล่น
-              </span>
+              <span className="text-blue-300 text-sm">คลิกเพื่อเริ่มเล่น</span>
               <span className="text-yellow-400 text-lg">▶️</span>
             </div>
 
