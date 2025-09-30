@@ -298,6 +298,8 @@ export interface AvailableEventDto {
   chapterTitle: string;
   locationName: string;
   interactionsCount: number;
+  chapterDisplayOrder: number;
+  eventDisplayOrder: number;
 }
 
 export interface CompletedInteractionDto {

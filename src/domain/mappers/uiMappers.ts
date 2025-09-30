@@ -117,6 +117,8 @@ export const mapAvailableEventDtoToUI = (
     chapterTitle: dto.chapterTitle,
     locationName: dto.locationName,
     interactionsCount: dto.interactionsCount,
+    chapterDisplayOrder: dto.chapterDisplayOrder,
+    eventDisplayOrder: dto.eventDisplayOrder,
   };
 };
 

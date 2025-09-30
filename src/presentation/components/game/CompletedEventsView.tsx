@@ -84,7 +84,16 @@ export function CompletedEventsView() {
 
       {/* Completed Events */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {completedEvents.map((event) => {
+        {[...completedEvents]
+          .sort((a, b) => {
+            // First sort by chapter display order
+            if (a.chapterDisplayOrder !== b.chapterDisplayOrder) {
+              return a.chapterDisplayOrder - b.chapterDisplayOrder;
+            }
+            // Then sort by event display order
+            return a.eventDisplayOrder - b.eventDisplayOrder;
+          })
+          .map((event) => {
           const userCompletedInteractions = userGameState?.completedInteractions.filter(
             ci => ci.eventId === event.eventId
           ) || [];

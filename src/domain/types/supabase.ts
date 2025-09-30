@@ -112,7 +112,7 @@ export type Database = {
       }
       event_outcomes: {
         Row: {
-          choice_key: string | null
+          choice_key: string
           created_at: string | null
           description: string | null
           effects: Json | null
@@ -124,7 +124,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          choice_key?: string | null
+          choice_key?: string
           created_at?: string | null
           description?: string | null
           effects?: Json | null
@@ -136,7 +136,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          choice_key?: string | null
+          choice_key?: string
           created_at?: string | null
           description?: string | null
           effects?: Json | null

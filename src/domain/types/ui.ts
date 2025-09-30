@@ -61,6 +61,8 @@ export interface StoryEventUI {
   chapterTitle: string;
   locationName: string;
   interactionsCount: number;
+  chapterDisplayOrder: number;
+  eventDisplayOrder: number;
 }
 
 export interface PartyMemberUI {

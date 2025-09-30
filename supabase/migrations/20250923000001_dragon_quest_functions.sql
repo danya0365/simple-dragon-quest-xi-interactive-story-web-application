@@ -422,15 +422,17 @@ AS $$
             se.event_type,
             sc.title as chapter_title,
             sl.name as location_name,
-            COUNT(ei.id) as interactions_count
+            COUNT(ei.id) as interactions_count,
+            sc.display_order as chapter_display_order,
+            se.display_order as event_display_order
         FROM public.story_events se
         JOIN public.story_chapters sc ON se.chapter_id = sc.id
         LEFT JOIN public.locations sl ON se.location_id = sl.id
         LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
         JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.unlocked_events)::UUID)
         WHERE NOT se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
-        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
-        ORDER BY se.display_order, se.title
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name, sc.display_order, se.display_order
+        ORDER BY sc.display_order, se.display_order
     )
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
@@ -440,7 +442,9 @@ AS $$
             'event_type', ae.event_type,
             'chapter_title', ae.chapter_title,
             'location_name', ae.location_name,
-            'interactions_count', ae.interactions_count
+            'interactions_count', ae.interactions_count,
+            'chapter_display_order', ae.chapter_display_order,
+            'event_display_order', ae.event_display_order
         )
     ), '[]'::jsonb)
     FROM available_events ae;
@@ -471,14 +475,16 @@ AS $$
             se.event_type,
             sc.title as chapter_title,
             sl.name as location_name,
-            COUNT(ei.id) as interactions_count
+            COUNT(ei.id) as interactions_count,
+            sc.display_order as chapter_display_order,
+            se.display_order as event_display_order
         FROM public.story_events se
         JOIN public.story_chapters sc ON se.chapter_id = sc.id
         LEFT JOIN public.locations sl ON se.location_id = sl.id
         LEFT JOIN public.event_interactions ei ON se.id = ei.event_id
         JOIN user_progress_data upd ON se.id = ANY(SELECT jsonb_array_elements_text(upd.completed_events)::UUID)
-        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name
-        ORDER BY se.display_order, se.title
+        GROUP BY se.id, se.title, se.description, se.event_type, sc.title, sl.name, sc.display_order, se.display_order
+        ORDER BY sc.display_order, se.display_order
     )
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
@@ -488,7 +494,9 @@ AS $$
             'event_type', ce.event_type,
             'chapter_title', ce.chapter_title,
             'location_name', ce.location_name,
-            'interactions_count', ce.interactions_count
+            'interactions_count', ce.interactions_count,
+            'chapter_display_order', ce.chapter_display_order,
+            'event_display_order', ce.event_display_order
         )
     ), '[]'::jsonb)
     FROM completed_events ce;
