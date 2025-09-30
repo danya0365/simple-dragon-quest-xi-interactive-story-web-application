@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { EventTypeBadge } from "./EventTypeBadge";
 import { useGameStore } from "../../../stores/gameStore";
 
@@ -14,10 +14,12 @@ export function CompletedEventsView() {
     setCurrentView,
     setSelectedEventId,
   } = useGameStore();
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     if (userGameState?.id) {
       loadCompletedEventsForUserProgress();
+      setIsInitialized(true);
     }
   }, [userGameState?.id, loadCompletedEventsForUserProgress]);
 
@@ -30,7 +32,7 @@ export function CompletedEventsView() {
     setCurrentView("world_map");
   };
 
-  if (loading) {
+  if (loading && !isInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -58,7 +60,6 @@ export function CompletedEventsView() {
       </div>
     );
   }
-
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -94,62 +95,62 @@ export function CompletedEventsView() {
             return a.eventDisplayOrder - b.eventDisplayOrder;
           })
           .map((event) => {
-          const userCompletedInteractions = userGameState?.completedInteractions.filter(
-            ci => ci.eventId === event.eventId
-          ) || [];
-          
-          return (
-            <div
-              key={event.eventId}
-              className="bg-white/10 backdrop-blur-md rounded-lg border border-green-500/30 p-6 relative overflow-hidden opacity-90 cursor-pointer transition-all hover:scale-[1.02]"
-              onClick={() => handleEventClick(event.eventId)}
-            >
-            {/* Event Type Badge */}
-            <div className="flex items-center justify-between mb-4">
-              <EventTypeBadge eventType={event.eventType} />
+            const userCompletedInteractions =
+              userGameState?.completedInteractions.filter(
+                (ci) => ci.eventId === event.eventId
+              ) || [];
 
-              <div className="flex items-center space-x-2">
-                <span className="text-blue-300 text-sm">
-                  {userCompletedInteractions.length} การโต้ตอบที่ทำเสร็จ
-                </span>
-                <span className="text-green-400 text-lg">✅</span>
-                <span className="text-yellow-400 text-lg">→</span>
-              </div>
-            </div>
+            return (
+              <div
+                key={event.eventId}
+                className="bg-white/10 backdrop-blur-md rounded-lg border border-green-500/30 p-6 relative overflow-hidden opacity-90 cursor-pointer transition-all hover:scale-[1.02]"
+                onClick={() => handleEventClick(event.eventId)}
+              >
+                {/* Event Type Badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <EventTypeBadge eventType={event.eventType} />
 
-            {/* Event Info */}
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-white mb-2">
-                {event.eventTitle}
-              </h3>
-              {/* Chapter and Location Info */}
-              <div className="space-y-2">
-                <div className="flex items-center text-blue-300 text-sm mb-2">
-                  <span className="mr-2">📚</span>
-                  <span>บท: {event.chapterTitle}</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-blue-300 text-sm">
+                      {userCompletedInteractions.length} การโต้ตอบที่ทำเสร็จ
+                    </span>
+                    <span className="text-green-400 text-lg">✅</span>
+                    <span className="text-yellow-400 text-lg">→</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center text-blue-300 text-sm">
-                  <span className="mr-2">📍</span>
-                  <span>สถานที่: {event.locationName || "ไม่ระบุ"}</span>
+                {/* Event Info */}
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {event.eventTitle}
+                  </h3>
+                  {/* Chapter and Location Info */}
+                  <div className="space-y-2">
+                    <div className="flex items-center text-blue-300 text-sm mb-2">
+                      <span className="mr-2">📚</span>
+                      <span>บท: {event.chapterTitle}</span>
+                    </div>
+
+                    <div className="flex items-center text-blue-300 text-sm">
+                      <span className="mr-2">📍</span>
+                      <span>สถานที่: {event.locationName || "ไม่ระบุ"}</span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Completed Status */}
+                <div className="flex items-center justify-between mt-4">
+                  <span className="text-green-400 text-sm font-medium">
+                    ทำเสร็จแล้ว
+                  </span>
+                  <span className="text-green-400 text-lg">🏆</span>
+                </div>
+
+                {/* Success Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-green-400/15 rounded-lg"></div>
               </div>
-            </div>
-
-            {/* Completed Status */}
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-green-400 text-sm font-medium">
-                ทำเสร็จแล้ว
-              </span>
-              <span className="text-green-400 text-lg">🏆</span>
-            </div>
-
-            
-            {/* Success Effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-green-400/15 rounded-lg"></div>
-          </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       {/* Empty State */}
