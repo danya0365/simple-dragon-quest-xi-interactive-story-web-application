@@ -134,7 +134,7 @@ FROM event_interactions ei
 CROSS JOIN (
   VALUES 
     ('88888888-8888-8888-8888-888888888020', 'Speak to King', 'show_mark', 'story', 'Mark Revealed', 'Luminary แสดงเครื่องหมาย แต่แสงที่ออกมาเป็นสีมืด!', '{"experience": 30}', 'The Accusation'),
-    ('88888888-8888-8888-8888-888888888021', 'Dark Revelation', null, 'unlock', 'Imprisoned as Darkspawn', 'Luminary ถูกจับและขังในคุก ถูกกล่าวหาว่าเป็น Darkspawn', '{"experience": 50, "unlock_regions": ["11111111-1111-1111-1111-111111111003"]}', null)
+    ('88888888-8888-8888-8888-888888888021', 'Dark Revelation', 'default', 'unlock', 'Imprisoned as Darkspawn', 'Luminary ถูกจับและขังในคุก ถูกกล่าวหาว่าเป็น Darkspawn', '{"experience": 50, "unlock_regions": ["11111111-1111-1111-1111-111111111003"]}', null)
 ) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title
 WHERE ei.title = outcome_info.interaction_title;

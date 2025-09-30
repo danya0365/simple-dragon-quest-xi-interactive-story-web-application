@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS public.event_interactions (
 CREATE TABLE IF NOT EXISTS public.event_outcomes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     interaction_id UUID NOT NULL REFERENCES public.event_interactions(id) ON DELETE CASCADE,
-    choice_key VARCHAR(100), -- ID of the choice that leads to this outcome
+    choice_key VARCHAR(100) NOT NULL DEFAULT 'default', -- ID of the choice that leads to this outcome
     outcome_type VARCHAR(50) DEFAULT 'story', -- story, reward, unlock, party_join, etc.
     title VARCHAR(255),
     description TEXT,

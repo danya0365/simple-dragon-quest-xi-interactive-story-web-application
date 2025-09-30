@@ -236,9 +236,21 @@ CROSS JOIN (
      'Dan พยักหน้า "ไม่เป็นไร ถ้าต้องการอะไรก็มาหาได้เสมอ"', 
      '{"relationship": {"dan": 2}}', 'The Sacred Ritual'),
 
-    ('88888888-8888-8888-8888-888888888007', 'The Awakening', null, 'unlock', 'Luminary Powers Awakened', 
+    ('88888888-8888-8888-8888-888888888007', 'The Awakening', 'default', 'unlock', 'Luminary Powers Awakened', 
      'พลังของ Luminary ได้ตื่นขึ้นแล้ว! เครื่องหมายศักดิ์สิทธิ์ปรากฏบนมือ และแสงสว่างล้อมรอบร่างกาย', 
-     '{"items": [{"id": "55555555-5555-5555-5555-555555555005", "quantity": 1}], "experience": 100, "unlock_regions": ["11111111-1111-1111-1111-111111111002"]}', null)
+     '{"items": [{"id": "55555555-5555-5555-5555-555555555005", "quantity": 1}], "experience": 100, "unlock_regions": ["11111111-1111-1111-1111-111111111002"]}', null),
+
+    ('88888888-8888-8888-8888-888888888008', 'Look at Decorations', 'default', 'story', 'Festival Atmosphere', 
+     'การตกแต่งที่สวยงามทำให้รู้สึกถึงบรรยากาศเทศกาลอย่างเต็มที่ ชาวบ้านต่างเตรียมตัวสำหรับพิธีกรรมสำคัญ', 
+     '{"experience": 5}', 'Getting Supplies'),
+
+    ('88888888-8888-8888-8888-888888888009', 'Check Room', 'default', 'story', 'Room Preparation', 
+     'ห้องสะอาดและเรียบร้อยพร้อมสำหรับวันสำคัญ มีของใช้ส่วนตัวและของที่จะนำไปทำพิธีกรรมวางอยู่', 
+     '{"experience": 3}', 'Meeting Gemma'),
+
+    ('88888888-8888-8888-8888-888888888010', 'Talk to Villagers', 'default', 'story', 'Village Excitement', 
+     'ชาวบ้านต่างแสดงความยินดีและให้กำลังใจกับ Luminary ที่จะทำพิธีกรรมบรรลุนิติภาวะ', 
+     '{"experience": 8}', 'Getting Supplies')
 ) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title
 WHERE ei.title = outcome_info.interaction_title;
