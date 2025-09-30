@@ -1,6 +1,7 @@
 "use client";
 
 import { AvailableEventsView } from "@/src/presentation/components/game/AvailableEventsView";
+import { CompletedEventDetailView } from "@/src/presentation/components/game/CompletedEventDetailView";
 import { CompletedEventsView } from "@/src/presentation/components/game/CompletedEventsView";
 import { EventInteractionView } from "@/src/presentation/components/game/EventInteractionView";
 import { EventView } from "@/src/presentation/components/game/EventView";
@@ -19,6 +20,7 @@ export function StoryMapView() {
   const {
     currentView,
     userGameState,
+    selectedEventId,
     loading: gameLoading,
     loadUserGameState,
     initializeUserProgress,
@@ -393,6 +395,12 @@ export function StoryMapView() {
               {currentView === "event_interaction" && <EventInteractionView />}
               {currentView === "available_event" && <AvailableEventsView />}
               {currentView === "completed_event" && <CompletedEventsView />}
+              {currentView === "completed_event_detail" && (
+                <CompletedEventDetailView 
+                  eventId={selectedEventId || ""} 
+                  onBack={() => setCurrentView("completed_event")} 
+                />
+              )}
               {currentView === "inventory" && <InventoryView />}
               {currentView === "party" && <PartyView />}
             </div>

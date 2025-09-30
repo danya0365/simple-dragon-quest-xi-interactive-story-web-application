@@ -81,6 +81,7 @@ export type GameView =
   | "event_interaction"
   | "available_event"
   | "completed_event"
+  | "completed_event_detail"
   | "inventory"
   | "party";
 

@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { EventTypeBadge } from "./EventTypeBadge";
 import { useGameStore } from "../../../stores/gameStore";
-import type { EventInteractionUI } from "../../../domain/types/ui";
 
 export function CompletedEventsView() {
   const {
@@ -12,14 +11,9 @@ export function CompletedEventsView() {
     loading,
     error,
     loadCompletedEventsForUserProgress,
-    loadEventInteractions,
     setCurrentView,
+    setSelectedEventId,
   } = useGameStore();
-  
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-  const [eventInteractions, setEventInteractions] = useState<EventInteractionUI[]>([]);
-  const [loadingInteractions, setLoadingInteractions] = useState(false);
-  const [interactionsError, setInteractionsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (userGameState?.id) {
@@ -27,40 +21,9 @@ export function CompletedEventsView() {
     }
   }, [userGameState?.id, loadCompletedEventsForUserProgress]);
 
-  const handleEventClick = async (eventId: string) => {
-    if (selectedEvent === eventId) {
-      setSelectedEvent(null);
-      setEventInteractions([]);
-      return;
-    }
-    
-    setSelectedEvent(eventId);
-    setLoadingInteractions(true);
-    setInteractionsError(null);
-    
-    try {
-      const interactions = await loadEventInteractions(eventId);
-      if (interactions) {
-        setEventInteractions(interactions);
-      }
-    } catch {
-      setInteractionsError("ไม่สามารถโหลดข้อมูลการโต้ตอบได้");
-    } finally {
-      setLoadingInteractions(false);
-    }
-  };
-
-  const getChoiceText = (interactionId: string, choiceKey: string) => {
-    const interaction = eventInteractions.find(i => i.id === interactionId);
-    if (!interaction) return "ไม่พบข้อมูลการโต้ตอบ";
-    
-    const choice = interaction.choices.find(c => c.id === choiceKey);
-    return choice ? choice.text : "ไม่พบตัวเลือก";
-  };
-
-  const getInteractionTitle = (interactionId: string) => {
-    const interaction = eventInteractions.find(i => i.id === interactionId);
-    return interaction ? interaction.title : "ไม่พบข้อมูล";
+  const handleEventClick = (eventId: string) => {
+    setSelectedEventId(eventId);
+    setCurrentView("completed_event_detail");
   };
 
   const handleBackToWorldMap = () => {
@@ -96,6 +59,7 @@ export function CompletedEventsView() {
     );
   }
 
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
@@ -112,7 +76,7 @@ export function CompletedEventsView() {
             ✅ เหตุการณ์ที่ทำเสร็จแล้ว
           </h2>
           <p className="text-blue-200">
-            เหตุการณ์ทั้งหมดที่คุณได้ผ่านไปแล้วในการผจญภัย
+            คลิกที่เหตุการณ์เพื่อทบทวนเนื้อเรื่องและการโต้ตอบของคุณ
           </p>
         </div>
         <div></div> {/* Spacer for flex layout */}
@@ -128,11 +92,7 @@ export function CompletedEventsView() {
           return (
             <div
               key={event.eventId}
-              className={`bg-white/10 backdrop-blur-md rounded-lg border p-6 relative overflow-hidden opacity-90 cursor-pointer transition-all hover:scale-[1.02] ${
-                selectedEvent === event.eventId 
-                  ? 'border-yellow-400/50 bg-yellow-400/10' 
-                  : 'border-green-500/30'
-              }`}
+              className="bg-white/10 backdrop-blur-md rounded-lg border border-green-500/30 p-6 relative overflow-hidden opacity-90 cursor-pointer transition-all hover:scale-[1.02]"
               onClick={() => handleEventClick(event.eventId)}
             >
             {/* Event Type Badge */}
@@ -144,9 +104,7 @@ export function CompletedEventsView() {
                   {userCompletedInteractions.length} การโต้ตอบที่ทำเสร็จ
                 </span>
                 <span className="text-green-400 text-lg">✅</span>
-                {selectedEvent === event.eventId && (
-                  <span className="text-yellow-400 text-lg">▼</span>
-                )}
+                <span className="text-yellow-400 text-lg">→</span>
               </div>
             </div>
 
@@ -177,54 +135,6 @@ export function CompletedEventsView() {
               <span className="text-green-400 text-lg">🏆</span>
             </div>
 
-            {/* Interaction History (Expanded View) */}
-            {selectedEvent === event.eventId && (
-              <div className="mt-4 pt-4 border-t border-green-500/30">
-                <h4 className="text-yellow-400 font-bold mb-3 flex items-center">
-                  <span className="mr-2">📝</span>
-                  ประวัติการโต้ตอบของคุณ
-                </h4>
-                
-                {loadingInteractions ? (
-                  <div className="flex items-center justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-400 mr-2"></div>
-                    <span className="text-blue-200">กำลังโหลดข้อมูลการโต้ตอบ...</span>
-                  </div>
-                ) : interactionsError ? (
-                  <div className="bg-red-900/30 rounded-lg p-3 border border-red-500/30">
-                    <p className="text-red-200 text-sm">{interactionsError}</p>
-                  </div>
-                ) : userCompletedInteractions.length === 0 ? (
-                  <div className="text-center py-4">
-                    <p className="text-blue-300">ไม่พบข้อมูลการโต้ตอบที่ทำเสร็จ</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {userCompletedInteractions.map((interaction, index) => (
-                      <div 
-                        key={`${interaction.interactionId}-${index}`}
-                        className="bg-blue-900/30 rounded-lg p-3 border border-blue-500/30"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <h5 className="text-blue-200 font-medium">
-                            {getInteractionTitle(interaction.interactionId)}
-                          </h5>
-                          <span className="text-green-400 text-xs">
-                            {new Date(interaction.completedAt).toLocaleDateString('th-TH')}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-yellow-400 text-sm">💬</span>
-                          <span className="text-blue-300 text-sm">
-                            คุณเลือก: {getChoiceText(interaction.interactionId, interaction.choiceKey)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
             
             {/* Success Effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-green-400/15 rounded-lg"></div>
@@ -309,9 +219,9 @@ export function CompletedEventsView() {
         <h4 className="text-green-400 font-medium mb-2">เคล็ดลับ:</h4>
         <ul className="text-blue-200 text-sm space-y-1">
           <li>• หน้านี้แสดงเหตุการณ์ทั้งหมดที่คุณได้ทำเสร็จแล้ว</li>
-          <li>• คุณสามารถย้อนดูความสำเร็จและความก้าวหน้าของคุณได้ที่นี่</li>
+          <li>• คลิกที่เหตุการณ์เพื่อดูรายละเอียดการโต้ตอบและตัวเลือกของคุณ</li>
+          <li>• ทบทวนเนื้อเรื่องและการตัดสินใจในอดีตได้ที่นี่</li>
           <li>• ทุกเหตุการณ์ที่ทำเสร็จจะส่งผลต่อเนื้อเรื่องในอนาคต</li>
-          <li>• พยายามทำเหตุการณ์ให้ครบทุกอย่างเพื่อดู ending ทั้งหมด</li>
         </ul>
       </div>
     </div>
