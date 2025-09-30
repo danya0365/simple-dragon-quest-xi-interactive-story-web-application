@@ -172,11 +172,10 @@ BEGIN
     -- =============================================================================
     -- AUTO NEXT EVENT PROGRESSION LOGIC
     -- =============================================================================
-    IF v_all_interactions_completed AND v_new_completed_events @> to_jsonb(v_next_event_id::text) THEN
-        
-        RAISE NOTICE 'DEBUG: Need to find next event - all_interactions_completed: %, current in completed: %', 
-            v_all_interactions_completed,
-            (COALESCE(v_user_progress.completed_events, '[]'::jsonb) @> to_jsonb(v_user_progress.current_event_id::text));
+    IF v_all_interactions_completed AND v_next_event_id IS NULL THEN
+    
+        RAISE NOTICE 'DEBUG: All interactions completed AND next_event_id is NULL - finding next event automatically';
+        RAISE NOTICE 'DEBUG: Current event_id: %', v_interaction.event_id;
         
         -- Get current event's chapter and display order
         SELECT chapter_id, display_order 
@@ -184,7 +183,8 @@ BEGIN
         FROM public.story_events
         WHERE id = v_interaction.event_id;
         
-        RAISE NOTICE 'DEBUG: Current event chapter_id: %, display_order: %', v_current_chapter_id, v_current_display_order;
+        RAISE NOTICE 'DEBUG: Current event chapter_id: %, display_order: %', 
+            v_current_chapter_id, v_current_display_order;
         
         -- Try to find next event in same chapter
         SELECT id INTO v_next_event_in_chapter
@@ -195,9 +195,12 @@ BEGIN
         LIMIT 1;
         
         IF v_next_event_in_chapter IS NOT NULL THEN
+            -- มี event ถัดไปใน chapter เดียวกัน
             v_next_event_id := v_next_event_in_chapter;
             RAISE NOTICE 'DEBUG: Found next event in same chapter: %', v_next_event_id;
+            
         ELSE
+            -- ไม่มี event ถัดไปใน chapter เดียวกัน -> หา chapter ถัดไป
             RAISE NOTICE 'DEBUG: No more events in current chapter, looking for next chapter';
             
             SELECT id INTO v_next_chapter_id
@@ -213,6 +216,7 @@ BEGIN
             IF v_next_chapter_id IS NOT NULL THEN
                 RAISE NOTICE 'DEBUG: Found next chapter: %', v_next_chapter_id;
                 
+                -- หา event แรกใน chapter ถัดไป
                 SELECT id INTO v_first_event_in_next_chapter
                 FROM public.story_events
                 WHERE chapter_id = v_next_chapter_id
@@ -223,6 +227,7 @@ BEGIN
                     v_next_event_id := v_first_event_in_next_chapter;
                     RAISE NOTICE 'DEBUG: Found first event in next chapter: %', v_next_event_id;
                     
+                    -- 🔥 ปลดล็อก chapter ใหม่
                     IF NOT (v_current_unlocked_chapters @> to_jsonb(v_next_chapter_id::text)) THEN
                         v_auto_unlock_chapters := v_auto_unlock_chapters || to_jsonb(v_next_chapter_id::text);
                         RAISE NOTICE 'DEBUG: Auto-unlocking next chapter: %', v_next_chapter_id;
@@ -235,6 +240,7 @@ BEGIN
             END IF;
         END IF;
         
+        -- 🔥 เพิ่ม next_event_id เข้า unlock list
         IF v_next_event_id IS NOT NULL THEN
             IF NOT (v_current_unlocked_events @> to_jsonb(v_next_event_id::text)) THEN
                 IF NOT (v_new_events_to_unlock @> to_jsonb(v_next_event_id::text)) THEN
@@ -243,6 +249,7 @@ BEGIN
                 END IF;
             END IF;
         END IF;
+        
     END IF;
     
     -- =============================================================================
