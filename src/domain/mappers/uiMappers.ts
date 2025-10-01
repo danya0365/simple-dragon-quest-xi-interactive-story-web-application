@@ -257,20 +257,27 @@ export const mapUserGameStateDtoToUI = (
 };
 
 /**
- * Map CompleteInteractionSchema to CompleteInteractionDto
- * Converts snake_case properties to camelCase
+ * Map CompleteInteractionDto to CompleteInteractionUI
+ * Converts database schema format to UI-friendly format
  */
 export const mapCompleteInteractionToUI = (
   schema: CompleteInteractionDto,
   masterItems?: ItemDto[],
   masterCharacters?: CharacterDto[],
-  worldRegions?: WorldRegionUI[]
+  worldRegions?: WorldRegionUI[],
+  allLocations?: LocationUI[]
 ): CompleteInteractionUI => {
   return {
     success: schema.success,
     nextEventId: schema.nextEventId,
     effects: schema.effects
-      ? mapGameEffectsToUI(schema.effects, masterItems, masterCharacters, worldRegions)
+      ? mapGameEffectsToUI(
+          schema.effects,
+          masterItems,
+          masterCharacters,
+          worldRegions,
+          allLocations
+        )
       : undefined,
     choiceKey: schema.choiceKey,
     autoUnlockedLocations: schema.autoUnlockedLocations,
@@ -280,7 +287,8 @@ export const mapCompleteInteractionToUI = (
           schema.eventOutcome,
           masterItems,
           masterCharacters,
-          worldRegions
+          worldRegions,
+          allLocations
         )
       : undefined,
     error: schema.error,
@@ -295,7 +303,8 @@ export const mapGameEffectsToUI = (
   effects: GameEffectsDto,
   masterItems?: ItemDto[],
   masterCharacters?: CharacterDto[],
-  worldRegions?: WorldRegionUI[]
+  worldRegions?: WorldRegionUI[],
+  allLocations?: LocationUI[]
 ): GameEffectsUI => {
   // Enrich items with master data if available
   const enrichedItems = effects.items?.map((item) => {
@@ -338,11 +347,28 @@ export const mapGameEffectsToUI = (
     };
   });
 
+  // Enrich unlock locations with location data if available
+  const enrichedUnlockLocations = effects.unlockLocations?.map((locationId) => {
+    const location = allLocations?.find((loc) => loc.id === locationId);
+    const worldRegion = worldRegions?.find(
+      (wr) => wr.id === location?.worldRegionId
+    );
+    return {
+      id: locationId,
+      name: location?.name || locationId, // Fallback to ID if name not found
+      description: location?.description || "",
+      locationType: location?.locationType || "",
+      imageUrl: location?.imageUrl || "",
+      worldRegionId: location?.worldRegionId || "",
+      worldRegionName: worldRegion?.name,
+    };
+  });
+
   return {
     relationship: effects.relationship,
     unlockEvents: effects.unlockEvents,
     unlockChapters: effects.unlockChapters,
-    unlockLocations: effects.unlockLocations,
+    unlockLocations: enrichedUnlockLocations,
     unlockRegions: enrichedUnlockRegions,
     partyJoins: enrichedPartyJoins,
     items: enrichedItems,
@@ -359,7 +385,8 @@ export const mapEventOutcomeDtoToUI = (
   dto: EventOutcomeDto,
   masterItems?: ItemDto[],
   masterCharacters?: CharacterDto[],
-  worldRegions?: WorldRegionUI[]
+  worldRegions?: WorldRegionUI[],
+  allLocations?: LocationUI[]
 ): EventOutcomeUI => {
   return {
     id: dto.id,
@@ -369,18 +396,14 @@ export const mapEventOutcomeDtoToUI = (
     description: dto.description,
     outcomeType: dto.outcomeType,
     effects: dto.effects
-      ? mapGameEffectsToUI(dto.effects, masterItems, masterCharacters, worldRegions)
-      : {
-          relationship: undefined,
-          unlockEvents: undefined,
-          unlockChapters: undefined,
-          unlockLocations: undefined,
-          unlockRegions: undefined,
-          partyJoins: undefined,
-          items: undefined,
-          experience: undefined,
-          gold: undefined,
-        },
+      ? mapGameEffectsToUI(
+          dto.effects,
+          masterItems,
+          masterCharacters,
+          worldRegions,
+          allLocations
+        )
+      : undefined,
     nextEventId: dto.nextEventId,
   };
 };

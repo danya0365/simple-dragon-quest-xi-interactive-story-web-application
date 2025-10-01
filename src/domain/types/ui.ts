@@ -6,7 +6,7 @@ export interface GameEffectsUI {
   relationship?: Record<string, number>; // {characterName: integer}
   unlockEvents?: string[]; // [uuid]
   unlockChapters?: string[]; // [uuid]
-  unlockLocations?: string[]; // [uuid]
+  unlockLocations?: GameEffectLocationUI[]; // [location data]
   unlockRegions?: GameEffectRegionUI[]; // [region data]
   partyJoins?: GameEffectCharacterUI[]; // [character data]
   items?: GameEffectItemUI[];
@@ -39,6 +39,16 @@ export interface GameEffectRegionUI {
   imageUrl: string;
   locationsCount: number;
   unlockedLocationsCount: number;
+}
+
+export interface GameEffectLocationUI {
+  id: string;
+  name: string;
+  description: string;
+  locationType: string;
+  imageUrl: string;
+  worldRegionId: string;
+  worldRegionName?: string;
 }
 
 export interface EventInteractionUI {
@@ -194,7 +204,7 @@ export interface EventOutcomeUI {
   title: string;
   description: string | null;
   outcomeType: string;
-  effects: GameEffectsUI;
+  effects?: GameEffectsUI;
   nextEventId: string | null;
 }
 

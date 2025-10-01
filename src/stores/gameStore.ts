@@ -573,8 +573,8 @@ export const useGameStore = create<GameStore>()(
 
           const resultSchema = data as unknown as CompleteInteractionSchema;
           const resultDto = mapCompleteInteractionToDto(resultSchema);
-          const { masterItems, masterCharacters, worldRegions } = get();
-          const resultUI = mapCompleteInteractionToUI(resultDto, masterItems, masterCharacters, worldRegions);
+          const { masterItems, masterCharacters, worldRegions, allLocations } = get();
+          const resultUI = mapCompleteInteractionToUI(resultDto, masterItems, masterCharacters, worldRegions, allLocations);
 
           if (resultDto.success && !resultDto.error) {
             // Reload game state after successful interaction

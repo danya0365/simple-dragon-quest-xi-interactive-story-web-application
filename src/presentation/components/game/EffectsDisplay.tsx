@@ -229,11 +229,62 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
     });
   }
 
-  // Handle other unlocks (events, chapters, locations)
+  // Handle unlock locations (special case with rich data)
+  if (effects.unlockLocations && effects.unlockLocations.length > 0) {
+    effects.unlockLocations.forEach((location, index) => {
+      displayElements.push(
+        <div
+          key={`unlock-locations-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-purple-500/20 rounded-xl border border-purple-400/40 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            {location.imageUrl ? (
+              <Image 
+                src={location.imageUrl} 
+                alt={location.name}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover border-2 border-purple-400/60"
+              />
+            ) : (
+              <span className="text-purple-400 text-2xl animate-bounce">🏰</span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-purple-200 font-bold text-lg block">
+              ปลดล็อกสถานที่ใหม่!
+            </span>
+            <div className="text-purple-100 text-sm font-medium">
+              {location.name}
+              {location.locationType && (
+                <span className="ml-2 text-purple-300 text-xs">
+                  ({location.locationType})
+                </span>
+              )}
+              {location.worldRegionName && (
+                <span className="ml-2 text-purple-300 text-xs">
+                  ใน{location.worldRegionName}
+                </span>
+              )}
+            </div>
+            {location.description && (
+              <div className="text-purple-200/80 text-xs">
+                {location.description}
+              </div>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-purple-300 text-2xl animate-spin-slow">🔓</span>
+          </div>
+        </div>
+      );
+    });
+  }
+
+  // Handle other unlocks (events, chapters)
   const unlockTypes = [
     { key: "unlockEvents", icon: "📜", label: "เหตุการณ์" },
     { key: "unlockChapters", icon: "📖", label: "บท" },
-    { key: "unlockLocations", icon: "🏰", label: "สถานที่" },
   ];
 
   unlockTypes.forEach(({ key, icon, label }) => {
