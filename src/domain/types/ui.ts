@@ -9,12 +9,14 @@ export interface GameEffectsUI {
   unlockLocations?: string[]; // [uuid]
   unlockRegions?: string[]; // [uuid]
   partyJoins?: string[]; // [uuid]
-  items?: Array<{
-    id: string; // uuid
-    quantity?: number; // integer, defaults to 1
-  }>;
+  items?: GameEffectItemUI[];
   experience?: number; // integer
   gold?: number; // integer
+}
+
+export interface GameEffectItemUI {
+  id: string;
+  quantity?: number;
 }
 
 export interface EventInteractionUI {
