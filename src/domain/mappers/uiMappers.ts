@@ -5,10 +5,12 @@ import {
 } from "@/src/domain/types/enums";
 import {
   AvailableEventDto,
+  CharacterDto,
   CompleteInteractionDto,
   EventInteractionDto,
   EventOutcomeDto,
   GameEffectsDto,
+  ItemDto,
   LocationDto,
   UserGameStateDto,
   WorldMapDto,
@@ -259,17 +261,25 @@ export const mapUserGameStateDtoToUI = (
  * Converts snake_case properties to camelCase
  */
 export const mapCompleteInteractionToUI = (
-  schema: CompleteInteractionDto
+  schema: CompleteInteractionDto,
+  masterItems?: ItemDto[],
+  masterCharacters?: CharacterDto[]
 ): CompleteInteractionUI => {
   return {
     success: schema.success,
     nextEventId: schema.nextEventId,
-    effects: schema.effects ? mapGameEffectsToUI(schema.effects) : undefined,
+    effects: schema.effects
+      ? mapGameEffectsToUI(schema.effects, masterItems, masterCharacters)
+      : undefined,
     choiceKey: schema.choiceKey,
     autoUnlockedLocations: schema.autoUnlockedLocations,
     autoUnlockedRegions: schema.autoUnlockedRegions,
     eventOutcome: schema.eventOutcome
-      ? mapEventOutcomeDtoToUI(schema.eventOutcome)
+      ? mapEventOutcomeDtoToUI(
+          schema.eventOutcome,
+          masterItems,
+          masterCharacters
+        )
       : undefined,
     error: schema.error,
   };
@@ -279,15 +289,47 @@ export const mapCompleteInteractionToUI = (
  * Map GameEffects (snake_case from RPC) to GameEffectsUI (camelCase for UI)
  * Converts database schema format to UI-friendly format
  */
-export const mapGameEffectsToUI = (effects: GameEffectsDto): GameEffectsUI => {
+export const mapGameEffectsToUI = (
+  effects: GameEffectsDto,
+  masterItems?: ItemDto[],
+  masterCharacters?: CharacterDto[]
+): GameEffectsUI => {
+  // Enrich items with master data if available
+  const enrichedItems = effects.items?.map((item) => {
+    const masterItem = masterItems?.find((mi) => mi.id === item.id);
+    return {
+      id: item.id,
+      name: masterItem?.name || item.id, // Fallback to ID if name not found
+      description: masterItem?.description,
+      itemType: masterItem?.itemType || "",
+      rarity: masterItem?.rarity || "",
+      imageUrl: masterItem?.imageUrl || "",
+      quantity: item.quantity,
+    };
+  });
+
+  // Enrich party joins with master character data if available
+  const enrichedPartyJoins = effects.partyJoins?.map((characterId) => {
+    const masterCharacter = masterCharacters?.find(
+      (mc) => mc.id === characterId
+    );
+    return {
+      id: characterId,
+      name: masterCharacter?.name || characterId, // Fallback to ID if name not found
+      description: masterCharacter?.description || "",
+      characterType: masterCharacter?.characterType || "",
+      avatarUrl: masterCharacter?.avatarUrl || "",
+    };
+  });
+
   return {
     relationship: effects.relationship,
     unlockEvents: effects.unlockEvents,
     unlockChapters: effects.unlockChapters,
     unlockLocations: effects.unlockLocations,
     unlockRegions: effects.unlockRegions,
-    partyJoins: effects.partyJoins,
-    items: effects.items,
+    partyJoins: enrichedPartyJoins,
+    items: enrichedItems,
     experience: effects.experience,
     gold: effects.gold,
   };
@@ -298,7 +340,9 @@ export const mapGameEffectsToUI = (effects: GameEffectsDto): GameEffectsUI => {
  * Since DTO is already in camelCase, this is mainly for type safety
  */
 export const mapEventOutcomeDtoToUI = (
-  dto: EventOutcomeDto
+  dto: EventOutcomeDto,
+  masterItems?: ItemDto[],
+  masterCharacters?: CharacterDto[]
 ): EventOutcomeUI => {
   return {
     id: dto.id,
@@ -307,7 +351,19 @@ export const mapEventOutcomeDtoToUI = (
     title: dto.title,
     description: dto.description,
     outcomeType: dto.outcomeType,
-    effects: dto.effects,
+    effects: dto.effects
+      ? mapGameEffectsToUI(dto.effects, masterItems, masterCharacters)
+      : {
+          relationship: undefined,
+          unlockEvents: undefined,
+          unlockChapters: undefined,
+          unlockLocations: undefined,
+          unlockRegions: undefined,
+          partyJoins: undefined,
+          items: undefined,
+          experience: undefined,
+          gold: undefined,
+        },
     nextEventId: dto.nextEventId,
   };
 };

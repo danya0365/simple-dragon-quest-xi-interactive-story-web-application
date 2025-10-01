@@ -1,7 +1,6 @@
 "use client";
 
-import { EventOutcomeDto } from "@/src/domain/types/rpc";
-import { EventInteractionUI } from "@/src/domain/types/ui";
+import { EventInteractionUI, EventOutcomeUI } from "@/src/domain/types/ui";
 import { EffectsDisplay } from "@/src/presentation/components/game/EffectsDisplay";
 import { useGameStore } from "@/src/stores/gameStore";
 import Image from "next/image";
@@ -37,7 +36,7 @@ export function EventInteractionView() {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [interactionHistory, setInteractionHistory] = useState<string[]>([]);
   const [currentEventOutcome, setCurrentEventOutcome] =
-    useState<EventOutcomeDto | null>(null);
+    useState<EventOutcomeUI | null>(null);
   const [allInteractions, setAllInteractions] = useState<EventInteractionUI[]>(
     []
   );

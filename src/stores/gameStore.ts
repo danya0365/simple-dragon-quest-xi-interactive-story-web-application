@@ -20,7 +20,6 @@ import {
   AvailableEventSchema,
   CharacterDto,
   CharacterSchema,
-  CompleteInteractionDto,
   CompleteInteractionSchema,
   DeleteUserProgressDto,
   DeleteUserProgressSchema,
@@ -42,6 +41,7 @@ import { persist } from "zustand/middleware";
 
 // Import UI types for frontend components
 import type {
+  CompleteInteractionUI,
   EventInteractionUI,
   InventoryItemUI,
   LocationUI,
@@ -127,7 +127,7 @@ interface GameActions {
   completeInteraction: (
     interactionId: string,
     choiceData?: Json
-  ) => Promise<CompleteInteractionDto>;
+  ) => Promise<CompleteInteractionUI>;
   initializeUserProgress: (userId: string) => Promise<void>;
   deleteUserProgress: (userId: string) => Promise<DeleteUserProgressDto>;
   loadUserInventory: () => Promise<void>;
@@ -546,7 +546,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       completeInteraction: async (interactionId: string, choiceData?: Json) => {
-        const { userGameState } = get();
+        const { userGameState, ensureMasterDataLoaded } = get();
         if (!userGameState) {
           set({ error: "ไม่พบข้อมูลผู้เล่น" });
           return {
@@ -554,6 +554,7 @@ export const useGameStore = create<GameStore>()(
             error: "ไม่พบข้อมูลผู้เล่น",
           };
         }
+        await ensureMasterDataLoaded();
         const userProgressId = userGameState.id;
         set({ loading: true, error: null });
         const supabase = createClientSupabaseClient();
@@ -572,7 +573,8 @@ export const useGameStore = create<GameStore>()(
 
           const resultSchema = data as unknown as CompleteInteractionSchema;
           const resultDto = mapCompleteInteractionToDto(resultSchema);
-          const resultUI = mapCompleteInteractionToUI(resultDto);
+          const { masterItems, masterCharacters } = get();
+          const resultUI = mapCompleteInteractionToUI(resultDto, masterItems, masterCharacters);
 
           if (resultDto.success && !resultDto.error) {
             // Reload game state after successful interaction

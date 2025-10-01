@@ -1,5 +1,6 @@
 import { GameEffectsUI } from "@/src/domain/types/ui";
 import React from "react";
+import Image from "next/image";
 
 interface EffectsDisplayProps {
   effects: GameEffectsUI;
@@ -32,8 +33,18 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
               ได้รับไอเทม!
             </span>
             <div className="text-yellow-100 text-sm font-medium">
-              ID: {item.id} x{item.quantity || 1}
+              {item.name} x{item.quantity || 1}
+              {item.rarity && (
+                <span className="ml-2 text-yellow-300 text-xs">
+                  ({item.rarity})
+                </span>
+              )}
             </div>
+            {item.itemType && (
+              <div className="text-yellow-200/80 text-xs">
+                ประเภท: {item.itemType}
+              </div>
+            )}
           </div>
           <div className="flex-shrink-0">
             <span className="text-yellow-300 text-2xl animate-spin-slow">
@@ -126,27 +137,49 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
 
   // Handle party joins
   if (effects.partyJoins && effects.partyJoins.length > 0) {
-    displayElements.push(
-      <div
-        key="party_joins"
-        className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-blue-500/20 rounded-xl border border-blue-400/40 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300"
-      >
-        <div className="flex-shrink-0">
-          <span className="text-blue-400 text-2xl animate-pulse">👥</span>
-        </div>
-        <div className="flex-1 min-w-0">
-          <span className="text-blue-200 font-bold text-lg block">
-            ตัวละครเข้าร่วมปาร์ตี้!
-          </span>
-          <div className="text-blue-100 text-sm font-medium">
-            {effects.partyJoins.length} ตัวละครเข้าร่วมปาร์ตี้
+    effects.partyJoins.forEach((character, index) => {
+      displayElements.push(
+        <div
+          key={`party-joins-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-blue-500/20 rounded-xl border border-blue-400/40 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            {character.avatarUrl ? (
+              <Image 
+                src={character.avatarUrl} 
+                alt={character.name}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover border-2 border-blue-400/60"
+              />
+            ) : (
+              <span className="text-blue-400 text-2xl animate-pulse">👥</span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-blue-200 font-bold text-lg block">
+              ตัวละครเข้าร่วมปาร์ตี้!
+            </span>
+            <div className="text-blue-100 text-sm font-medium">
+              {character.name}
+              {character.characterType && (
+                <span className="ml-2 text-blue-300 text-xs">
+                  ({character.characterType})
+                </span>
+              )}
+            </div>
+            {character.description && (
+              <div className="text-blue-200/80 text-xs">
+                {character.description}
+              </div>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-blue-300 text-2xl animate-bounce">🎉</span>
           </div>
         </div>
-        <div className="flex-shrink-0">
-          <span className="text-blue-300 text-2xl animate-bounce">🎉</span>
-        </div>
-      </div>
-    );
+      );
+    });
   }
 
   // Handle unlocks
