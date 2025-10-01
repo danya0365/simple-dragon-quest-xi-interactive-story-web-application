@@ -4,8 +4,8 @@ import { ChoiceType, EventType, InteractionType } from "./enums";
 // Game Effects UI Types - camelCase version for frontend components
 export interface GameEffectsUI {
   relationship?: Record<string, number>; // {characterName: integer}
-  unlockEvents?: string[]; // [uuid]
-  unlockChapters?: string[]; // [uuid]
+  unlockEvents?: GameEffectEventUI[]; // [event data]
+  unlockChapters?: GameEffectChapterUI[]; // [chapter data]
   unlockLocations?: GameEffectLocationUI[]; // [location data]
   unlockRegions?: GameEffectRegionUI[]; // [region data]
   partyJoins?: GameEffectCharacterUI[]; // [character data]
@@ -49,6 +49,23 @@ export interface GameEffectLocationUI {
   imageUrl: string;
   worldRegionId: string;
   worldRegionName?: string;
+}
+
+export interface GameEffectEventUI {
+  id: string;
+  title: string;
+  description: string;
+  eventType: string;
+  chapterId: string;
+  locationId: string;
+}
+
+export interface GameEffectChapterUI {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  description: string;
+  displayOrder: number;
 }
 
 export interface EventInteractionUI {

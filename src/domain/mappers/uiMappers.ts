@@ -12,6 +12,8 @@ import {
   GameEffectsDto,
   ItemDto,
   LocationDto,
+  StoryChapterDto,
+  StoryEventDto,
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
@@ -265,7 +267,9 @@ export const mapCompleteInteractionToUI = (
   masterItems?: ItemDto[],
   masterCharacters?: CharacterDto[],
   worldRegions?: WorldRegionUI[],
-  allLocations?: LocationUI[]
+  allLocations?: LocationUI[],
+  masterEvents?: StoryEventDto[],
+  masterChapters?: StoryChapterDto[]
 ): CompleteInteractionUI => {
   return {
     success: schema.success,
@@ -276,7 +280,9 @@ export const mapCompleteInteractionToUI = (
           masterItems,
           masterCharacters,
           worldRegions,
-          allLocations
+          allLocations,
+          masterEvents,
+          masterChapters
         )
       : undefined,
     choiceKey: schema.choiceKey,
@@ -288,7 +294,9 @@ export const mapCompleteInteractionToUI = (
           masterItems,
           masterCharacters,
           worldRegions,
-          allLocations
+          allLocations,
+          masterEvents,
+          masterChapters
         )
       : undefined,
     error: schema.error,
@@ -304,7 +312,9 @@ export const mapGameEffectsToUI = (
   masterItems?: ItemDto[],
   masterCharacters?: CharacterDto[],
   worldRegions?: WorldRegionUI[],
-  allLocations?: LocationUI[]
+  allLocations?: LocationUI[],
+  masterEvents?: StoryEventDto[],
+  masterChapters?: StoryChapterDto[]
 ): GameEffectsUI => {
   // Enrich items with master data if available
   const enrichedItems = effects.items?.map((item) => {
@@ -364,10 +374,35 @@ export const mapGameEffectsToUI = (
     };
   });
 
+  // Enrich unlock events with master event data if available
+  const enrichedUnlockEvents = effects.unlockEvents?.map((eventId) => {
+    const masterEvent = masterEvents?.find((me) => me.id === eventId);
+    return {
+      id: eventId,
+      title: masterEvent?.title || eventId, // Fallback to ID if title not found
+      description: masterEvent?.description || "",
+      eventType: masterEvent?.eventType || "",
+      chapterId: masterEvent?.chapterId || "",
+      locationId: masterEvent?.locationId || "",
+    };
+  });
+
+  // Enrich unlock chapters with master chapter data if available
+  const enrichedUnlockChapters = effects.unlockChapters?.map((chapterId) => {
+    const masterChapter = masterChapters?.find((mc) => mc.id === chapterId);
+    return {
+      id: chapterId,
+      chapterNumber: masterChapter?.chapterNumber || 0,
+      title: masterChapter?.title || chapterId, // Fallback to ID if title not found
+      description: masterChapter?.description || "",
+      displayOrder: masterChapter?.displayOrder || 0,
+    };
+  });
+
   return {
     relationship: effects.relationship,
-    unlockEvents: effects.unlockEvents,
-    unlockChapters: effects.unlockChapters,
+    unlockEvents: enrichedUnlockEvents,
+    unlockChapters: enrichedUnlockChapters,
     unlockLocations: enrichedUnlockLocations,
     unlockRegions: enrichedUnlockRegions,
     partyJoins: enrichedPartyJoins,
@@ -386,7 +421,9 @@ export const mapEventOutcomeDtoToUI = (
   masterItems?: ItemDto[],
   masterCharacters?: CharacterDto[],
   worldRegions?: WorldRegionUI[],
-  allLocations?: LocationUI[]
+  allLocations?: LocationUI[],
+  masterEvents?: StoryEventDto[],
+  masterChapters?: StoryChapterDto[]
 ): EventOutcomeUI => {
   return {
     id: dto.id,
@@ -401,7 +438,9 @@ export const mapEventOutcomeDtoToUI = (
           masterItems,
           masterCharacters,
           worldRegions,
-          allLocations
+          allLocations,
+          masterEvents,
+          masterChapters
         )
       : undefined,
     nextEventId: dto.nextEventId,

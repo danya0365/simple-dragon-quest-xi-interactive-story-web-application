@@ -281,33 +281,33 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
     });
   }
 
-  // Handle other unlocks (events, chapters)
-  const unlockTypes = [
-    { key: "unlockEvents", icon: "📜", label: "เหตุการณ์" },
-    { key: "unlockChapters", icon: "📖", label: "บท" },
-  ];
-
-  unlockTypes.forEach(({ key, icon, label }) => {
-    const unlockArray = effects[key as keyof GameEffectsUI] as
-      | string[]
-      | undefined;
-    if (unlockArray && unlockArray.length > 0) {
+  // Handle unlock events
+  if (effects.unlockEvents && effects.unlockEvents.length > 0) {
+    effects.unlockEvents.forEach((event) => {
       displayElements.push(
         <div
-          key={key}
-          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-purple-500/20 rounded-xl border border-purple-400/40 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 transition-all duration-300"
+          key={`event-${event.id}`}
+          className="flex items-start gap-3 py-3 px-4 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-purple-500/20 rounded-xl border border-purple-400/40 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 transition-all duration-300"
         >
           <div className="flex-shrink-0">
             <span className="text-purple-400 text-2xl animate-bounce">
-              {icon}
+              📜
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <span className="text-purple-200 font-bold text-lg block">
-              ปลดล็อกใหม่!
+              ปลดล็อกเหตุการณ์ใหม่!
             </span>
             <div className="text-purple-100 text-sm font-medium">
-              {label}: {unlockArray.length} รายการ
+              {event.title}
+            </div>
+            {event.description && (
+              <div className="text-purple-200/80 text-xs mt-1">
+                {event.description}
+              </div>
+            )}
+            <div className="text-purple-300/70 text-xs mt-1">
+              ประเภท: {event.eventType}
             </div>
           </div>
           <div className="flex-shrink-0">
@@ -317,8 +317,44 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
           </div>
         </div>
       );
-    }
-  });
+    });
+  }
+
+  // Handle unlock chapters
+  if (effects.unlockChapters && effects.unlockChapters.length > 0) {
+    effects.unlockChapters.forEach((chapter) => {
+      displayElements.push(
+        <div
+          key={`chapter-${chapter.id}`}
+          className="flex items-start gap-3 py-3 px-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 rounded-xl border border-indigo-400/40 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            <span className="text-indigo-400 text-2xl animate-bounce">
+              📖
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-indigo-200 font-bold text-lg block">
+              ปลดล็อกบทใหม่!
+            </span>
+            <div className="text-indigo-100 text-sm font-medium">
+              บท {chapter.chapterNumber}: {chapter.title}
+            </div>
+            {chapter.description && (
+              <div className="text-indigo-200/80 text-xs mt-1">
+                {chapter.description}
+              </div>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-indigo-300 text-2xl animate-spin-slow">
+              🔓
+            </span>
+          </div>
+        </div>
+      );
+    });
+  }
 
   // Handle unknown effects (fallback for any other properties)
   const unknownEffects = Object.entries(effects).filter(

@@ -583,14 +583,16 @@ export const useGameStore = create<GameStore>()(
 
           const resultSchema = data as unknown as CompleteInteractionSchema;
           const resultDto = mapCompleteInteractionToDto(resultSchema);
-          const { masterItems, masterCharacters, worldRegions, allLocations } =
+          const { masterItems, masterCharacters, worldRegions, allLocations, masterEvents, masterChapters } =
             get();
           const resultUI = mapCompleteInteractionToUI(
             resultDto,
             masterItems,
             masterCharacters,
             worldRegions,
-            allLocations
+            allLocations,
+            masterEvents,
+            masterChapters
           );
 
           if (resultDto.success && !resultDto.error) {
