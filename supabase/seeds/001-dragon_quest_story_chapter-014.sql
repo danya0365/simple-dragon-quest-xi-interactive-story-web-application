@@ -42,7 +42,7 @@ CROSS JOIN (
 WHERE wr.name = location_info.region_name;
 
 -- === STORY CHAPTERS ===
-INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
+INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress, act_id)
 SELECT 
   chapter_info.id::uuid,
   chapter_info.chapter_number,
@@ -50,11 +50,12 @@ SELECT
   chapter_info.description,
   chapter_info.unlock_requirements::jsonb,
   chapter_info.display_order,
-  chapter_info.is_initial_user_progress
+  chapter_info.is_initial_user_progress,
+  chapter_info.act_id::uuid
 FROM (
   VALUES 
-    ('33333333-3333-3333-3333-333333333014', 14, 'The New Beginning', 'บทสุดท้าย: มรดกของ Luminary และการเริ่มต้นใหม่ของโลกที่เต็มไปด้วยสันติสุข', '{"completed_chapters": ["33333333-3333-3333-3333-333333333013"], "game_flags": {"married": true, "happy_ending": true}}', 14, false)
-) AS chapter_info(id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
+    ('33333333-3333-3333-3333-333333333014', 14, 'The New Beginning', 'บทสุดท้าย: มรดกของ Luminary และการเริ่มต้นใหม่ของโลกที่เต็มไปด้วยสันติสุข', '{"completed_chapters": ["33333333-3333-3333-3333-333333333013"], "game_flags": {"married": true, "happy_ending": true}}', 14, false, '11111111-1111-1111-1111-111111111005')
+) AS chapter_info(id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress, act_id);
 
 -- === CHARACTERS ===
 INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress)

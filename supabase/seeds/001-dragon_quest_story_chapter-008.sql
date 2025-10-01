@@ -42,9 +42,10 @@ CROSS JOIN (
 WHERE wr.name = location_info.region_name;
 
 -- === STORY CHAPTERS ===
-INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
+INSERT INTO public.story_chapters (id, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
 SELECT 
   chapter_info.id::uuid,
+  chapter_info.act_id::uuid,
   chapter_info.chapter_number,
   chapter_info.title,
   chapter_info.description,
@@ -53,8 +54,8 @@ SELECT
   chapter_info.is_initial_user_progress
 FROM (
   VALUES 
-    ('33333333-3333-3333-3333-333333333008', 8, 'The Frozen Citadel', 'การเดินทางสู่ Sniflheim ดินแดนแห่งน้ำแข็งและการเผชิญหน้ากับความหนาวเหน็บ', '{"completed_chapters": ["33333333-3333-3333-3333-333333333007"]}', 8, false)
-) AS chapter_info(id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
+    ('33333333-3333-3333-3333-333333333008', '11111111-1111-1111-1111-111111111003', 8, 'The Frozen Citadel', 'การเดินทางสู่ Sniflheim ดินแดนแห่งน้ำแข็งและการเผชิญหน้ากับความหนาวเหน็บ', '{"completed_chapters": ["33333333-3333-3333-3333-333333333007"]}', 8, false)
+) AS chapter_info(id, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
 
 -- === CHARACTERS ===
 INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress)

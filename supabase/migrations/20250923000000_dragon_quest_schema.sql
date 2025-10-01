@@ -49,10 +49,29 @@ CREATE TABLE IF NOT EXISTS public.locations (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Story Acts Table
+-- เก็บข้อมูล Act ต่าง ๆ ที่ใช้จัดกลุ่ม Chapters (Content only, no user state)
+CREATE TABLE IF NOT EXISTS public.story_acts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    act_number INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    unlock_requirements JSONB DEFAULT '{}',
+    -- Requirements to unlock this story act
+    -- Format: {"level": integer, "completed_acts": [uuid], "flags": {string: any}}
+    -- Example: {"level": 1, "completed_acts": ["00000000-0000-0000-0000-000000000001"], "flags": {"prologue_completed": true}}
+    display_order INTEGER NOT NULL DEFAULT 0,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this story act is part of initial user progress setup
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Story Chapters Table
 -- เก็บข้อมูลบทต่าง ๆ ของเรื่อง (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.story_chapters (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    act_id UUID NOT NULL REFERENCES public.story_acts(id) ON DELETE CASCADE,
     chapter_number INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -316,6 +335,7 @@ CREATE TABLE IF NOT EXISTS public.user_progress (
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_locations_world_region_id ON public.locations(world_region_id);
+CREATE INDEX IF NOT EXISTS idx_story_chapters_act_id ON public.story_chapters(act_id);
 CREATE INDEX IF NOT EXISTS idx_story_events_chapter_id ON public.story_events(chapter_id);
 CREATE INDEX IF NOT EXISTS idx_story_events_location_id ON public.story_events(location_id);
 CREATE INDEX IF NOT EXISTS idx_event_interactions_event_id ON public.event_interactions(event_id);
@@ -351,6 +371,7 @@ $$ language 'plpgsql';
 -- Apply updated_at triggers
 CREATE TRIGGER update_world_regions_updated_at BEFORE UPDATE ON public.world_regions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_locations_updated_at BEFORE UPDATE ON public.locations FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER update_story_acts_updated_at BEFORE UPDATE ON public.story_acts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_story_chapters_updated_at BEFORE UPDATE ON public.story_chapters FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_story_events_updated_at BEFORE UPDATE ON public.story_events FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER update_event_interactions_updated_at BEFORE UPDATE ON public.event_interactions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

@@ -42,9 +42,10 @@ CROSS JOIN (
 WHERE wr.name = location_info.region_name;
 
 -- === STORY CHAPTERS ===
-INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
+INSERT INTO public.story_chapters (id, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
 SELECT 
   chapter_info.id::uuid,
+  chapter_info.act_id::uuid,
   chapter_info.chapter_number,
   chapter_info.title,
   chapter_info.description,
@@ -53,8 +54,8 @@ SELECT
   chapter_info.is_initial_user_progress
 FROM (
   VALUES 
-    ('33333333-3333-3333-3333-333333333009', 9, 'The World Tree', 'การเดินทางสู่ Yggdrasil ต้นไม้แห่งโลกและการเตรียมพร้อมสำหรับการต่อสู้ครั้งสุดท้าย', '{"completed_chapters": ["33333333-3333-3333-3333-333333333008"]}', 9, false)
-) AS chapter_info(id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
+    ('33333333-3333-3333-3333-333333333009', '11111111-1111-1111-1111-111111111004', 9, 'The World Tree', 'การเดินทางสู่ Yggdrasil ต้นไม้แห่งโลกและการเตรียมพร้อมสำหรับการต่อสู้ครั้งสุดท้าย', '{"completed_chapters": ["33333333-3333-3333-3333-333333333008"]}', 9, false)
+) AS chapter_info(id, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
 
 -- === CHARACTERS ===
 INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress)

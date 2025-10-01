@@ -42,7 +42,7 @@ CROSS JOIN (
 WHERE wr.name = location_info.region_name;
 
 -- === STORY CHAPTERS ===
-INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
+INSERT INTO public.story_chapters (id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress, act_id)
 SELECT 
   chapter_info.id::uuid,
   chapter_info.chapter_number,
@@ -50,11 +50,12 @@ SELECT
   chapter_info.description,
   chapter_info.unlock_requirements::jsonb,
   chapter_info.display_order,
-  chapter_info.is_initial_user_progress
+  chapter_info.is_initial_user_progress,
+  chapter_info.act_id::uuid
 FROM (
   VALUES 
-    ('33333333-3333-3333-3333-333333333011', 11, 'The Time Paradox', 'การเดินทางกลับไปในอดีตเพื่อป้องกันไม่ให้โลกถูกทำลาย และการค้นพบศัตรูตัวจริง', '{"completed_chapters": ["33333333-3333-3333-3333-333333333010"], "game_flags": {"world_saved": true}}', 11, false)
-) AS chapter_info(id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
+    ('33333333-3333-3333-3333-333333333011', 11, 'The Time Paradox', 'การเดินทางกลับไปในอดีตเพื่อป้องกันไม่ให้โลกถูกทำลาย และการค้นพบศัตรูตัวจริง', '{"completed_chapters": ["33333333-3333-3333-3333-333333333010"], "game_flags": {"world_saved": true}}', 11, false, '11111111-1111-1111-1111-111111111004')
+) AS chapter_info(id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress, act_id);
 
 -- === CHARACTERS ===
 INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress)
