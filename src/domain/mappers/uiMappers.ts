@@ -5,15 +5,17 @@ import {
 } from "@/src/domain/types/enums";
 import {
   AvailableEventDto,
+  CompleteInteractionDto,
   EventInteractionDto,
   EventOutcomeDto,
-  GameEffects,
+  GameEffectsDto,
   LocationDto,
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
 import { Json } from "@/src/domain/types/supabase";
 import {
+  CompleteInteractionUI,
   EventInteractionUI,
   EventOutcomeUI,
   GameEffectsUI,
@@ -253,17 +255,38 @@ export const mapUserGameStateDtoToUI = (
 };
 
 /**
+ * Map CompleteInteractionSchema to CompleteInteractionDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapCompleteInteractionToUI = (
+  schema: CompleteInteractionDto
+): CompleteInteractionUI => {
+  return {
+    success: schema.success,
+    nextEventId: schema.nextEventId,
+    effects: schema.effects ? mapGameEffectsToUI(schema.effects) : undefined,
+    choiceKey: schema.choiceKey,
+    autoUnlockedLocations: schema.autoUnlockedLocations,
+    autoUnlockedRegions: schema.autoUnlockedRegions,
+    eventOutcome: schema.eventOutcome
+      ? mapEventOutcomeDtoToUI(schema.eventOutcome)
+      : undefined,
+    error: schema.error,
+  };
+};
+
+/**
  * Map GameEffects (snake_case from RPC) to GameEffectsUI (camelCase for UI)
  * Converts database schema format to UI-friendly format
  */
-export const mapGameEffectsToUI = (effects: GameEffects): GameEffectsUI => {
+export const mapGameEffectsToUI = (effects: GameEffectsDto): GameEffectsUI => {
   return {
     relationship: effects.relationship,
-    unlockEvents: effects.unlock_events,
-    unlockChapters: effects.unlock_chapters,
-    unlockLocations: effects.unlock_locations,
-    unlockRegions: effects.unlock_regions,
-    partyJoins: effects.party_joins,
+    unlockEvents: effects.unlockEvents,
+    unlockChapters: effects.unlockChapters,
+    unlockLocations: effects.unlockLocations,
+    unlockRegions: effects.unlockRegions,
+    partyJoins: effects.partyJoins,
     items: effects.items,
     experience: effects.experience,
     gold: effects.gold,

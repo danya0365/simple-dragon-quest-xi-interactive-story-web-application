@@ -1,6 +1,5 @@
 "use client";
 
-import { mapGameEffectsToUI } from "@/src/domain/mappers/uiMappers";
 import { EventOutcomeDto } from "@/src/domain/types/rpc";
 import { EventInteractionUI } from "@/src/domain/types/ui";
 import { EffectsDisplay } from "@/src/presentation/components/game/EffectsDisplay";
@@ -482,9 +481,7 @@ export function EventInteractionView() {
                         สิ่งที่ได้รับ:
                       </h5>
                       <EffectsDisplay
-                        effects={mapGameEffectsToUI(
-                          currentEventOutcome.effects
-                        )}
+                        effects={currentEventOutcome.effects}
                         className="mt-2"
                       />
                     </div>

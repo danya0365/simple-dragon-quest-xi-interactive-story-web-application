@@ -170,7 +170,7 @@ export interface EventOutcomeUI {
   title: string;
   description: string | null;
   outcomeType: string;
-  effects: Record<string, unknown>;
+  effects: GameEffectsUI;
   nextEventId: string | null;
 }
 
@@ -179,4 +179,15 @@ export interface CompletedInteractionUI {
   interactionId: string;
   choiceKey: string;
   completedAt: string;
+}
+
+export interface CompleteInteractionUI {
+  success: boolean;
+  nextEventId?: string | null;
+  effects?: GameEffectsUI;
+  choiceKey?: string;
+  autoUnlockedLocations?: string[];
+  autoUnlockedRegions?: string[];
+  eventOutcome?: EventOutcomeUI;
+  error?: string;
 }

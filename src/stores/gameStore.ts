@@ -12,6 +12,7 @@ import {
 import {
   convertJsonStatsToRecord,
   mapAvailableEventDtoToUI,
+  mapCompleteInteractionToUI,
   mapEventInteractionDtoToUI,
   mapUserGameStateDtoToUI,
 } from "@/src/domain/mappers/uiMappers";
@@ -570,21 +571,18 @@ export const useGameStore = create<GameStore>()(
           if (error) throw error;
 
           const resultSchema = data as unknown as CompleteInteractionSchema;
-          console.log(
-            "CompleteInteractionSchema check game effect for party joins",
-            resultSchema
-          );
-          const result = mapCompleteInteractionToDto(resultSchema);
+          const resultDto = mapCompleteInteractionToDto(resultSchema);
+          const resultUI = mapCompleteInteractionToUI(resultDto);
 
-          if (result.success && !result.error) {
+          if (resultDto.success && !resultDto.error) {
             // Reload game state after successful interaction
             await get().loadUserGameState();
 
             set({ loading: false });
-            return result;
+            return resultUI;
           } else {
             set({ loading: false });
-            return result;
+            return resultUI;
           }
         } catch (err) {
           console.error("Error completing interaction:", err);
