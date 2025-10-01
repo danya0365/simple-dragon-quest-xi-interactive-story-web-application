@@ -182,12 +182,58 @@ export const EffectsDisplay: React.FC<EffectsDisplayProps> = ({
     });
   }
 
-  // Handle unlocks
+  // Handle unlock regions (special case with rich data)
+  if (effects.unlockRegions && effects.unlockRegions.length > 0) {
+    effects.unlockRegions.forEach((region, index) => {
+      displayElements.push(
+        <div
+          key={`unlock-regions-${index}`}
+          className="flex items-center gap-3 py-3 px-4 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-purple-500/20 rounded-xl border border-purple-400/40 shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 transition-all duration-300"
+        >
+          <div className="flex-shrink-0">
+            {region.imageUrl ? (
+              <Image 
+                src={region.imageUrl} 
+                alt={region.name}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover border-2 border-purple-400/60"
+              />
+            ) : (
+              <span className="text-purple-400 text-2xl animate-bounce">🗺️</span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-purple-200 font-bold text-lg block">
+              ปลดล็อกภูมิภาคใหม่!
+            </span>
+            <div className="text-purple-100 text-sm font-medium">
+              {region.name}
+              {region.locationsCount > 0 && (
+                <span className="ml-2 text-purple-300 text-xs">
+                  ({region.locationsCount} สถานที่)
+                </span>
+              )}
+            </div>
+            {region.description && (
+              <div className="text-purple-200/80 text-xs">
+                {region.description}
+              </div>
+            )}
+          </div>
+          <div className="flex-shrink-0">
+            <span className="text-purple-300 text-2xl animate-spin-slow">🔓</span>
+          </div>
+        </div>
+      );
+    });
+  }
+
+  // Handle other unlocks (events, chapters, locations)
   const unlockTypes = [
     { key: "unlockEvents", icon: "📜", label: "เหตุการณ์" },
     { key: "unlockChapters", icon: "📖", label: "บท" },
     { key: "unlockLocations", icon: "🏰", label: "สถานที่" },
-    { key: "unlockRegions", icon: "🗺️", label: "ภูมิภาค" },
   ];
 
   unlockTypes.forEach(({ key, icon, label }) => {

@@ -263,13 +263,14 @@ export const mapUserGameStateDtoToUI = (
 export const mapCompleteInteractionToUI = (
   schema: CompleteInteractionDto,
   masterItems?: ItemDto[],
-  masterCharacters?: CharacterDto[]
+  masterCharacters?: CharacterDto[],
+  worldRegions?: WorldRegionUI[]
 ): CompleteInteractionUI => {
   return {
     success: schema.success,
     nextEventId: schema.nextEventId,
     effects: schema.effects
-      ? mapGameEffectsToUI(schema.effects, masterItems, masterCharacters)
+      ? mapGameEffectsToUI(schema.effects, masterItems, masterCharacters, worldRegions)
       : undefined,
     choiceKey: schema.choiceKey,
     autoUnlockedLocations: schema.autoUnlockedLocations,
@@ -278,7 +279,8 @@ export const mapCompleteInteractionToUI = (
       ? mapEventOutcomeDtoToUI(
           schema.eventOutcome,
           masterItems,
-          masterCharacters
+          masterCharacters,
+          worldRegions
         )
       : undefined,
     error: schema.error,
@@ -292,7 +294,8 @@ export const mapCompleteInteractionToUI = (
 export const mapGameEffectsToUI = (
   effects: GameEffectsDto,
   masterItems?: ItemDto[],
-  masterCharacters?: CharacterDto[]
+  masterCharacters?: CharacterDto[],
+  worldRegions?: WorldRegionUI[]
 ): GameEffectsUI => {
   // Enrich items with master data if available
   const enrichedItems = effects.items?.map((item) => {
@@ -322,12 +325,25 @@ export const mapGameEffectsToUI = (
     };
   });
 
+  // Enrich unlock regions with world region data if available
+  const enrichedUnlockRegions = effects.unlockRegions?.map((regionId) => {
+    const worldRegion = worldRegions?.find((wr) => wr.id === regionId);
+    return {
+      id: regionId,
+      name: worldRegion?.name || regionId, // Fallback to ID if name not found
+      description: worldRegion?.description || "",
+      imageUrl: worldRegion?.imageUrl || "",
+      locationsCount: worldRegion?.locationsCount || 0,
+      unlockedLocationsCount: worldRegion?.unlockedLocationsCount || 0,
+    };
+  });
+
   return {
     relationship: effects.relationship,
     unlockEvents: effects.unlockEvents,
     unlockChapters: effects.unlockChapters,
     unlockLocations: effects.unlockLocations,
-    unlockRegions: effects.unlockRegions,
+    unlockRegions: enrichedUnlockRegions,
     partyJoins: enrichedPartyJoins,
     items: enrichedItems,
     experience: effects.experience,
@@ -342,7 +358,8 @@ export const mapGameEffectsToUI = (
 export const mapEventOutcomeDtoToUI = (
   dto: EventOutcomeDto,
   masterItems?: ItemDto[],
-  masterCharacters?: CharacterDto[]
+  masterCharacters?: CharacterDto[],
+  worldRegions?: WorldRegionUI[]
 ): EventOutcomeUI => {
   return {
     id: dto.id,
@@ -352,7 +369,7 @@ export const mapEventOutcomeDtoToUI = (
     description: dto.description,
     outcomeType: dto.outcomeType,
     effects: dto.effects
-      ? mapGameEffectsToUI(dto.effects, masterItems, masterCharacters)
+      ? mapGameEffectsToUI(dto.effects, masterItems, masterCharacters, worldRegions)
       : {
           relationship: undefined,
           unlockEvents: undefined,

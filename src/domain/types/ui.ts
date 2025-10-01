@@ -7,7 +7,7 @@ export interface GameEffectsUI {
   unlockEvents?: string[]; // [uuid]
   unlockChapters?: string[]; // [uuid]
   unlockLocations?: string[]; // [uuid]
-  unlockRegions?: string[]; // [uuid]
+  unlockRegions?: GameEffectRegionUI[]; // [region data]
   partyJoins?: GameEffectCharacterUI[]; // [character data]
   items?: GameEffectItemUI[];
   experience?: number; // integer
@@ -30,6 +30,15 @@ export interface GameEffectCharacterUI {
   description: string;
   characterType: string;
   avatarUrl: string;
+}
+
+export interface GameEffectRegionUI {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  locationsCount: number;
+  unlockedLocationsCount: number;
 }
 
 export interface EventInteractionUI {
