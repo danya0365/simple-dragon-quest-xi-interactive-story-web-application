@@ -11,6 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- เก็บข้อมูลภูมิภาคต่าง ๆ ในโลก (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.world_regions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image_url VARCHAR(500),
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS public.world_regions (
 -- เก็บข้อมูลสถานที่ต่าง ๆ ในแต่ละภูมิภาค (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.locations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     world_region_id UUID NOT NULL REFERENCES public.world_regions(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -49,10 +51,30 @@ CREATE TABLE IF NOT EXISTS public.locations (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Story Origins Table
+-- เก็บข้อมูลต้นกำเนิดของเรื่องราว (Content only, no user state)
+CREATE TABLE IF NOT EXISTS public.story_origins (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    unlock_requirements JSONB DEFAULT '{}',
+    -- Requirements to unlock this story origin
+    -- Format: {"level": integer, "completed_origins": [uuid], "flags": {string: any}}
+    -- Example: {"level": 1, "completed_origins": ["11111111-1111-1111-1111-111111111001"], "flags": {"prologue_completed": true}}
+    display_order INTEGER NOT NULL DEFAULT 0,
+    is_initial_user_progress BOOLEAN DEFAULT false,
+    -- Indicates if this story origin is part of initial user progress setup
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Story Acts Table
 -- เก็บข้อมูล Act ต่าง ๆ ที่ใช้จัดกลุ่ม Chapters (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.story_acts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
+    origin_id UUID NOT NULL REFERENCES public.story_origins(id) ON DELETE CASCADE,
     act_number INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -71,6 +93,7 @@ CREATE TABLE IF NOT EXISTS public.story_acts (
 -- เก็บข้อมูลบทต่าง ๆ ของเรื่อง (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.story_chapters (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     act_id UUID NOT NULL REFERENCES public.story_acts(id) ON DELETE CASCADE,
     chapter_number INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
@@ -90,6 +113,7 @@ CREATE TABLE IF NOT EXISTS public.story_chapters (
 -- เก็บข้อมูลเหตุการณ์ต่าง ๆ ในเรื่อง (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.story_events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     chapter_id UUID NOT NULL REFERENCES public.story_chapters(id) ON DELETE CASCADE,
     location_id UUID REFERENCES public.locations(id) ON DELETE SET NULL,
     title VARCHAR(255) NOT NULL,
@@ -118,6 +142,7 @@ CREATE TABLE IF NOT EXISTS public.story_events (
 -- เก็บข้อมูลการโต้ตอบในแต่ละเหตุการณ์
 CREATE TABLE IF NOT EXISTS public.event_interactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     event_id UUID NOT NULL REFERENCES public.story_events(id) ON DELETE CASCADE,
     interaction_type VARCHAR(50) NOT NULL, -- talk, examine, choose, battle, etc.
     title VARCHAR(255) NOT NULL,
@@ -142,6 +167,7 @@ CREATE TABLE IF NOT EXISTS public.event_interactions (
 -- เก็บผลลัพธ์ของการเลือกในแต่ละ interaction
 CREATE TABLE IF NOT EXISTS public.event_outcomes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     interaction_id UUID NOT NULL REFERENCES public.event_interactions(id) ON DELETE CASCADE,
     choice_key VARCHAR(100) NOT NULL DEFAULT 'default', -- ID of the choice that leads to this outcome
     outcome_type VARCHAR(50) DEFAULT 'story', -- story, reward, unlock, party_join, etc.
@@ -170,6 +196,7 @@ CREATE TABLE IF NOT EXISTS public.event_outcomes (
 -- เก็บข้อมูลตัวละครในเกม (Content only, no user state)
 CREATE TABLE IF NOT EXISTS public.characters (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     character_type VARCHAR(50) DEFAULT 'npc', -- party_member, npc, enemy, etc.
@@ -197,6 +224,7 @@ CREATE TABLE IF NOT EXISTS public.characters (
 -- เก็บข้อมูลไอเทมต่าง ๆ
 CREATE TABLE IF NOT EXISTS public.items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     item_type VARCHAR(50) DEFAULT 'misc', -- weapon, armor, consumable, key_item, misc

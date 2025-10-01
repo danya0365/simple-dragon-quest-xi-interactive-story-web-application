@@ -5,9 +5,10 @@
 -- Features: Basic structure following Dragon Quest XI narrative
 
 -- === WORLD REGIONS ===
-INSERT INTO public.world_regions (id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock)
+INSERT INTO public.world_regions (id, code, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock)
 SELECT 
-  region_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), region_info.code),
+  region_info.code,
   region_info.name,
   region_info.description,
   region_info.image_url,
@@ -17,13 +18,14 @@ SELECT
   region_info.is_alway_hide_until_unlock
 FROM (
   VALUES 
-    ('11111111-1111-1111-1111-111111111008', 'Sniflheim', 'ดินแดนแห่งน้ำแข็งและหิมะที่เย็นเหน็บและเต็มไปด้วยความลึกลับ', '/images/regions/sniflheim.svg', '{"completed_events": ["66666666-6666-6666-6666-666666666063"]}', 8, false, true)
-) AS region_info(id, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock);
+    ('sniflheim-region-------------------008', 'Sniflheim', 'ดินแดนแห่งน้ำแข็งและหิมะที่เย็นเหน็บและเต็มไปด้วยความลึกลับ', '/images/regions/sniflheim.svg', '{"completed_events": ["ancient-forest-evt----------------053"]}', 8, false, true)
+) AS region_info(code, name, description, image_url, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock);
 
 -- === LOCATIONS ===
-INSERT INTO public.locations (id, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock)
+INSERT INTO public.locations (id, code, world_region_id, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock)
 SELECT 
-  location_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), location_info.code),
+  location_info.code,
   wr.id AS world_region_id,
   location_info.name,
   location_info.description,
@@ -35,32 +37,36 @@ SELECT
 FROM world_regions wr
 CROSS JOIN (
   VALUES 
-    ('22222222-2222-2222-2222-222222222027', 'Sniflheim', 'Frozen Wasteland', 'ที่ราบน้ำแข็งที่กว้างใหญ่และเย็นเหน็บ', 'wasteland', '{}', 1, false, false),
-    ('22222222-2222-2222-2222-222222222028', 'Sniflheim', 'Ice Palace', 'พระราชวังน้ำแข็งที่สวยงามแต่เย็นเยียบ', 'palace', '{"completed_events": ["66666666-6666-6666-6666-666666666071"]}', 2, false, true),
-    ('22222222-2222-2222-2222-222222222029', 'Sniflheim', 'Crystal Caverns', 'ถ้ำคริสตัลที่เต็มไปด้วยน้ำแข็งและแสงระยิบระยับ', 'cavern', '{"completed_events": ["66666666-6666-6666-6666-666666666072"]}', 3, false, true)
-) AS location_info(id, region_name, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock)
+    ('frozen-wasteland-loc----------------027', 'Sniflheim', 'Frozen Wasteland', 'ที่ราบน้ำแข็งที่กว้างใหญ่และเย็นเหน็บ', 'wasteland', '{}', 1, false, false),
+    ('ice-palace-loc---------------------028', 'Sniflheim', 'Ice Palace', 'พระราชวังน้ำแข็งที่สวยงามแต่เย็นเยียบ', 'palace', '{"completed_events": ["journey-through-ice-evt-------------071"]}', 2, false, true),
+    ('crystal-caverns-loc----------------029', 'Sniflheim', 'Crystal Caverns', 'ถ้ำคริสตัลที่เต็มไปด้วยน้ำแข็งและแสงระยิบระยับ', 'cavern', '{"completed_events": ["ice-queen-challenge-evt-----------072"]}', 3, false, true)
+) AS location_info(code, region_name, name, description, location_type, unlock_requirements, display_order, is_initial_user_progress, is_alway_hide_until_unlock)
 WHERE wr.name = location_info.region_name;
 
 -- === STORY CHAPTERS ===
-INSERT INTO public.story_chapters (id, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
+INSERT INTO public.story_chapters (id, code, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
 SELECT 
-  chapter_info.id::uuid,
-  chapter_info.act_id::uuid,
+  uuid_generate_v5(uuid_nil(), chapter_info.code),
+  chapter_info.code,
+  sa.id AS act_id,
   chapter_info.chapter_number,
   chapter_info.title,
   chapter_info.description,
   chapter_info.unlock_requirements::jsonb,
   chapter_info.display_order,
   chapter_info.is_initial_user_progress
-FROM (
+FROM story_acts sa
+CROSS JOIN (
   VALUES 
-    ('33333333-3333-3333-3333-333333333008', '11111111-1111-1111-1111-111111111003', 8, 'The Frozen Citadel', 'การเดินทางสู่ Sniflheim ดินแดนแห่งน้ำแข็งและการเผชิญหน้ากับความหนาวเหน็บ', '{"completed_chapters": ["33333333-3333-3333-3333-333333333007"]}', 8, false)
-) AS chapter_info(id, act_id, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress);
+    ('frozen-citadel-ch-------------------008', 'dragon-quest-xi-act----------------002', 8, 'The Frozen Citadel', 'การเดินทางสู่ Sniflheim ดินแดนแห่งน้ำแข็งและการเผชิญหน้ากับความหนาวเหน็บ', '{"completed_chapters": ["mermaid-kingdom-ch-----------------007"]}', 8, false)
+) AS chapter_info(code, act_code, chapter_number, title, description, unlock_requirements, display_order, is_initial_user_progress)
+WHERE sa.code = chapter_info.act_code;
 
 -- === CHARACTERS ===
-INSERT INTO public.characters (id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress)
+INSERT INTO public.characters (id, code, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress)
 SELECT 
-  character_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), character_info.code),
+  character_info.code,
   character_info.name,
   character_info.description,
   character_info.character_type,
@@ -71,15 +77,16 @@ SELECT
   character_info.is_initial_user_progress
 FROM (
   VALUES 
-    ('44444444-4444-4444-4444-444444444022', 'Hendrik', 'อัศวินผู้ยิ่งใหญ่ที่เคยเป็นศัตรู แต่ตอนนี้เป็นพันธมิตร', 'party_member', '/images/characters/hendrik.svg', '{"hp": 180, "mp": 60, "level": 1, "attack": 28, "defense": 35, "agility": 8, "luck": 10}', '["Sword Mastery", "Shield Wall", "Noble Strike"]', true, false),
-    ('44444444-4444-4444-4444-444444444023', 'Ice Queen', 'ราชินีแห่งน้ำแข็งผู้ปกครอง Sniflheim ด้วยความเย็นชา', 'npc', '/images/characters/ice_queen.svg', '{"hp": 400, "mp": 350, "level": 45}', '["Absolute Zero", "Ice Storm", "Frozen Heart"]', false, false),
-    ('44444444-4444-4444-4444-444444444024', 'Frost Giant', 'ยักษ์น้ำแข็งที่ปกป้องดินแดนแห่งความหนาวเหน็บ', 'npc', '/images/characters/frost_giant.svg', '{"hp": 300, "mp": 100, "level": 25}', '["Ice Punch", "Blizzard Breath"]', false, false)
-) AS character_info(id, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress);
+    ('hendrik-character------------------022', 'Hendrik', 'อัศวินผู้ยิ่งใหญ่ที่เคยเป็นศัตรู แต่ตอนนี้เป็นพันธมิตร', 'party_member', '/images/characters/hendrik.svg', '{"hp": 180, "mp": 60, "level": 1, "attack": 28, "defense": 35, "agility": 8, "luck": 10}', '["Sword Mastery", "Shield Wall", "Noble Strike"]', true, false),
+    ('ice-queen-character----------------023', 'Ice Queen', 'ราชินีแห่งน้ำแข็งผู้ปกครอง Sniflheim ด้วยความเย็นชา', 'npc', '/images/characters/ice_queen.svg', '{"hp": 400, "mp": 350, "level": 45}', '["Absolute Zero", "Ice Storm", "Frozen Heart"]', false, false),
+    ('frost-giant-character---------------024', 'Frost Giant', 'ยักษ์น้ำแข็งที่ปกป้องดินแดนแห่งความหนาวเหน็บ', 'npc', '/images/characters/frost_giant.svg', '{"hp": 300, "mp": 100, "level": 25}', '["Ice Punch", "Blizzard Breath"]', false, false)
+) AS character_info(code, name, description, character_type, avatar_url, stats, abilities, is_joinable, is_initial_user_progress);
 
 -- === ITEMS ===
-INSERT INTO public.items (id, name, description, item_type, rarity, stats, effects, image_url, is_initial_user_progress)
+INSERT INTO public.items (id, code, name, description, item_type, rarity, stats, effects, image_url, is_initial_user_progress)
 SELECT 
-  item_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), item_info.code),
+  item_info.code,
   item_info.name,
   item_info.description,
   item_info.item_type,
@@ -90,15 +97,16 @@ SELECT
   item_info.is_initial_user_progress
 FROM (
   VALUES 
-    ('55555555-5555-5555-5555-555555555026', 'Frost Blade', 'ดาบน้ำแข็งที่มีพลังแห่งความหนาวเหน็บ', 'weapon', 'rare', '{"attack": 35, "ice_power": 25}', '{"freeze_chance": 30}', '/images/items/frost_blade.svg', false),
-    ('55555555-5555-5555-5555-555555555027', 'Crystal of Eternal Ice', 'คริสตัลน้ำแข็งนิรันดร์ที่ไม่เคยละลาย', 'key_item', 'legendary', '{}', '{"eternal_cold": true, "ice_immunity": true}', '/images/items/ice_crystal.svg', false),
-    ('55555555-5555-5555-5555-555555555028', 'Winter Cloak', 'เสื้อคลุมฤดูหนาวที่ป้องกันความหนาวเย็น', 'armor', 'uncommon', '{"defense": 25, "cold_resistance": 40}', '{"warmth": true}', '/images/items/winter_cloak.svg', false)
-) AS item_info(id, name, description, item_type, rarity, stats, effects, image_url, is_initial_user_progress);
+    ('frost-blade-item-------------------026', 'Frost Blade', 'ดาบน้ำแข็งที่มีพลังแห่งความหนาวเหน็บ', 'weapon', 'rare', '{"attack": 35, "ice_power": 25}', '{"freeze_chance": 30}', '/images/items/frost_blade.svg', false),
+    ('eternal-ice-crystal-item------------027', 'Crystal of Eternal Ice', 'คริสตัลน้ำแข็งนิรันดร์ที่ไม่เคยละลาย', 'key_item', 'legendary', '{}', '{"eternal_cold": true, "ice_immunity": true}', '/images/items/ice_crystal.svg', false),
+    ('winter-cloak-item------------------028', 'Winter Cloak', 'เสื้อคลุมฤดูหนาวที่ป้องกันความหนาวเย็น', 'armor', 'uncommon', '{"defense": 25, "cold_resistance": 40}', '{"warmth": true}', '/images/items/winter_cloak.svg', false)
+) AS item_info(code, name, description, item_type, rarity, stats, effects, image_url, is_initial_user_progress);
 
 -- === STORY EVENTS ===
-INSERT INTO public.story_events (id, chapter_id, location_id, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress)
+INSERT INTO public.story_events (id, code, chapter_id, location_id, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress)
 SELECT 
-  event_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), event_info.code),
+  event_info.code,
   sc.id AS chapter_id,
   l.id AS location_id,
   event_info.title,
@@ -111,17 +119,18 @@ FROM story_chapters sc
 JOIN locations l ON 1=1
 CROSS JOIN (
   VALUES 
-    ('66666666-6666-6666-6666-666666666071', 'The Frozen Citadel', 'Frozen Wasteland', 'Journey Through Ice', 'การเดินทางผ่านที่ราบน้ำแข็งที่เย็นเหน็บ', 'exploration', '{"completed_chapters": ["33333333-3333-3333-3333-333333333007"]}', 1, false),
-    ('66666666-6666-6666-6666-666666666072', 'The Frozen Citadel', 'Ice Palace', 'The Ice Queen''s Challenge', 'การเผชิญหน้ากับราชินีแห่งน้ำแข็ง', 'boss_battle', '{"completed_events": ["66666666-6666-6666-6666-666666666071"]}', 2, false),
-    ('66666666-6666-6666-6666-666666666073', 'The Frozen Citadel', 'Crystal Caverns', 'The Crystal Heart', 'การค้นหาหัวใจคริสตัลในถ้ำลึก', 'quest', '{"completed_events": ["66666666-6666-6666-6666-666666666072"]}', 3, false)
-) AS event_info(id, chapter_name, location_name, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress)
+    ('journey-through-ice-evt-------------071', 'The Frozen Citadel', 'Frozen Wasteland', 'Journey Through Ice', 'การเดินทางผ่านที่ราบน้ำแข็งที่เย็นเหน็บ', 'exploration', '{"completed_chapters": ["mermaid-kingdom-ch-----------------007"]}', 1, false),
+    ('ice-queen-challenge-evt-----------072', 'The Frozen Citadel', 'Ice Palace', 'The Ice Queen''s Challenge', 'การเผชิญหน้ากับราชินีแห่งน้ำแข็ง', 'boss_battle', '{"completed_events": ["journey-through-ice-evt-------------071"]}', 2, false),
+    ('crystal-heart-evt------------------073', 'The Frozen Citadel', 'Crystal Caverns', 'The Crystal Heart', 'การค้นหาหัวใจคริสตัลในถ้ำลึก', 'quest', '{"completed_events": ["ice-queen-challenge-evt-----------072"]}', 3, false)
+) AS event_info(code, chapter_name, location_name, title, description, event_type, unlock_requirements, display_order, is_initial_user_progress)
 WHERE sc.title = event_info.chapter_name
 AND l.name = event_info.location_name;
 
 -- === EVENT INTERACTIONS ===
-INSERT INTO public.event_interactions (id, event_id, interaction_type, title, description, dialogue_text, character_speaker, choices, requirements, display_order)
+INSERT INTO public.event_interactions (id, code, event_id, interaction_type, title, description, dialogue_text, character_speaker, choices, requirements, display_order)
 SELECT 
-  interaction_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), interaction_info.code),
+  interaction_info.code,
   se.id AS event_id,
   interaction_info.interaction_type,
   interaction_info.title,
@@ -134,16 +143,17 @@ SELECT
 FROM story_events se
 CROSS JOIN (
   VALUES 
-    ('77777777-7777-7777-7777-777777777080', 'Journey Through Ice', 'examine', 'Observe Frozen Land', 'สำรวจดินแดนที่ปกคลุมไปด้วยน้ำแข็ง', 'ดินแดนนี้หนาวเหน็บมาก! ทุกอย่างปกคลุมไปด้วยน้ำแข็งและหิมะ', 'Narrator', '[]', '{}', 1),
-    ('77777777-7777-7777-7777-777777777081', 'The Ice Queen''s Challenge', 'battle', 'Confront Ice Queen', 'เผชิญหน้ากับราชินีแห่งน้ำแข็ง', 'ใครกล้ามาท้าทายข้าในดินแดนแห่งน้ำแข็ง! เจ้าจะต้องแข็งตัวไปตลอดกาล!', 'Ice Queen', '[{"id": "fight", "text": "ผมจะหยุดคุณ!", "type": "heroic"}, {"id": "reason", "text": "เราไม่จำเป็นต้องสู้กัน", "type": "peaceful"}]', '{}', 1),
-    ('77777777-7777-7777-7777-777777777082', 'The Crystal Heart', 'quest', 'Search for Crystal', 'ค้นหาหัวใจคริสตัลในถ้ำ', 'หัวใจคริสตัลซ่อนอยู่ในส่วนลึกของถ้ำ... แต่มีอันตรายรออยู่', 'Narrator', '[{"id": "careful", "text": "เดินอย่างระมัดระวัง", "type": "cautious"}, {"id": "rush", "text": "รีบไปให้เร็ว", "type": "hasty"}]', '{}', 1)
-) AS interaction_info(id, event_name, interaction_type, title, description, dialogue_text, character_speaker, choices, requirements, display_order)
+    ('observe-frozen-land-int-------------080', 'Journey Through Ice', 'examine', 'Observe Frozen Land', 'สำรวจดินแดนที่ปกคลุมไปด้วยน้ำแข็ง', 'ดินแดนนี้หนาวเหน็บมาก! ทุกอย่างปกคลุมไปด้วยน้ำแข็งและหิมะ', 'Narrator', '[]', '{}', 1),
+    ('confront-ice-queen-int-------------081', 'The Ice Queen''s Challenge', 'battle', 'Confront Ice Queen', 'เผชิญหน้ากับราชินีแห่งน้ำแข็ง', 'ใครกล้ามาท้าทายข้าในดินแดนแห่งน้ำแข็ง! เจ้าจะต้องแข็งตัวไปตลอดกาล!', 'Ice Queen', '[{"id": "fight", "text": "ผมจะหยุดคุณ!", "type": "heroic"}, {"id": "reason", "text": "เราไม่จำเป็นต้องสู้กัน", "type": "peaceful"}]', '{}', 1),
+    ('search-crystal-int-----------------082', 'The Crystal Heart', 'quest', 'Search for Crystal', 'ค้นหาหัวใจคริสตัลในถ้ำ', 'หัวใจคริสตัลซ่อนอยู่ในส่วนลึกของถ้ำ... แต่มีอันตรายรออยู่', 'Narrator', '[{"id": "careful", "text": "เดินอย่างระมัดระวัง", "type": "cautious"}, {"id": "rush", "text": "รีบไปให้เร็ว", "type": "hasty"}]', '{}', 1)
+) AS interaction_info(code, event_name, interaction_type, title, description, dialogue_text, character_speaker, choices, requirements, display_order)
 WHERE se.title = interaction_info.event_name;
 
 -- === EVENT OUTCOMES ===
-INSERT INTO public.event_outcomes (id, interaction_id, choice_key, outcome_type, title, description, effects, next_event_id)
+INSERT INTO public.event_outcomes (id, code, interaction_id, choice_key, outcome_type, title, description, effects, next_event_id)
 SELECT 
-  outcome_info.id::uuid,
+  uuid_generate_v5(uuid_nil(), outcome_info.code),
+  outcome_info.code,
   ei.id AS interaction_id,
   outcome_info.choice_key,
   outcome_info.outcome_type,
@@ -154,10 +164,10 @@ SELECT
 FROM event_interactions ei
 CROSS JOIN (
   VALUES 
-    ('88888888-8888-8888-8888-888888888080', 'Confront Ice Queen', 'fight', 'reward', 'Ice Queen Defeated', 'Luminary เอาชนะราชินีแห่งน้ำแข็ง! ความหนาวเหน็บเริ่มลดลง', '{"experience": 300, "items": [{"id": "55555555-5555-5555-5555-555555555026", "quantity": 1}], "party_joins": ["44444444-4444-4444-4444-444444444022"]}', 'The Crystal Heart'),
-    ('88888888-8888-8888-8888-888888888081', 'Confront Ice Queen', 'reason', 'story', 'Peaceful Resolution', 'ราชินีแห่งน้ำแข็งเข้าใจและยอมช่วยเหลือ Luminary', '{"experience": 250, "items": [{"id": "55555555-5555-5555-5555-555555555027", "quantity": 1}], "party_joins": ["44444444-4444-4444-4444-444444444022"]}', 'The Crystal Heart'),
-    ('88888888-8888-8888-8888-888888888082', 'Search for Crystal', 'careful', 'reward', 'Crystal Found Safely', 'ความระมัดระวังทำให้ Luminary หาหัวใจคริสตัลได้อย่างปลอดภัย', '{"experience": 200, "items": [{"id": "55555555-5555-5555-5555-555555555027", "quantity": 1}], "unlock_regions": ["11111111-1111-1111-1111-111111111009"]}', null),
-    ('88888888-8888-8888-8888-888888888083', 'Search for Crystal', 'rush', 'story', 'Dangerous Discovery', 'การรีบร้อนทำให้เกิดอันตราย แต่ก็ได้หัวใจคริสตัลมา', '{"experience": 150, "items": [{"id": "55555555-5555-5555-5555-555555555027", "quantity": 1}], "unlock_regions": ["11111111-1111-1111-1111-111111111009"]}', null)
-) AS outcome_info(id, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
+    ('ice-queen-defeated-outcome----------080', 'Confront Ice Queen', 'fight', 'reward', 'Ice Queen Defeated', 'Luminary เอาชนะราชินีแห่งน้ำแข็ง! ความหนาวเหน็บเริ่มลดลง', '{"experience": 300, "items": [{"code": "frost-blade-item-------------------026", "quantity": 1}], "party_joins": ["hendrik-character------------------022"]}', 'The Crystal Heart'),
+    ('peaceful-resolution-outcome---------081', 'Confront Ice Queen', 'reason', 'story', 'Peaceful Resolution', 'ราชินีแห่งน้ำแข็งเข้าใจและยอมช่วยเหลือ Luminary', '{"experience": 250, "items": [{"code": "eternal-ice-crystal-item------------027", "quantity": 1}], "party_joins": ["hendrik-character------------------022"]}', 'The Crystal Heart'),
+    ('crystal-found-safely-outcome--------082', 'Search for Crystal', 'careful', 'reward', 'Crystal Found Safely', 'ความระมัดระวังทำให้ Luminary หาหัวใจคริสตัลได้อย่างปลอดภัย', '{"experience": 200, "items": [{"code": "eternal-ice-crystal-item------------027", "quantity": 1}], "unlock_regions": ["sniflheim-region-------------------008"]}', null),
+    ('dangerous-discovery-outcome---------083', 'Search for Crystal', 'rush', 'story', 'Dangerous Discovery', 'การรีบร้อนทำให้เกิดอันตราย แต่ก็ได้หัวใจคริสตัลมา', '{"experience": 150, "items": [{"code": "eternal-ice-crystal-item------------027", "quantity": 1}], "unlock_regions": ["sniflheim-region-------------------008"]}', null)
+) AS outcome_info(code, interaction_title, choice_key, outcome_type, title, description, effects, next_event_title)
 LEFT JOIN story_events se_next ON se_next.title = outcome_info.next_event_title
 WHERE ei.title = outcome_info.interaction_title;
