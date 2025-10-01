@@ -12,6 +12,8 @@ import {
   ItemSchema,
   LocationSchema,
   PartyMemberSchema,
+  StoryChapterSchema,
+  StoryEventSchema,
   UserGameStateSchema,
   WorldMapSchema,
 } from "@/src/domain/types/rpc";
@@ -29,6 +31,8 @@ import {
   ItemDto,
   LocationDto,
   PartyMemberDto,
+  StoryChapterDto,
+  StoryEventDto,
   UserGameStateDto,
   WorldMapDto,
 } from "@/src/domain/types/rpc";
@@ -354,5 +358,45 @@ export const mapInventoryEntryToDto = (
     itemType: "",
     rarity: "",
     imageUrl: "",
+  };
+};
+
+/**
+ * Map StoryChapterSchema to StoryChapterDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapStoryChapterToDto = (
+  schema: StoryChapterSchema
+): StoryChapterDto => {
+  return {
+    id: schema.id,
+    chapterNumber: schema.chapter_number,
+    title: schema.title,
+    description: schema.description,
+    displayOrder: schema.display_order,
+    unlockRequirements: schema.unlock_requirements,
+    isInitialUserProgress: schema.is_initial_user_progress,
+  };
+};
+
+/**
+ * Map StoryEventSchema to StoryEventDto
+ * Converts snake_case properties to camelCase
+ */
+export const mapStoryEventToDto = (
+  schema: StoryEventSchema
+): StoryEventDto => {
+  return {
+    id: schema.id,
+    chapterId: schema.chapter_id,
+    title: schema.title,
+    description: schema.description,
+    eventType: schema.event_type,
+    displayOrder: schema.display_order,
+    locationId: schema.location_id,
+    unlockRequirements: schema.unlock_requirements,
+    completionRequirements: schema.completion_requirements,
+    rewards: schema.rewards,
+    isInitialUserProgress: schema.is_initial_user_progress,
   };
 };

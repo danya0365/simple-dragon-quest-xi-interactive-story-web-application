@@ -669,7 +669,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["profile_role"]
       }
+      get_all_chapters: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_all_characters: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_all_events: {
         Args: Record<PropertyKey, never>
         Returns: Json
       }

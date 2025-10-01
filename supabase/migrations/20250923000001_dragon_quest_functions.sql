@@ -656,6 +656,62 @@ AS $$
 $$;
 
 -- =============================================================================
+-- Function to get all chapters from story_chapters table
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_all_chapters()
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    SELECT COALESCE(
+        (SELECT JSONB_AGG(
+            JSONB_BUILD_OBJECT(
+                'id', id,
+                'chapter_number', chapter_number,
+                'title', title,
+                'description', description,
+                'display_order', display_order,
+                'unlock_requirements', unlock_requirements,
+                'is_initial_user_progress', is_initial_user_progress
+            )
+        )
+        FROM public.story_chapters
+        ),
+        '[]'::JSONB
+    ) AS chapters;
+$$;
+
+-- =============================================================================
+-- Function to get all events from story_events table
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.get_all_events()
+RETURNS JSONB
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+    SELECT COALESCE(
+        (SELECT JSONB_AGG(
+            JSONB_BUILD_OBJECT(
+                'id', id,
+                'chapter_id', chapter_id,
+                'title', title,
+                'description', description,
+                'event_type', event_type,
+                'display_order', display_order,
+                'location_id', location_id,
+                'unlock_requirements', unlock_requirements,
+                'completion_requirements', completion_requirements,
+                'rewards', rewards,
+                'is_initial_user_progress', is_initial_user_progress
+            )
+        )
+        FROM public.story_events
+        ),
+        '[]'::JSONB
+    ) AS events;
+$$;
+
+-- =============================================================================
 -- Delete user progress function
 -- =============================================================================
 

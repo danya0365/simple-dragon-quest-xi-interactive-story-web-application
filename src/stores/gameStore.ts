@@ -6,6 +6,8 @@ import {
   mapEventInteractionToDto,
   mapInitializeUserProgressToDto,
   mapItemToDto,
+  mapStoryChapterToDto,
+  mapStoryEventToDto,
   mapUserGameStateToDto,
   mapWorldMapToDto,
 } from "@/src/domain/mappers/rpcMappers";
@@ -29,6 +31,10 @@ import {
   ItemDto,
   ItemSchema,
   LocationDto,
+  StoryChapterDto,
+  StoryChapterSchema,
+  StoryEventDto,
+  StoryEventSchema,
   UserGameStateDto,
   UserGameStateSchema,
   WorldMapDto,
@@ -102,6 +108,8 @@ interface GameState {
   // Master data cache
   masterCharacters: CharacterDto[];
   masterItems: ItemDto[];
+  masterChapters: StoryChapterDto[];
+  masterEvents: StoryEventDto[];
   masterDataLoaded: boolean;
 
   // UI state
@@ -169,6 +177,8 @@ export const useGameStore = create<GameStore>()(
       userProgressId: null,
       masterCharacters: [],
       masterItems: [],
+      masterChapters: [],
+      masterEvents: [],
       masterDataLoaded: false,
       loading: false,
       error: null,
@@ -573,8 +583,15 @@ export const useGameStore = create<GameStore>()(
 
           const resultSchema = data as unknown as CompleteInteractionSchema;
           const resultDto = mapCompleteInteractionToDto(resultSchema);
-          const { masterItems, masterCharacters, worldRegions, allLocations } = get();
-          const resultUI = mapCompleteInteractionToUI(resultDto, masterItems, masterCharacters, worldRegions, allLocations);
+          const { masterItems, masterCharacters, worldRegions, allLocations } =
+            get();
+          const resultUI = mapCompleteInteractionToUI(
+            resultDto,
+            masterItems,
+            masterCharacters,
+            worldRegions,
+            allLocations
+          );
 
           if (resultDto.success && !resultDto.error) {
             // Reload game state after successful interaction
@@ -901,10 +918,32 @@ export const useGameStore = create<GameStore>()(
           const itemSchemas = itemData as unknown as ItemSchema[];
           const itemDtos = itemSchemas.map(mapItemToDto);
 
+          // Load chapters
+          const { data: chapterData, error: chapterError } = await supabase.rpc(
+            "get_all_chapters"
+          );
+
+          if (chapterError) throw chapterError;
+
+          const chapterSchemas = chapterData as unknown as StoryChapterSchema[];
+          const chapterDtos = chapterSchemas.map(mapStoryChapterToDto);
+
+          // Load events
+          const { data: eventData, error: eventError } = await supabase.rpc(
+            "get_all_events"
+          );
+
+          if (eventError) throw eventError;
+
+          const eventSchemas = eventData as unknown as StoryEventSchema[];
+          const eventDtos = eventSchemas.map(mapStoryEventToDto);
+
           // Update store with master data
           set({
             masterCharacters: characterDtos,
             masterItems: itemDtos,
+            masterChapters: chapterDtos,
+            masterEvents: eventDtos,
             masterDataLoaded: true,
             loading: false,
           });

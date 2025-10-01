@@ -495,5 +495,57 @@ export interface InventoryEntryDto {
   imageUrl: string;
 }
 
+// Story Chapter Schema (snake_case from database)
+export interface StoryChapterSchema {
+  id: string;
+  chapter_number: number;
+  title: string;
+  description: string;
+  display_order: number;
+  unlock_requirements: Record<string, unknown>;
+  is_initial_user_progress: boolean;
+}
+
+// Story Chapter DTO (camelCase for frontend use)
+export interface StoryChapterDto {
+  id: string;
+  chapterNumber: number;
+  title: string;
+  description: string;
+  displayOrder: number;
+  unlockRequirements: Record<string, unknown>;
+  isInitialUserProgress: boolean;
+}
+
+// Story Event Schema (snake_case from database)
+export interface StoryEventSchema {
+  id: string;
+  chapter_id: string;
+  title: string;
+  description: string;
+  event_type: string;
+  display_order: number;
+  location_id: string;
+  unlock_requirements: Record<string, unknown>;
+  completion_requirements: Record<string, unknown>;
+  rewards: Record<string, unknown>;
+  is_initial_user_progress: boolean;
+}
+
+// Story Event DTO (camelCase for frontend use)
+export interface StoryEventDto {
+  id: string;
+  chapterId: string;
+  title: string;
+  description: string;
+  eventType: string;
+  displayOrder: number;
+  locationId: string;
+  unlockRequirements: Record<string, unknown>;
+  completionRequirements: Record<string, unknown>;
+  rewards: Record<string, unknown>;
+  isInitialUserProgress: boolean;
+}
+
 export type RpcUserGameStateResponse = UserGameStateSchema;
 export type RpcInitializeUserProgressResponse = InitializeUserProgressSchema;
